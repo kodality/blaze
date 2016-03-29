@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+  <changeSet id="tag-core" author="igor.bossenko@gmail.com">
+     <tagDatabase tag="core"/>
+  </changeSet>
+  
+  <changeSet dbms="PostgreSQL" id="schema_util" author="igor.bossenko@gmail.com">
+    <sql>
+    	create schema if not exists util;
+    </sql>
+	<rollback>
+		drop schema util cascade;
+	</rollback>
+  </changeSet>
+  <changeSet dbms="PostgreSQL" id="schema_meta" author="igor.bossenko@gmail.com" >
+    <sql>
+    	create schema if not exists meta;
+    </sql>
+	<rollback>
+		drop schema meta cascade;
+	</rollback>
+  </changeSet>
+
+
+  <changeSet dbms="PostgreSQL" id="add_funcs_exec_path" runOnChange="true" author="igor.bossenko@gmail.com" >
+    <sqlFile splitStatements="false" path="../functions/exec.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="../functions/set_schema_search_path.sql" relativeToChangelogFile="true"  />
+    <sqlFile splitStatements="false" path="../functions/restore_default_search_path.sql" relativeToChangelogFile="true"  />
+    <sqlFile splitStatements="false" stripComments="true" path="../functions/dbowner.sql" relativeToChangelogFile="true" />
+    <rollback>
+		drop function util."exec"(text, boolean);
+		drop function meta.set_schema_search_path(character varying, character varying);
+		drop function meta.restore_default_search_path();
+		drop function meta.dbowner();
+	</rollback>
+  </changeSet>
+
+  <changeSet dbms="PostgreSQL" id="set_search_path1" author="igor.bossenko@gmail.com" >
+    <sql>
+    	select meta.set_schema_search_path('meta', p_action := 'BEGIN');
+    	select meta.set_schema_search_path('util', p_action := 'BEGIN');
+    	SET search_path TO util,meta,public;
+    </sql>
+	<rollback>
+	    select meta.set_schema_search_path('public', 'REWRITE');
+	</rollback>
+  </changeSet>
+
+</databaseChangeLog>
+
+
+
+
+
+
+
+

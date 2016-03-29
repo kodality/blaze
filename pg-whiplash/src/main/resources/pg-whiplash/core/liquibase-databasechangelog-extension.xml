@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+ 	<!--originally taken from https://liquibase.jira.com/browse/CORE-1909. Thanks to Mark Chesney -->
+
+	<property name="liquibaseCatalogName" value=""/>
+	<property name="liquibaseSchemaName" value="${database.liquibaseSchemaName}"/>
+	<property name="databaseChangeLogTableName" value="${database.databaseChangeLogTableName}"/>
+	<property name="liquibaseTablespaceName" value=""/>
+	
+	<changeSet id="liquibase-drop-pk-if-exists" author="igor.bossenko@gmail.com">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists
+				catalogName="${liquibaseCatalogName}"
+				schemaName="${liquibaseSchemaName}"
+				tableName="${databaseChangeLogTableName}"
+				primaryKeyName="PK_${databaseChangeLogTableName}"/>
+		</preConditions>
+		<dropPrimaryKey
+			catalogName="${liquibaseCatalogName}"
+			schemaName="${liquibaseSchemaName}"
+			tableName="${databaseChangeLogTableName}"
+			constraintName="PK_${databaseChangeLogTableName}"/>
+	</changeSet>
+
+	<changeSet id="liquibase-create-index-by-date" author="igor.bossenko@gmail.com">
+		<createIndex
+			catalogName="${liquibaseCatalogName}"
+			schemaName="${liquibaseSchemaName}"
+			tableName="${databaseChangeLogTableName}"
+			indexName="IX_${databaseChangeLogTableName}_DATE"
+			tablespace="${liquibaseTablespaceName}"
+			>
+			<column name="DATEEXECUTED"/>
+			<column name="ORDEREXECUTED"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="liquibase-create-pk" author="igor.bossenko@gmail.com">
+		<addPrimaryKey
+			catalogName="${liquibaseCatalogName}"
+			schemaName="${liquibaseSchemaName}"
+			tableName="${databaseChangeLogTableName}"
+			constraintName="PK_${databaseChangeLogTableName}"
+			tablespace="${liquibaseTablespaceName}"
+			columnNames="ID,AUTHOR,FILENAME"/>
+	</changeSet>
+  
+</databaseChangeLog>
+
+
+
+
+
+
+
+

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.nortal</groupId>
+    <artifactId>blaze</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.nortal.blaze</groupId>
+  <artifactId>blaze-core</artifactId>
+  <packaging>bundle</packaging>
+  <name>blaze-core</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>me.fhir</groupId>
+      <artifactId>fhir-dstu2</artifactId>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <bundle.export-packages>
+      com.nortal.blaze.core.exception,
+      com.nortal.blaze.core.iface,
+      com.nortal.blaze.core.model,
+      com.nortal.blaze.core.model.search,
+      com.nortal.blaze.core.service,
+      com.nortal.blaze.core.util,
+    </bundle.export-packages>
+  </properties>
+</project>

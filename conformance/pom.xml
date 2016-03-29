@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.nortal</groupId>
+    <artifactId>blaze</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.nortal.blaze</groupId>
+  <artifactId>conformance</artifactId>
+  <packaging>bundle</packaging>
+  <name>conformance</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>blaze-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>representation</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>me.fhir</groupId>
+      <artifactId>fhir-dstu2</artifactId>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <bundle.export-packages>
+      com.nortal.fhir.conformance.content,
+      com.nortal.fhir.conformance.operations
+    </bundle.export-packages>
+  </properties>
+</project>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+ 
+  <changeSet dbms="PostgreSQL" id="add_util_functions-0030-1" runOnChange="true" author="igor.bossenko@gmail.com" >
+    <sqlFile splitStatements="false" path="../functions/string2null.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="../functions/string2tab.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="../functions/object_exists.sql" relativeToChangelogFile="true"  />
+    <sqlFile splitStatements="false" path="../functions/column_exists.sql" relativeToChangelogFile="true"  />
+    <rollback>
+		drop function util.string2null(character varying);
+		drop function util.string2tab(character varying, character varying);
+		drop function util.object_exists(character varying, character varying);
+		drop function util.column_exists(character varying, character varying, character varying);
+	</rollback>
+  </changeSet>
+  
+</databaseChangeLog>
+
+
+
+
+
+
+
+
