@@ -12,6 +12,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
 
 public abstract class AbstractWriter<T> implements MessageBodyWriter<T>, ContainerResponseFilter {
@@ -21,16 +22,6 @@ public abstract class AbstractWriter<T> implements MessageBodyWriter<T>, Contain
   @Override
   public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
     return -1;// funny javadoc
-  }
-
-  protected boolean isWriteable(ContainerResponseContext responseContext) {
-    if (responseContext.getEntity() == null) {
-      return false;
-    }
-    return isWriteable(responseContext.getEntity().getClass(),
-                       responseContext.getEntityType(),
-                       responseContext.getEntityAnnotations(),
-                       responseContext.getMediaType());
   }
 
   @Override
@@ -47,17 +38,20 @@ public abstract class AbstractWriter<T> implements MessageBodyWriter<T>, Contain
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
       throws IOException {
-    if (isWriteable(responseContext)) {
-      String contentType = getContentType((T) responseContext.getEntity());
-      responseContext.getHeaders().putSingle(Message.CONTENT_TYPE, contentType);
+    if (responseContext.getEntity() == null) {
+      return;
     }
-  }
-
-  protected String getContentType(T t) {
-    return RequestContext.getResponseMime();
+    for (String mime : StringUtils.split(RequestContext.getResponseMime(), ",")) {
+      if (isWriteable(responseContext.getEntity().getClass(),
+                      responseContext.getEntityType(),
+                      responseContext.getEntityAnnotations(),
+                      MediaType.valueOf(mime))) {
+        responseContext.getHeaders().putSingle(Message.CONTENT_TYPE, mime);
+        return;
+      }
+    }
   }
 
 }
