@@ -143,13 +143,17 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     return bundle;
   }
 
-  private static void addPagingLinks(Bundle bundle, Integer count, Integer page) {
+  private void addPagingLinks(Bundle bundle, Integer count, Integer page) {
     if (count == 0) {
       return;
     }
-    String uri = RequestContext.getUriInfo().getRequestUriBuilder().build().toString();
-    uri = StringUtils.removePattern(uri, "[&?]_page=[0-9]+");
-    String pageUrl = uri + (StringUtils.contains(uri, "?") ? "&" : "?") + "_page=";
+    // String pageUrl = RequestContext.getUriInfo().getBaseUri().toString();
+    // pageUrl = StringUtils.removeEnd(pageUrl, getEndpoint());
+    String pageUrl = "/" + getEndpoint();
+
+    String queryString = RequestContext.getUriInfo().getRequestUriBuilder().build().getQuery();
+    queryString = StringUtils.isEmpty(queryString) ? "" : StringUtils.removePattern(queryString, "[&?]_page=[0-9]+");
+    pageUrl += queryString + (StringUtils.contains(queryString, "?") ? "&" : "?") + "_page=";
 
     bundle.addLink().setRelation("self").setUrl(pageUrl + page);
     bundle.addLink().setRelation("first").setUrl(pageUrl + 1);

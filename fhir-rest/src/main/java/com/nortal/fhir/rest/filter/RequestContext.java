@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 public class RequestContext implements ContainerRequestFilter {
   private static final ThreadLocal<UriInfo> uriInfo = new ThreadLocal<>();
   private static final ThreadLocal<String> responseMime = new ThreadLocal<>();
+  private static final String DEFAULT = "application/json+fhir";
 
   public static UriInfo getUriInfo() {
     return uriInfo.get();
@@ -23,9 +24,11 @@ public class RequestContext implements ContainerRequestFilter {
   public void filter(ContainerRequestContext requestContext) throws IOException {
     try {
       uriInfo.set(requestContext.getUriInfo());
-      String accept = requestContext.getHeaderString("Accept");
       String contentType = requestContext.getHeaderString("Content-Type");
-      responseMime.set(accept == null || accept.equals(MediaType.WILDCARD) ? contentType : accept);
+      String accept = requestContext.getHeaderString("Accept");
+      accept =
+          accept == null || accept.equals(MediaType.WILDCARD) ? contentType == null ? DEFAULT : contentType : accept;
+      responseMime.set(accept);
     } catch (Exception e) {
       Logger.getLogger(RequestContext.class).error(e);
     }

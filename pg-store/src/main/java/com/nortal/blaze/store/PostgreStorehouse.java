@@ -34,7 +34,7 @@ public class PostgreStorehouse implements ResourceStorehouse {
 
   @Override
   public void delete(ResourceId id) {
-    throw new FhirException(501, "soon");
+    resourceDao.delete(id);
   }
 
   @Override

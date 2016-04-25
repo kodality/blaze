@@ -30,6 +30,11 @@ public class ResourceDao {
                         version.getContent().getValue());
   }
 
+  public void delete(ResourceId id) {
+    String sql = "UPDATE resource SET sys_status = 'C' WHERE type = ? AND id = ? AND sys_status != 'T'";
+    jdbcTemplate.update(sql, id.getResourceType(), id.getResourceId());
+  }
+
   public Integer getLastVersion(ResourceId id) {
     String sql = "SELECT COALESCE(max(last_version),0) FROM resource WHERE type = ? AND id = ?";
     return jdbcTemplate.queryForObject(sql, Integer.class, id.getResourceType(), id.getResourceId());
@@ -41,7 +46,7 @@ public class ResourceDao {
     if (id.getVersion() != null) {
       sb.append(" AND last_version = ?", id.getVersion());
     } else {
-      sb.append(" AND sys_status = 'A'");
+      sb.append(" AND sys_status != 'T'");
     }
     try {
       return jdbcTemplate.queryForObject(sb.getSql(), new ResourceRowMapper(), sb.getParams());
