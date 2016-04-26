@@ -18,7 +18,7 @@ BEGIN
       CONTINUE WHEN EXISTS (SELECT 1 FROM blindex WHERE resource_type = _resource_type AND path = _path AND param_type = _param_type);
 
       _idx_type := CASE WHEN _param_type IN ('string','token') THEN 'pizzelle' ELSE 'parasol' END;
-      _idx_name := lower(_resource_type) || '_' || _param_type || '_' || replace(_path, '.', '_')  || '_' || _idx_type ;
+      _idx_name := lower(_resource_type) || '_' || _param_type || '_' || lower(replace(_path, '.', '_'))  || '_' || _idx_type ;
 
       CASE
         WHEN _param_type = 'string' THEN
@@ -26,7 +26,7 @@ BEGIN
         WHEN _param_type = 'token' THEN
           EXECUTE format('CREATE INDEX %3$s ON %1$s USING gin (token(%1$s::resource, %2$L))', lower(_resource_type), _path, _idx_name);
         WHEN _param_type = 'date' THEN
-          EXECUTE format('CREATE TABLE %1$s (key bigserial primary key, resource_key bigint %3$s REFERENCES %2$s (key) ON DELETE CASCADE, range tstzrange)', _idx_name, _resource_type, CASE WHEN _struct.is_many THEN '' ELSE 'PRIMARY KEY' END);
+          EXECUTE format('CREATE TABLE %1$s (resource_key bigint %3$s REFERENCES %2$s (key) ON DELETE CASCADE, range tstzrange)', _idx_name, _resource_type, CASE WHEN _struct.is_many THEN '' ELSE 'PRIMARY KEY' END);
           EXECUTE format('CREATE INDEX %2$s ON %1$s USING gist (resource_key, range);', _idx_name, 'idx_' || _idx_name);
           EXECUTE format('INSERT INTO %1$s (select key, unnest(date(r, %3$L)) from %2$s r)', _idx_name, _resource_type, _path);
           EXECUTE format('DROP TRIGGER IF EXISTS trigger_parasolindex ON %s', _resource_type);

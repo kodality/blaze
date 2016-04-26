@@ -13,7 +13,7 @@ create table resource (
   sys_status    char(1) not null default 'A'
 );
 
-alter table resource add constraint resource__id_type_ukey unique (id,type);
+alter table resource add constraint resource_id_type_last_version_key unique (id,type,last_version);
 create index resource_reference_idx on resource USING gin (ref(type,id)));
 --rollback drop table resource cascade;
 

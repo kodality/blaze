@@ -17,9 +17,9 @@ public class ResourceDao {
   private FhirJdbcTemplate jdbcTemplate;
 
   public void create(ResourceVersion version) {
-    String key = jdbcTemplate.queryForObject("select nextval('resource_key_seq')", String.class);
+    Long key = jdbcTemplate.queryForObject("select nextval('resource_key_seq')", Long.class);
     if (version.getId().getResourceId() == null) {
-      version.getId().setResourceId(key);
+      version.getId().setResourceId(key.toString());
     }
     String sql = "INSERT INTO resource (key, type, id, last_version, content) VALUES (?,?,?,?,CAST(? as jsonb))";
     jdbcTemplate.update(sql,
