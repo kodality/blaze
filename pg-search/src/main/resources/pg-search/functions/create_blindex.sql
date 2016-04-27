@@ -30,7 +30,7 @@ BEGIN
           EXECUTE format('CREATE INDEX %2$s ON %1$s USING gist (resource_key, range);', _idx_name, 'idx_' || _idx_name);
           EXECUTE format('INSERT INTO %1$s (select key, unnest(date(r, %3$L)) from %2$s r)', _idx_name, _resource_type, _path);
           EXECUTE format('DROP TRIGGER IF EXISTS trigger_parasolindex ON %s', _resource_type);
-          EXECUTE format('CREATE TRIGGER trigger_parasolindex AFTER INSERT OR UPDATE ON %s FOR EACH ROW EXECUTE PROCEDURE merge_parasolindex()', _resource_type);
+          EXECUTE format('CREATE TRIGGER trigger_parasolindex AFTER INSERT ON %s FOR EACH ROW EXECUTE PROCEDURE merge_parasolindex()', _resource_type);
         ELSE
           RAISE EXCEPTION 'unknown type %', _param_type;
       END CASE;

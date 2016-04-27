@@ -17,7 +17,3 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql VOLATILE;
 
-CREATE TRIGGER trigger_resource_parasolindex
-    AFTER INSERT ON resource
-    FOR EACH ROW
-    EXECUTE PROCEDURE merge_parasolindex();
