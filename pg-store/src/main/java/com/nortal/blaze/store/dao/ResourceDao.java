@@ -39,7 +39,7 @@ public class ResourceDao {
     String sql = "SELECT COALESCE(max(last_version),0) FROM resource WHERE type = ? AND id = ?";
     return jdbcTemplate.queryForObject(sql, Integer.class, id.getResourceType(), id.getResourceId());
   }
-
+  
   public ResourceVersion load(VersionId id) {
     SqlBuilder sb = new SqlBuilder();
     sb.append("SELECT * FROM resource WHERE type = ? AND id = ?", id.getResourceType(), id.getResourceId());

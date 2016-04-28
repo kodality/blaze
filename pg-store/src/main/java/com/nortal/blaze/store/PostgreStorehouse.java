@@ -43,6 +43,9 @@ public class PostgreStorehouse implements ResourceStorehouse {
     if (version == null) {
       throw new FhirNotFoundException(id.getReference() + " not found");
     }
+    if (id.getVersion() == null && version.isDeleted()) {
+      throw new FhirException(410, "resource deleted");
+    }
     return version;
   }
 

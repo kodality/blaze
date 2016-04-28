@@ -14,6 +14,7 @@ public class ResourceRowMapper implements RowMapper<ResourceVersion> {
     ResourceVersion resource = new ResourceVersion();
     resource.setId(mapVersion(rs));
     resource.setContent(mapContent(rs));
+    resource.setDeleted(rs.getString("sys_status").equals("C"));
     return resource;
   }
 
