@@ -5,9 +5,12 @@ import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.representation.ResourceComposer;
 import com.nortal.blaze.representation.ResourceParser;
 import com.nortal.fhir.conformance.operations.ConformanceMonitor;
+import com.nortal.fhir.rest.interaction.Interaction;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.root.BatchService;
+import java.util.List;
 import javax.ws.rs.core.Response;
+import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Conformance.ConformanceRestComponent;
@@ -22,7 +25,7 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
 
   @Override
   protected String getEndpoint() {
-    return "";
+    return ""; // root
   }
 
   @Override
@@ -30,14 +33,15 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
     UserResource resource = new UserResource(this.getClass().getName(), "/");
     resource.setConsumes(TYPES);
     resource.setProduces(TYPES);
-    resource.setOperations(InteractionUtil.getOperations(conformance, FhirRootRest.class));
+    List<UserOperation> ops = InteractionUtil.getOperations(conformance, FhirRootRest.class);
+    ops.addAll(InteractionUtil.create(Interaction.CONFORMANCE, FhirRootRest.class));
+    resource.setOperations(ops);
     return resource;
   }
 
   @Override
   public Response conformance() {
-    String xml = ResourceComposer.compose(ConformanceMonitor.getConformance(), null);
-    return Response.ok().entity(xml).build();
+    return Response.ok().entity(ConformanceMonitor.getConformance()).build();
   }
 
   @Override

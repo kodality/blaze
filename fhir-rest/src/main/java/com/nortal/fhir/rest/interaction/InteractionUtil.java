@@ -43,7 +43,7 @@ public final class InteractionUtil {
     return ops;
   }
 
-  private static List<UserOperation> create(String interaction, Class<?> server) {
+  public static List<UserOperation> create(String interaction, Class<?> server) {
     List<Method> methods = findMethods(interaction, server);
     if (CollectionUtils.isEmpty(methods)) {
       return Collections.emptyList();

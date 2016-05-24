@@ -1,5 +1,10 @@
 package com.nortal.fhir.rest.server;
 
+import static com.nortal.fhir.rest.interaction.Interaction.CONFORMANCE;
+import static com.nortal.fhir.rest.interaction.Interaction.HISTORYSYSTEM;
+import static com.nortal.fhir.rest.interaction.Interaction.SEARCHSYSTEM;
+import static com.nortal.fhir.rest.interaction.Interaction.TRANSACTION;
+
 import com.nortal.fhir.rest.interaction.Interaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -11,23 +16,23 @@ import javax.ws.rs.core.Response;
 public interface FhirRootRest {
 
   @OPTIONS
-  @Interaction(Interaction.CONFORMANCE)
+  @Interaction(CONFORMANCE)
   Response conformance();
 
   @GET
-  @Path("_metadata")
-  @Interaction(Interaction.CONFORMANCE)
+  @Path("metadata")
+  @Interaction(CONFORMANCE)
   Response conformance_();
 
   @POST
-  @Interaction(Interaction.TRANSACTION)
+  @Interaction(TRANSACTION)
   Response transaction(String bundle, @HeaderParam("Content-Type") String contentType);
 
   @GET
-  @Interaction(Interaction.HISTORYSYSTEM)
+  @Interaction(HISTORYSYSTEM)
   Response history();
 
   @GET
-  @Interaction(Interaction.SEARCHSYSTEM)
+  @Interaction(SEARCHSYSTEM)
   Response search();
 }

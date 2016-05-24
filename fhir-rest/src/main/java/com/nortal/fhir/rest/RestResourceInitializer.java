@@ -28,14 +28,10 @@ public class RestResourceInitializer implements ConformanceListener {
 
   @Override
   public void comply(Conformance conformance) {
-    new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-        // hack cxf when trying to load by class name from wrong classloader
-        ClassLoaderUtils.setThreadContextClassloader(RestResourceInitializer.class.getClassLoader());
-        realComply(conformance);
-      }
+    new Thread(() -> {
+      // hack cxf when trying to load by class name from wrong classloader
+      ClassLoaderUtils.setThreadContextClassloader(RestResourceInitializer.class.getClassLoader());
+      realComply(conformance);
     }).run();
   }
 
