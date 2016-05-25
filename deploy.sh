@@ -1,6 +1,10 @@
 #!/bin/bash
 
-deploy_path="/opt/karaf/deploy/"
+if [ -z "$KARAF_HOME" ]; then
+  KARAF_HOME="/opt/karaf"
+fi
+
+deploy_path="$KARAF_HOME/deploy/"
 p="`dirname \"$0\"`"
 v=$(head pom.xml | sed -n 's/.*<version>\(.*\)<\/version>.*/\1/p')
 

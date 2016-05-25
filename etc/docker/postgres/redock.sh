@@ -1,3 +1,3 @@
 
-docker stop ci-postgres-admin && docker rm ci-postgres-admin
+docker rm -f blaze-postgres
 `dirname $0`/run-postgres.sh
