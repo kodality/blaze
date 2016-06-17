@@ -157,7 +157,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
 
     bundle.addLink().setRelation("self").setUrl(pageUrl + page);
     bundle.addLink().setRelation("first").setUrl(pageUrl + 1);
-    bundle.addLink().setRelation("last").setUrl(pageUrl + ((int) Math.ceil(bundle.getTotal() / count)));
+    bundle.addLink().setRelation("last").setUrl(pageUrl + (bundle.getTotal() / count + 1));
     if (page > 1) {
       bundle.addLink().setRelation("previous").setUrl(pageUrl + (page - 1));
     }
