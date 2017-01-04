@@ -10,7 +10,7 @@ v=$(head pom.xml | sed -n 's/.*<version>\(.*\)<\/version>.*/\1/p')
 
 if [[ -z "$1" ]]; then
   mvn install -DskipTests
-  cp -v `find $p -name "*$v.jar" | grep "/target/"` $deploy_path
+  cp -v `find $p/*/target/ -name "*$v.jar"` $deploy_path
   exit 0
 fi
 

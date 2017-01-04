@@ -1,10 +1,10 @@
 package com.nortal.fhir.rest.server;
 
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 
 public interface FhirResourceServerFactory {
 
   String getType();
 
-  JaxRsServer construct(ConformanceRestResourceComponent conformance);
+  JaxRsServer construct(CapabilityStatementRestResourceComponent conformance);
 }

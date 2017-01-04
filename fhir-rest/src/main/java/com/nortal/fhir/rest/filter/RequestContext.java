@@ -5,7 +5,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class RequestContext implements ContainerRequestFilter {
   private static final ThreadLocal<UriInfo> uriInfo = new ThreadLocal<>();
@@ -30,7 +30,7 @@ public class RequestContext implements ContainerRequestFilter {
           accept == null || accept.equals(MediaType.WILDCARD) ? contentType == null ? DEFAULT : contentType : accept;
       responseMime.set(accept);
     } catch (Exception e) {
-      Logger.getLogger(RequestContext.class).error(e);
+      LogManager.getLogger(RequestContext.class).error(e);
     }
   }
 
@@ -39,7 +39,7 @@ public class RequestContext implements ContainerRequestFilter {
       uriInfo.remove();
       responseMime.remove();
     } catch (Exception e) {
-      Logger.getLogger(RequestContext.class).error(e);
+      LogManager.getLogger(RequestContext.class).error(e);
     }
   }
 

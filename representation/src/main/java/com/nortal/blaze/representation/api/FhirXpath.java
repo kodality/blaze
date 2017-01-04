@@ -1,4 +1,4 @@
-package com.nortal.blaze.representation.defs.xml;
+package com.nortal.blaze.representation.api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpression;
-import net.sf.saxon.xpath.XPathFactoryImpl;
+import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 
 public class FhirXpath {
   private static final String UTF_8 = "UTF-8";
-  private static final XPathFactoryImpl FACTORY = new XPathFactoryImpl();
+  private static final XPathFactory FACTORY =  XPathFactory.newInstance();
 
   private static XPath newInstance() {
     XPath xpath = FACTORY.newXPath();

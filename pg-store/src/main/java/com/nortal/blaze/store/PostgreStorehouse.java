@@ -7,8 +7,7 @@ import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
-import com.nortal.blaze.representation.ResourceComposer;
-import com.nortal.blaze.representation.ResourceParser;
+import com.nortal.blaze.representation.api.ResourceComposer;
 import com.nortal.blaze.store.dao.ResourceDao;
 import java.util.List;
 import org.apache.felix.scr.annotations.Component;
@@ -24,7 +23,7 @@ public class PostgreStorehouse implements ResourceStorehouse {
   @Override
   public ResourceVersion save(VersionId id, ResourceContent content) {
     if (!content.getContentType().contains("json")) {
-      content.setValue(ResourceComposer.compose(ResourceParser.parse(content.getValue()), "json"));
+      content.setValue(ResourceComposer.compose(ResourceComposer.parse(content.getValue()), "json"));
     }
     ResourceVersion version = new ResourceVersion(id, content);
     version.getId().setVersion(resourceDao.getLastVersion(id) + 1);

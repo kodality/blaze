@@ -3,7 +3,7 @@ package com.nortal.fhir.conformance.content;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.iface.ResourceValidator;
 import com.nortal.blaze.core.model.ResourceContent;
-import org.hl7.fhir.instance.model.StructureDefinition;
+import org.hl7.fhir.dstu3.model.StructureDefinition;
 
 //@Provides
 //@Component

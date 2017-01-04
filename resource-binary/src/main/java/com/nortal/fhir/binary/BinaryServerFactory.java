@@ -2,8 +2,8 @@ package com.nortal.fhir.binary;
 
 import com.nortal.fhir.rest.server.FhirResourceServerFactory;
 import com.nortal.fhir.rest.server.JaxRsServer;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceComponent;
-import org.hl7.fhir.instance.model.ResourceType;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.ResourceType;
 
 // TODO: make this work
 // @Component(immediate = true)
@@ -16,8 +16,8 @@ public class BinaryServerFactory implements FhirResourceServerFactory {
   }
 
   @Override
-  public JaxRsServer construct(ConformanceRestResourceComponent conformance) {
-    return new FhirBinaryRest(conformance);
+  public JaxRsServer construct(CapabilityStatementRestResourceComponent capability) {
+    return new FhirBinaryRest(capability);
   }
 
 }

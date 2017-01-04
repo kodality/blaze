@@ -10,13 +10,14 @@ import java.util.List;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Component(immediate = true)
 @Service(PgSearchDao.class)
 public class PgSearchDao {
-  private static final Logger LOG = Logger.getLogger(PgSearchDao.class);
+  private static final Logger LOG = LogManager.getLogger(PgSearchDao.class);
   @Reference
   private JdbcTemplate jdbcTemplate;
 

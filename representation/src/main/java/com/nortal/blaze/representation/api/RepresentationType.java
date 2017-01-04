@@ -1,4 +1,4 @@
-package com.nortal.blaze.representation.defs;
+package com.nortal.blaze.representation.api;
 
 import java.util.Arrays;
 import java.util.List;

@@ -15,14 +15,17 @@
 
   <dependencies>
     <dependency>
-      <groupId>me.fhir</groupId>
-      <artifactId>fhir-dstu2</artifactId>
+      <groupId>ca.uhn.hapi.fhir</groupId>
+      <artifactId>hapi-fhir-structures-dstu3</artifactId>
     </dependency>
   </dependencies>
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.representation
+      com.nortal.blaze.representation.api
     </bundle.export-packages>
+    <bundle.import-packages>
+      org.hl7.fhir.dstu3.hapi.ctx
+    </bundle.import-packages>
   </properties>
 </project>

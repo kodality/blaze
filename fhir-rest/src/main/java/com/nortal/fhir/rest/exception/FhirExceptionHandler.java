@@ -1,22 +1,23 @@
 package com.nortal.fhir.rest.exception;
 
 import com.nortal.blaze.core.exception.FhirException;
-import com.nortal.blaze.representation.ResourceComposer;
+import com.nortal.blaze.representation.api.ResourceComposer;
 import com.nortal.fhir.rest.filter.RequestContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.OperationOutcome;
-import org.hl7.fhir.instance.model.OperationOutcome.IssueSeverity;
-import org.hl7.fhir.instance.model.OperationOutcome.OperationOutcomeIssueComponent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent;
 
 public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
-  private final static Logger LOG = Logger.getLogger(FhirExceptionHandler.class);
+  private final static Logger LOG = LogManager.getLogger(FhirExceptionHandler.class);
 
   @Override
   public Response toResponse(Throwable e) {

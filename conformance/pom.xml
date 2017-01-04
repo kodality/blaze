@@ -25,8 +25,8 @@
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>me.fhir</groupId>
-      <artifactId>fhir-dstu2</artifactId>
+      <groupId>ca.uhn.hapi.fhir</groupId>
+      <artifactId>hapi-fhir-structures-dstu3</artifactId>
     </dependency>
   </dependencies>
 

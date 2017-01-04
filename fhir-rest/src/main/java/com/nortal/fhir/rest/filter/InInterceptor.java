@@ -5,10 +5,11 @@ import javax.ws.rs.core.Response;
 import org.apache.cxf.interceptor.ServiceInvokerInterceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class InInterceptor extends AbstractPhaseInterceptor<Message> {
-  private static final Logger LOG = Logger.getLogger(InInterceptor.class);
+  private static final Logger LOG = LogManager.getLogger(InInterceptor.class);
   private boolean pohuist;
 
   public InInterceptor(String phase) {

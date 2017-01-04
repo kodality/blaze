@@ -1,4 +1,4 @@
-package com.nortal.blaze.representation;
+package com.nortal.blaze.representation.api;
 
 public class ParseException extends RuntimeException {
   public ParseException(String message) {

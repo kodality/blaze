@@ -77,9 +77,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>me.fhir</groupId>
-        <artifactId>fhir-dstu2</artifactId>
-        <version>1.0.1.7108</version>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-structures-dstu3</artifactId>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>

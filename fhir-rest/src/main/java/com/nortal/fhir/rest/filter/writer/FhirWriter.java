@@ -1,12 +1,12 @@
 package com.nortal.fhir.rest.filter.writer;
 
-import com.nortal.blaze.representation.ResourceComposer;
+import com.nortal.blaze.representation.api.ResourceComposer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.ws.rs.core.MediaType;
-import org.hl7.fhir.instance.model.Resource;
+import org.hl7.fhir.dstu3.model.Resource;
 
 public class FhirWriter extends AbstractWriter<Resource> {
 

@@ -9,7 +9,7 @@ import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.hl7.fhir.instance.model.StructureDefinition;
+import org.hl7.fhir.dstu3.model.StructureDefinition;
 
 @Component(immediate = true)
 @Service(ResourceDefinitionListener.class)

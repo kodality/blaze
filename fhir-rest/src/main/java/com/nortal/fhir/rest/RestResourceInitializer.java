@@ -1,8 +1,8 @@
 package com.nortal.fhir.rest;
 
 import com.nortal.blaze.core.util.Osgi;
-import com.nortal.fhir.conformance.operations.ConformanceListener;
-import com.nortal.fhir.conformance.operations.ConformanceMonitor;
+import com.nortal.fhir.conformance.operations.CapabilityStatementListener;
+import com.nortal.fhir.conformance.operations.CapabilityStatementMonitor;
 import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.FhirResourceServerFactory;
 import com.nortal.fhir.rest.server.FhirRootServer;
@@ -16,32 +16,32 @@ import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Service;
-import org.hl7.fhir.instance.model.Conformance;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestComponent;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceComponent;
-import org.hl7.fhir.instance.model.Conformance.RestfulConformanceMode;
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
 
 @Component(immediate = true)
-@Service(value = ConformanceListener.class)
-public class RestResourceInitializer implements ConformanceListener {
+@Service(value = CapabilityStatementListener.class)
+public class RestResourceInitializer implements CapabilityStatementListener {
   private final Map<String, Server> servers = new HashMap<>();
 
   @Override
-  public void comply(Conformance conformance) {
+  public void comply(CapabilityStatement capabilityStatement) {
     new Thread(() -> {
       // hack cxf when trying to load by class name from wrong classloader
       ClassLoaderUtils.setThreadContextClassloader(RestResourceInitializer.class.getClassLoader());
-      realComply(conformance);
+      realComply(capabilityStatement);
     }).run();
   }
 
-  private void realComply(Conformance conformance) {
+  private void realComply(CapabilityStatement capabilityStatement) {
     stop();
-    if (conformance == null) {
+    if (capabilityStatement == null) {
       return;
     }
-    for (ConformanceRestComponent rest : conformance.getRest()) {
-      if (rest.getMode() == RestfulConformanceMode.SERVER) {
+    for (CapabilityStatementRestComponent rest : capabilityStatement.getRest()) {
+      if (rest.getMode() == RestfulCapabilityMode.SERVER) {
         start(rest);
       }
     }
@@ -49,7 +49,7 @@ public class RestResourceInitializer implements ConformanceListener {
 
   @Activate
   private void start() {
-    comply(ConformanceMonitor.getConformance());
+    comply(CapabilityStatementMonitor.getCapabilityStatement());
   }
 
   @Deactivate
@@ -58,12 +58,12 @@ public class RestResourceInitializer implements ConformanceListener {
     servers.clear();
   }
 
-  private void start(ConformanceRestComponent rest) {
+  private void start(CapabilityStatementRestComponent rest) {
     start(null, new FhirRootServer(rest));
     rest.getResource().forEach(rr -> start(rr));
   }
 
-  private void start(ConformanceRestResourceComponent resourceRest) {
+  private void start(CapabilityStatementRestResourceComponent resourceRest) {
     String type = resourceRest.getType();
     for (FhirResourceServerFactory factory : Osgi.getBeans(FhirResourceServerFactory.class)) {
       if (StringUtils.equals(factory.getType(), type)) {

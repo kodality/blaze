@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.hl7.fhir.instance.model.CodeType;
+import org.hl7.fhir.dstu3.model.CodeType;
 
 public class ReferenceExpressionProvider extends ExpressionProvider {
   private static ThreadLocalInteger I = new ThreadLocalInteger();

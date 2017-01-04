@@ -12,10 +12,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceSearchParamComponent;
-import org.hl7.fhir.instance.model.Enumerations.SearchParamType;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
+import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
 
 public final class SearchUtil {
   private static final String UTF8 = "UTF8";
@@ -60,7 +59,7 @@ public final class SearchUtil {
     String key = StringUtils.substringBefore(link, MODIFIER);
     String modifier = link.contains(MODIFIER) ? StringUtils.substringAfter(link, MODIFIER) : null;
 
-    ConformanceRestResourceSearchParamComponent conformance = SearchConformance.get(resourceType, key);
+    CapabilityStatementRestResourceSearchParamComponent conformance = SearchConformance.get(resourceType, key);
     validate(conformance, key, modifier);
     SearchParamType paramType = conformance.getType();
 
@@ -75,7 +74,7 @@ public final class SearchUtil {
     return forge;
   }
 
-  private static void validate(ConformanceRestResourceSearchParamComponent conformance, String key, String modifier) {
+  private static void validate(CapabilityStatementRestResourceSearchParamComponent conformance, String key, String modifier) {
     if (SearchCriterion.resultParamKeys.contains(key)) {
       return;
     }
@@ -87,15 +86,17 @@ public final class SearchUtil {
     }
   }
 
-  private static boolean validateModifier(ConformanceRestResourceSearchParamComponent conformance, String modifier) {
+  private static boolean validateModifier(CapabilityStatementRestResourceSearchParamComponent conformance, String modifier) {
     if (StringUtils.isEmpty(modifier)) {
       return true;
     }
-    if (conformance.getType() == SearchParamType.REFERENCE) {
-      return CollectionUtils.isEmpty(conformance.getTarget())
-          || conformance.getTarget().stream().anyMatch(t -> t.getValue().equals(modifier));
-    }
-    return conformance.getModifier().stream().anyMatch(m -> m.getValue().toCode().equals(modifier));
+    //FIXME
+    return true;
+//    if (conformance.getType() == SearchParamType.REFERENCE) {
+//      return CollectionUtils.isEmpty(conformance.getTarget())
+//          || conformance.getTarget().stream().anyMatch(t -> t.getValue().equals(modifier));
+//    }
+//    return conformance.getModifier().stream().anyMatch(m -> m.getValue().toCode().equals(modifier));
   }
 
   private static class ChainForge {

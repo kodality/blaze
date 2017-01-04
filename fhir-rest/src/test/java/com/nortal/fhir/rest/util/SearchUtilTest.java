@@ -5,14 +5,13 @@ import com.nortal.fhir.rest.SearchConformance;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import org.hl7.fhir.instance.model.Conformance;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestComponent;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceComponent;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceSearchParamComponent;
-import org.hl7.fhir.instance.model.Conformance.RestfulConformanceMode;
-import org.hl7.fhir.instance.model.Conformance.SearchModifierCode;
-import org.hl7.fhir.instance.model.Enumerations.SearchParamType;
-import org.hl7.fhir.instance.model.ResourceType;
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
+import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
+import org.hl7.fhir.dstu3.model.ResourceType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,26 +19,26 @@ import org.junit.Test;
 public class SearchUtilTest {
   @Before
   public void mocks() {
-    Conformance conformance = new Conformance();
-    ConformanceRestComponent rest = conformance.addRest();
-    rest.setMode(RestfulConformanceMode.SERVER);
-    ConformanceRestResourceComponent resource = rest.addResource();
+    CapabilityStatement capability = new CapabilityStatement();
+    CapabilityStatementRestComponent rest = capability.addRest();
+    rest.setMode(RestfulCapabilityMode.SERVER);
+    CapabilityStatementRestResourceComponent resource = rest.addResource();
     resource.setType(ResourceType.Patient.name());
     addSearchParam(resource, s -> {
       s.setName("papa");
       s.setType(SearchParamType.REFERENCE);
-      s.addTarget(ResourceType.Patient.name());
+//      s.addTarget(ResourceType.Patient.name());
     });
     addSearchParam(resource, s -> {
       s.setName("name");
       s.setType(SearchParamType.STRING);
-      s.addModifier(SearchModifierCode.EXACT);
+//      s.addModifier(SearchModifierCode.EXACT);
     });
-    new SearchConformance().comply(conformance);
+    new SearchConformance().comply(capability);
   }
 
-  private void addSearchParam(ConformanceRestResourceComponent resource,
-                              Consumer<ConformanceRestResourceSearchParamComponent> a) {
+  private void addSearchParam(CapabilityStatementRestResourceComponent resource,
+                              Consumer<CapabilityStatementRestResourceSearchParamComponent> a) {
     a.accept(resource.addSearchParam());
   }
 

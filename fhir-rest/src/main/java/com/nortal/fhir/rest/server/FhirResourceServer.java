@@ -9,8 +9,8 @@ import com.nortal.blaze.core.model.search.SearchResult;
 import com.nortal.blaze.core.service.ResourceService;
 import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.core.util.ResourceUtil;
-import com.nortal.blaze.representation.FhirContentType;
-import com.nortal.blaze.representation.ResourceParser;
+import com.nortal.blaze.representation.api.FhirContentType;
+import com.nortal.blaze.representation.api.ResourceComposer;
 import com.nortal.fhir.rest.filter.RequestContext;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.util.SearchUtil;
@@ -23,18 +23,18 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserResource;
-import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceComponent;
-import org.hl7.fhir.instance.model.Resource;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.Resource;
 
 public class FhirResourceServer extends JaxRsServer implements FhirResourceRest {
   private static final String ETAG = "ETag";
-  protected final ConformanceRestResourceComponent conformance;
+  protected final CapabilityStatementRestResourceComponent capability;
   protected final String type;
 
-  public FhirResourceServer(ConformanceRestResourceComponent conformance) {
-    this.conformance = conformance;
-    this.type = conformance.getType();
+  public FhirResourceServer(CapabilityStatementRestResourceComponent capabilityStatement) {
+    this.capability = capabilityStatement;
+    this.type = capabilityStatement.getType();
   }
 
   @Override
@@ -51,7 +51,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     UserResource resource = new UserResource(this.getClass().getName(), "/");
     resource.setConsumes(StringUtils.join(FhirContentType.getMediaTypes(), ","));
     resource.setProduces(StringUtils.join(FhirContentType.getMediaTypes(), ","));
-    resource.setOperations(InteractionUtil.getOperations(conformance, FhirResourceRest.class));
+    resource.setOperations(InteractionUtil.getOperations(capability, FhirResourceRest.class));
     return resource;
   }
 
@@ -137,7 +137,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     Bundle bundle = new Bundle();
     bundle.setTotal(total);
     for (ResourceVersion version : versions) {
-      Resource resource = ResourceParser.parse(version.getContent().getValue());
+      Resource resource = ResourceComposer.parse(version.getContent().getValue());
       bundle.addEntry().setResource(resource).setId(version.getId().getResourceId());
     }
     return bundle;

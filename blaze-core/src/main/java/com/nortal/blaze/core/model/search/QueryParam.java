@@ -2,7 +2,7 @@ package com.nortal.blaze.core.model.search;
 
 import java.util.List;
 import org.apache.commons.lang3.Validate;
-import org.hl7.fhir.instance.model.Enumerations.SearchParamType;
+import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
 
 public class QueryParam {
   private final String key;

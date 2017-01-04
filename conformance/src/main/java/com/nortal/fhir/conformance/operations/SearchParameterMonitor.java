@@ -3,7 +3,7 @@ package com.nortal.fhir.conformance.operations;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.util.EtcMonitor;
 import com.nortal.blaze.core.util.Osgi;
-import com.nortal.blaze.representation.ResourceParser;
+import com.nortal.blaze.representation.api.ResourceComposer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +12,9 @@ import java.util.Map;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
-import org.hl7.fhir.instance.model.Resource;
-import org.hl7.fhir.instance.model.ResourceType;
-import org.hl7.fhir.instance.model.SearchParameter;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.ResourceType;
+import org.hl7.fhir.dstu3.model.SearchParameter;
 
 @Component(immediate = true)
 public class SearchParameterMonitor extends EtcMonitor {
@@ -69,15 +69,17 @@ public class SearchParameterMonitor extends EtcMonitor {
 
   @Override
   protected void file(File file) {
-    Resource res = ResourceParser.parse(file);
+    Resource res = ResourceComposer.parse(file);
     if (ResourceType.SearchParameter != res.getResourceType()) {
       return;
     }
     SearchParameter sp = (SearchParameter) res;
-    String key = sp.getBase();
-    parameters.putIfAbsent(key, new HashMap<String, SearchParameter>());
-    parameters.get(key).put(sp.getCode(), sp);
-    all.add(sp);
+    sp.getBase().forEach(ct -> {
+      String key = ct.getValue();
+      parameters.putIfAbsent(key, new HashMap<String, SearchParameter>());
+      parameters.get(key).put(sp.getCode(), sp);
+      all.add(sp);
+    });
   }
 
   @Override

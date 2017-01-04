@@ -11,19 +11,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.utils.AnnotationUtils;
 import org.apache.cxf.jaxrs.utils.ResourceUtils;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestComponent;
-import org.hl7.fhir.instance.model.Conformance.ConformanceRestResourceComponent;
-import org.hl7.fhir.instance.model.Conformance.ResourceInteractionComponent;
-import org.hl7.fhir.instance.model.Conformance.SystemInteractionComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.ResourceInteractionComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.SystemInteractionComponent;
 
 public final class InteractionUtil {
   private InteractionUtil() {
     //
   }
 
-  public static List<UserOperation> getOperations(ConformanceRestComponent conformance, Class<?> server) {
+  public static List<UserOperation> getOperations(CapabilityStatementRestComponent capability, Class<?> server) {
     List<UserOperation> ops = new ArrayList<>();
-    for (SystemInteractionComponent resourceInteraction : conformance.getInteraction()) {
+    for (SystemInteractionComponent resourceInteraction : capability.getInteraction()) {
       if (resourceInteraction.getCode() == null) {
         continue;
       }
@@ -32,9 +32,10 @@ public final class InteractionUtil {
     return ops;
   }
 
-  public static List<UserOperation> getOperations(ConformanceRestResourceComponent conformance, Class<?> server) {
+  public static List<UserOperation> getOperations(CapabilityStatementRestResourceComponent capability,
+                                                  Class<?> server) {
     List<UserOperation> ops = new ArrayList<>();
-    for (ResourceInteractionComponent resourceInteraction : conformance.getInteraction()) {
+    for (ResourceInteractionComponent resourceInteraction : capability.getInteraction()) {
       if (resourceInteraction.getCode() == null) {
         continue;
       }

@@ -6,7 +6,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class CharsetInterceptor extends AbstractPhaseInterceptor<Message> {
 
@@ -30,7 +30,7 @@ public class CharsetInterceptor extends AbstractPhaseInterceptor<Message> {
         ((HttpServletResponse) message.get("HTTP.RESPONSE")).setHeader(Message.CONTENT_TYPE, contentType);
       }
     } catch (Exception e) {
-      Logger.getLogger(CharsetInterceptor.class).error(e);
+      LogManager.getLogger(CharsetInterceptor.class).error(e);
     }
   }
 

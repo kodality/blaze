@@ -13,7 +13,7 @@ import com.nortal.fhir.conformance.operations.SearchParameterMonitor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hl7.fhir.instance.model.Enumerations.SearchParamType;
+import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
 
 public final class SqlToster {
   private static final Map<String, SpecialParamBuilder> specialParams;

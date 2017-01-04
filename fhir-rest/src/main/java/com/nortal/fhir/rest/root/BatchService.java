@@ -1,6 +1,7 @@
 package com.nortal.fhir.rest.root;
 
 import com.nortal.blaze.core.exception.FhirException;
+import com.nortal.blaze.representation.api.ResourceComposer;
 import com.nortal.fhir.rest.RestResourceInitializer;
 import com.nortal.fhir.rest.exception.FhirExceptionHandler;
 import com.nortal.fhir.rest.server.FhirResourceServer;
@@ -31,14 +32,13 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.felix.scr.annotations.Component;
-import org.hl7.fhir.instance.formats.JsonParser;
-import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.instance.model.Bundle.BundleEntryRequestComponent;
-import org.hl7.fhir.instance.model.Bundle.BundleEntryResponseComponent;
-import org.hl7.fhir.instance.model.Bundle.BundleType;
-import org.hl7.fhir.instance.model.Bundle.HTTPVerb;
-import org.hl7.fhir.instance.model.Resource;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryRequestComponent;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryResponseComponent;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
+import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
+import org.hl7.fhir.dstu3.model.Resource;
 
 // TODO: review or rewrite this shit
 @Component(immediate = true)
@@ -84,7 +84,8 @@ public class BatchService {
       List<MediaType> accept = Arrays.asList(MediaType.WILDCARD_TYPE);
       String contentType = "application/json+fhir";
       Map<String, String> params = new HashMap<String, String>();
-      params.put(null, composeJson(resource));
+      String json = ResourceComposer.compose(resource, "json");
+      params.put(null, json);
       params.put("Content-Type", contentType);
 
       Map<ClassResourceInfo, MultivaluedMap<String, String>> cri =
@@ -131,17 +132,6 @@ public class BatchService {
       return ((URI) response.getMetadata().get("Location").get(0)).toString();
     }
     return null;
-  }
-
-  private String composeJson(Resource resource) {
-    if (resource == null) {
-      return null;
-    }
-    try {
-      return new JsonParser().composeString(resource);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private List<Object> getArgs(List<Parameter> methodParameters, Map<String, String> params) {

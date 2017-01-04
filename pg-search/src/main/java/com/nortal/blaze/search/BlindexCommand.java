@@ -12,7 +12,7 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.hl7.fhir.instance.model.SearchParameter;
+import org.hl7.fhir.dstu3.model.SearchParameter;
 
 @Command(scope = "blindex", name = "init", description = "init search indexes")
 @Service
