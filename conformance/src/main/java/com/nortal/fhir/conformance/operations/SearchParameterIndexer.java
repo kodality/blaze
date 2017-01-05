@@ -3,7 +3,7 @@ package com.nortal.fhir.conformance.operations;
 import com.nortal.blaze.core.iface.ResourceIndexer;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
-import com.nortal.blaze.representation.api.FhirXpath;
+import com.nortal.blaze.fhir.structure.api.FhirXpath;
 import java.util.List;
 import org.hl7.fhir.dstu3.model.SearchParameter;
 

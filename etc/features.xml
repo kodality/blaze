@@ -10,12 +10,12 @@
 		<bundle>mvn:commons-io/commons-io/2.4</bundle>
 		<bundle>mvn:org.apache.commons/commons-lang3/3.3.2</bundle>
 
-		<bundle>mvn:com.google.code.gson/gson/2.2.4</bundle>
+		<bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
 		<bundle>mvn:org.apache.logging.log4j/log4j-api/2.5</bundle>
-		<bundle>mvn:org.apache.logging.log4j/log4j-core/2.5</bundle>
-		
+                <bundle>mvn:org.apache.logging.log4j/log4j-core/2.5</bundle>
+
                 <bundle>wrap:mvn:ca.uhn.hapi.fhir/hapi-fhir-base/2.2</bundle>
-                <bundle>wrap:mvn:ca.uhn.hapi.fhir/hapi-fhir-structures-dstu3/2.2</bundle>
+                <bundle>wrap:mvn:org.ogce/xpp3/1.1.6</bundle>
 	</feature>
 	<feature name="blaze-pg">
 		<feature>jdbc</feature>

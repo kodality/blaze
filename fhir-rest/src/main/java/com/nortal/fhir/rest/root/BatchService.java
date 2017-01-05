@@ -1,7 +1,7 @@
 package com.nortal.fhir.rest.root;
 
 import com.nortal.blaze.core.exception.FhirException;
-import com.nortal.blaze.representation.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.RestResourceInitializer;
 import com.nortal.fhir.rest.exception.FhirExceptionHandler;
 import com.nortal.fhir.rest.server.FhirResourceServer;

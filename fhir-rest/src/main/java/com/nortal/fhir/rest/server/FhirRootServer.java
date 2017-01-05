@@ -2,7 +2,7 @@ package com.nortal.fhir.rest.server;
 
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.util.Osgi;
-import com.nortal.blaze.representation.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.conformance.operations.CapabilityStatementMonitor;
 import com.nortal.fhir.rest.interaction.Interaction;
 import com.nortal.fhir.rest.interaction.InteractionUtil;

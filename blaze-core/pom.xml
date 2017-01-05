@@ -15,8 +15,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>ca.uhn.hapi.fhir</groupId>
-      <artifactId>hapi-fhir-structures-dstu3</artifactId>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>fhir-structures</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
 

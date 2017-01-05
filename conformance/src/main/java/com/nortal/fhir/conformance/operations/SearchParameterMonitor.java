@@ -3,7 +3,7 @@ package com.nortal.fhir.conformance.operations;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.util.EtcMonitor;
 import com.nortal.blaze.core.util.Osgi;
-import com.nortal.blaze.representation.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

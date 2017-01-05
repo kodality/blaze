@@ -1,6 +1,6 @@
 package com.nortal.fhir.rest.filter.writer;
 
-import com.nortal.blaze.representation.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;

@@ -1,6 +1,6 @@
 package com.nortal.fhir.rest.filter;
 
-import com.nortal.blaze.representation.api.FhirContentType;
+import com.nortal.blaze.fhir.structure.api.FhirContentType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

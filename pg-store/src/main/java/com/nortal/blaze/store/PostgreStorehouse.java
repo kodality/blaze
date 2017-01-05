@@ -7,7 +7,7 @@ import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
-import com.nortal.blaze.representation.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.blaze.store.dao.ResourceDao;
 import java.util.List;
 import org.apache.felix.scr.annotations.Component;
