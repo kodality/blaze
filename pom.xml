@@ -169,6 +169,7 @@
   </build>
 
   <modules>
+    <module>fhir-stu3</module>
     <module>blaze-core</module>
     <module>fhir-structures</module>
     <module>conformance</module>

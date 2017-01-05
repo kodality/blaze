@@ -24,7 +24,6 @@
       <groupId>org.hl7.fhir</groupId>
       <version>SNAPSHOT</version>
     </dependency>
-    
 
   </dependencies>
 

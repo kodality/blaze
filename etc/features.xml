@@ -35,4 +35,19 @@
     <bundle>wrap:mvn:org.liquibase/liquibase-osgi/3.4.2</bundle>
     <bundle>wrap:mvn:org.yaml/snakeyaml/1.17</bundle>
   </feature>
+  <feature name="blaze-all">
+    <feature>blaze-deps</feature>
+    <feature>blaze-pg</feature>
+    <feature>blaze-liquibase</feature>
+    <bundle>wrap:mvn:org.hl7.fhir/fhir-stu3/SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/blaze-core/1.0-SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/fhir-structures/1.0-SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/conformance/1.0-SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/fhir-rest/1.0-SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/pg-jdbc/1.0-SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/pg-whiplash/1.0-SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/pg-store/1.0-SNAPSHOT</bundle>
+    <bundle>mvn:com.nortal.blaze/pg-search/1.0-SNAPSHOT</bundle>
+  </feature>
+
 </features>
