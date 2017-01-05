@@ -17,12 +17,12 @@ public class ResourceProfileValidator implements ResourceValidator {
       throw new ServerException("definition for " + type + " not found");
     }
     try {
-      // ValidationEngine validator = new ValidationEngine();
-      // validator.init();
-      // validator.setProfile(definition);
-      // validator.setSource(content.getBytes());
-      // validator.setNoSchematron(true);
-      // validator.process();
+//       ValidationEngine validator = new ValidationEngine();
+//       validator.init();
+//       validator.setProfile(definition);
+//       validator.setSource(content.getBytes());
+//       validator.setNoSchematron(true);
+//       validator.process();
     } catch (Exception e) {
       throw new RuntimeException(":/", e);
     }

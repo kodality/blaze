@@ -8,12 +8,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.hl7.fhir.dstu3.validation.ProfileValidator;
+import org.hl7.fhir.utilities.validation.ValidationMessage;
 
 @Component(immediate = true)
 public class ResourceDefinitionsMonitor extends EtcMonitor {
@@ -53,7 +57,7 @@ public class ResourceDefinitionsMonitor extends EtcMonitor {
       return;
     }
     StructureDefinition definition = (StructureDefinition) res;
-//    validate(definition);
+    validate(definition);
     definitions.put(definition.getName(), definition);
   }
 
@@ -62,16 +66,12 @@ public class ResourceDefinitionsMonitor extends EtcMonitor {
     Osgi.getBeans(ResourceDefinitionListener.class).forEach(l -> l.comply(get()));
   }
 
-//  private void validate(StructureDefinition definition) {
-//    try {
-//      List<String> errors = new ProfileValidator().validate(definition);
-//      if (CollectionUtils.isEmpty(errors)) {
-//        return;
-//      }
-//      throw new RuntimeException(StringUtils.join(errors, "; "));
-//    } catch (Exception e) {
-//      throw new RuntimeException("боги ексепшнов", e);
-//    }
-//  }
+  private void validate(StructureDefinition definition) {
+    List<ValidationMessage> errors = new ProfileValidator().validate(definition, false);
+    if (CollectionUtils.isEmpty(errors)) {
+      return;
+    }
+    throw new RuntimeException(errors.stream().map(e -> e.getMessage()).collect(Collectors.joining(",")));
+  }
 
 }
