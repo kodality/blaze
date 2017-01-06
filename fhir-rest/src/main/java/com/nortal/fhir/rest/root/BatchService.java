@@ -63,10 +63,10 @@ public class BatchService {
     Validate.isTrue(entry.hasRequest() || entry.hasResource());
     if (!entry.hasRequest()) {
       entry.setRequest(new BundleEntryRequestComponent());
-      if (entry.getResource().hasId()){
+      if (entry.getResource().hasId()) {
         entry.getRequest().setMethod(HTTPVerb.PUT);
         entry.getRequest().setUrl(entry.getResource().getResourceType().name() + "/" + entry.getResource().getId());
-      }else{
+      } else {
         entry.getRequest().setMethod(HTTPVerb.POST);
         entry.getRequest().setUrl(entry.getResource().getResourceType().name());
       }
