@@ -22,7 +22,7 @@ import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResou
 import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
 
 @Component(immediate = true)
-@Service(value = CapabilityStatementListener.class)
+@Service({CapabilityStatementListener.class, RestResourceInitializer.class})
 public class RestResourceInitializer implements CapabilityStatementListener {
   private final Map<String, Server> servers = new HashMap<>();
 

@@ -30,7 +30,7 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
   @Override
   protected UserResource getResource() {
     UserResource resource = new UserResource(this.getClass().getName(), "/");
-    resource.setConsumes(TYPES);
+    resource.setConsumes("application/xml+fhir");
     resource.setProduces(TYPES);
     List<UserOperation> ops = InteractionUtil.getOperations(capabilityStatement, FhirRootRest.class);
     ops.addAll(InteractionUtil.create(Interaction.CONFORMANCE, FhirRootRest.class));

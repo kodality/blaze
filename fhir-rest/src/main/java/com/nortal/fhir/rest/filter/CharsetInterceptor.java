@@ -24,7 +24,7 @@ public class CharsetInterceptor extends AbstractPhaseInterceptor<Message> {
         return;
       }
       String header = (String) message.get(Message.CONTENT_TYPE);
-      if (!hasCharset(header)) {
+      if (header != null && !hasCharset(header)) {
         String contentType = header + ";" + CHARSET + "=" + UTF_8;
         message.put(Message.CONTENT_TYPE, contentType);
         ((HttpServletResponse) message.get("HTTP.RESPONSE")).setHeader(Message.CONTENT_TYPE, contentType);

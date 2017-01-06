@@ -31,7 +31,7 @@ public class FhirContentType {
       if (mimes.containsKey(mime)) {
         throw new IllegalStateException(" multiple composers for mime " + mime);
       }
-      mimes.put(main, mime);
+      mimes.put(mime, main);
       if (mime.contains("/")) {
         mediaTypes.add(mime);
       }

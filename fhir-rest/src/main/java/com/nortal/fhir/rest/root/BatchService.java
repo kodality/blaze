@@ -32,6 +32,8 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryRequestComponent;
@@ -42,8 +44,9 @@ import org.hl7.fhir.dstu3.model.Resource;
 
 // TODO: review or rewrite this shit
 @Component(immediate = true)
+@Service(value = BatchService.class)
 public class BatchService {
-  @javax.annotation.Resource
+  @Reference
   private RestResourceInitializer restResourceInitializer;
 
   public Bundle batch(Bundle bundle) {
@@ -51,29 +54,31 @@ public class BatchService {
     Validate.isTrue(type == BundleType.BATCH || type == BundleType.TRANSACTION);
 
     Bundle responseBundle = new Bundle();
+    bundle.getEntry().forEach(entry -> responseBundle.addEntry().setResponse(perform(entry)));
     responseBundle.setType(BundleType.TRANSACTIONRESPONSE);
-    for (BundleEntryComponent entry : bundle.getEntry()) {
-      BundleEntryResponseComponent response = perform(entry.getRequest(), entry.getResource());
-      responseBundle.addEntry().setResponse(response);
-    }
     return responseBundle;
   }
 
-  private BundleEntryResponseComponent perform(BundleEntryRequestComponent request, Resource resource) {
-    Validate.isTrue(request != null || resource != null);
-    if (request == null) {
-      request = new BundleEntryRequestComponent();
-      request.setMethod(HTTPVerb.POST);
-      request.setUrl(resource.getResourceType().name());
+  private BundleEntryResponseComponent perform(BundleEntryComponent entry) {
+    Validate.isTrue(entry.hasRequest() || entry.hasResource());
+    if (!entry.hasRequest()) {
+      entry.setRequest(new BundleEntryRequestComponent());
+      if (entry.getResource().hasId()){
+        entry.getRequest().setMethod(HTTPVerb.PUT);
+        entry.getRequest().setUrl(entry.getResource().getResourceType().name() + "/" + entry.getResource().getId());
+      }else{
+        entry.getRequest().setMethod(HTTPVerb.POST);
+        entry.getRequest().setUrl(entry.getResource().getResourceType().name());
+      }
     }
 
-    String method = request.getMethod().toCode();
-    URI url = URI.create(request.getUrl());
+    String method = entry.getRequest().getMethod().toCode();
+    URI url = URI.create(entry.getRequest().getUrl());
     String type = StringUtils.substringBefore(url.getPath(), "/");
     String path = StringUtils.removeStart(url.getPath(), type);
 
     JAXRSServiceImpl service = getService(type);
-    Response response = invoke(service, method, path, resource);
+    Response response = invoke(service, method, path, entry.getResource());
     return bundleResponse(response);
   }
 
@@ -87,6 +92,7 @@ public class BatchService {
       String json = ResourceComposer.compose(resource, "json");
       params.put(null, json);
       params.put("Content-Type", contentType);
+      params.put("id", StringUtils.removeStart(path, "/"));
 
       Map<ClassResourceInfo, MultivaluedMap<String, String>> cri =
           JAXRSUtils.selectResourceClass(service.getClassResourceInfos(), path, null);
