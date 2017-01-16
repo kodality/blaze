@@ -1,5 +1,6 @@
 package com.nortal.blaze.fhir.structure.service;
 
+import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class ResourceRepresentationService {
   }
 
   private ResourceRepresentation guessPresenter(String content) {
-    return presenters.stream().filter(c -> c.isParsable(content)).findFirst().orElse(null);
+    return presenters.stream().filter(c -> c.isParsable(content)).findFirst().orElseThrow(() -> new ParseException("unknown format"));
   }
 
   protected void bind(ResourceRepresentation presenter) {

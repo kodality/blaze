@@ -17,7 +17,7 @@ public class ResourceProfileValidator implements ResourceValidator {
       throw new ServerException("definition for " + type + " not found");
     }
     try {
-//       ValidationEngine validator = new ValidationEngine();
+//       ValidationEngine validator = new ValidationEngine(null, null);
 //       validator.init();
 //       validator.setProfile(definition);
 //       validator.setSource(content.getBytes());

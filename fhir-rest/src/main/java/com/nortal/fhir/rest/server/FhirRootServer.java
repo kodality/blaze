@@ -9,6 +9,7 @@ import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.root.BatchService;
 import java.util.List;
 import javax.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -50,6 +51,9 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
 
   @Override
   public Response transaction(String bundle, String contentType) {
+    if (StringUtils.isEmpty(bundle)) {
+      return Response.status(204).build();
+    }
     Bundle responseBundle = Osgi.getBean(BatchService.class).batch(ResourceComposer.<Bundle> parse(bundle));
     return Response.ok().entity(ResourceComposer.compose(responseBundle, contentType)).build();
   }
