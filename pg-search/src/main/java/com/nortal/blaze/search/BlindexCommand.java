@@ -12,6 +12,7 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.SearchParameter;
 
 @Command(scope = "blindex", name = "init", description = "init search indexes")
@@ -27,10 +28,12 @@ public class BlindexCommand implements Action {
     System.out.println("currently indexed: " + current + "\n");
     Set<String> create = new HashSet<>();
     for (SearchParameter sp : SearchParameterMonitor.get()) {
-      if (sp.getBase().equals("Resource")) {
-        continue;
+      for (CodeType base : sp.getBase()) {
+        if (base.getValue().equals("Resource")) {
+          continue;
+        }
+        create.add(base.getValue() + "." + sp.getXpath());
       }
-      create.add(sp.getBase() + "." + sp.getXpath());
     }
     HashSet<String> ignore = new HashSet<>(create);
     ignore.retainAll(current);

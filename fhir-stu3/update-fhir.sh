@@ -4,7 +4,7 @@ repo="https://github.com/hl7-fhir/fhir-svn"
 fhir="$this/fhir.src"
 build="$this/fhir.build"
 
-git clone $repo $fhir
+git clone $repo $fhir || (pushd $fhir && git pull && popd)
 ant -f $fhir/build.xml fetch-imports || exit 1
 
 ant -f $fhir/tools/java/org.hl7.fhir.tools.core/build.xml  build
@@ -16,6 +16,6 @@ done;
 jar="fhir-stu3.jar"
 rm -rf $build/dstu2 $build/validation $build/conversion
 pushd $build && jar cfe $jar -C . && popd
-mv $build/$jar $this/bin/
+mv $build/$jar $this
 rm -r $build
 
