@@ -5,8 +5,8 @@ CREATE SEQUENCE resource_key_seq INCREMENT 1 MINVALUE 1;
 
 create table resource (
   key           bigint not null default nextval('resource_key_seq') PRIMARY KEY,
-  type          varchar(30) not null,
-  id            varchar(50) not null,
+  type          text not null,
+  id            text not null,
   last_version  smallint not null default 1,
   last_updated  timestamp not null default localtimestamp,
   content       jsonb not null,
