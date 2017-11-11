@@ -19,13 +19,13 @@
   
   <include file="sql/10-resource.sql" relativeToChangelogFile="true" />
 
-  <changeSet dbms="PostgreSQL" id="store-funcs-2" runOnChange="true" author="blaze">
+  <!--changeSet dbms="PostgreSQL" id="store-funcs-2" runOnChange="true" author="blaze">
     <sqlFile splitStatements="false" path="functions/resource_insert_trigger.sql" relativeToChangelogFile="true" />
     <rollback>
       drop function resource_insert_trigger();
     </rollback>
-  </changeSet>
+  </changeSet-->
 
-  <include file="sql/11-resource_trigger.sql" relativeToChangelogFile="true" />
+  <!--include file="sql/11-resource_trigger.sql" relativeToChangelogFile="true" /-->
 
 </databaseChangeLog>
