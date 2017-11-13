@@ -1,5 +1,6 @@
 #!/bin/bash
 
+docker rm -vf blaze-karaf
 docker run -d -t \
   --name blaze-karaf \
   --link blaze-postgres \
