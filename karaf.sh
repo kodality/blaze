@@ -2,7 +2,7 @@
 client=./etc/docker/karaf/console
 
 ./etc/docker/karaf/run-karaf.sh
-./deploy-docker.sh
+./deploy-docker.sh -b
 
 until $client version; do sleep 5s; done;
 until $client whiplash:list; do sleep 2s; done;
