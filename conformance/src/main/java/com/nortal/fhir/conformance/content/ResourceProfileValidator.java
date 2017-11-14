@@ -28,17 +28,17 @@ public class ResourceProfileValidator implements ResourceValidator, ResourceDefi
     if (definition == null) {
       throw new ServerException("definition for " + type + " not found");
     }
-    InstanceValidator validator = new InstanceValidator(fhirContext);
-    List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
-    ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes());
-    try {
-      validator.validate(null, messages, input, FhirFormat.XML);
-    } catch (Exception e) {
-      throw new RuntimeException(":/", e);
-    }
-    if (!messages.isEmpty()) {
-      throw new FhirParseException(StringUtils.join(messages, ","));
-    }
+//    InstanceValidator validator = new InstanceValidator(fhirContext);
+//    List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+//    ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes());
+//    try {
+//      validator.validate(null, messages, input, FhirFormat.XML);
+//    } catch (Exception e) {
+//      throw new RuntimeException(":/", e);
+//    }
+//    if (!messages.isEmpty()) {
+//      throw new FhirParseException(StringUtils.join(messages, ","));
+//    }
 
   }
 
