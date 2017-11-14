@@ -1,11 +1,16 @@
 #!/bin/bash
+name=blaze-karaf
 
-docker rm -vf blaze-karaf
+docker rm -vf $name
 docker run -d -t \
-  --name blaze-karaf \
+  --name $name \
   --link blaze-postgres \
   -p 8181:8181 \
-  -v `pwd`/`dirname $0`/run:/run \
   blaze/karaf
 
-docker exec -t blaze-karaf /bin/sh /run/deploy-blaze.sh
+docker cp `dirname $0`/run $name:/
+docker cp `dirname $0`/../../conf $name:/
+
+docker exec -t $name /bin/sh /run/prepare.sh
+
+

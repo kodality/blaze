@@ -1,6 +1,5 @@
 #!/usr/bin/env bash 
 
-LOCAL_PORT="5432"
 CONTAINER_NAME="blaze-postgres"
 DB_NAME="blazedb"
 
