@@ -6,7 +6,7 @@ docker run -d -t \
   --name $name \
   --link blaze-postgres \
   -p 8181:8181 \
-  blaze/karaf
+  mkroli/karaf
 
 docker cp `dirname $0`/run $name:/
 docker cp `dirname $0`/../../conf $name:/
