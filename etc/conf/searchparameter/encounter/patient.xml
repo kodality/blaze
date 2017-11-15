@@ -8,6 +8,6 @@
   <code value="patient"/>
   <base value="Encounter"/>
   <type value="reference"/>
-  <xpath value="patient"/>
+  <xpath value="subject"/>
   <xpathUsage value="normal"/>
 </SearchParameter>
