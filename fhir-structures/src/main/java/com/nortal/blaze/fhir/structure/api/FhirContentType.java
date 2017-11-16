@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-@Component(immediate = true)
-@Service(FhirContentType.class)
-@Reference(name = "presenters", cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, referenceInterface = ResourceRepresentation.class, policy = ReferencePolicy.DYNAMIC)
+@Component(immediate = true, service = FhirContentType.class)
 public class FhirContentType {
   private static final Map<String, String> mimes = new HashMap<>();
   private static final List<String> mediaTypes = new ArrayList<>();
@@ -25,6 +22,7 @@ public class FhirContentType {
     return mimes.get(type);
   }
 
+  @Reference(name = "presenters", cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unbind")
   protected void bind(ResourceRepresentation presenter) {
     String main = presenter.getMimeTypes().get(0);
     presenter.getMimeTypes().forEach(mime -> {

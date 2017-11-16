@@ -5,21 +5,20 @@ import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 @Component(immediate = true)
 public class CapabilityStatementMonitor extends EtcMonitor {
   private static CapabilityStatement capabilityStatement;
-
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, referenceInterface = CapabilityStatementListener.class, policy = ReferencePolicy.DYNAMIC)
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, service = CapabilityStatementListener.class, bind = "bind", unbind = "unbind")
   private final List<CapabilityStatementListener> listeners = new ArrayList<>();
 
   public CapabilityStatementMonitor() {

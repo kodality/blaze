@@ -7,16 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
+import org.osgi.service.component.annotations.Component;
 
-@Component(immediate = true)
-@Service(value = CapabilityStatementListener.class)
+@Component(immediate = true, service = CapabilityStatementListener.class)
 public class SearchConformance implements CapabilityStatementListener {
   private static final Map<String, Map<String, CapabilityStatementRestResourceSearchParamComponent>> params =
       new HashMap<>();

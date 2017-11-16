@@ -6,12 +6,10 @@ import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
 import com.nortal.blaze.search.dao.PgSearchDao;
 import java.util.List;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component(immediate = true)
-@Service(Google.class)
+@Component(immediate = true, service = Google.class)
 public class PgSearch implements Google {
   @Reference
   private PgSearchDao pgSearchDao;

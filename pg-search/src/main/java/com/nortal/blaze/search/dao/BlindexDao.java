@@ -8,15 +8,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-@Component(immediate = true)
-@Service(BlindexDao.class)
+@Component(immediate = true, service = BlindexDao.class)
 public class BlindexDao {
   private static final Map<String, String> parasols = new HashMap<String, String>();
   @Reference
@@ -28,11 +25,6 @@ public class BlindexDao {
       throw new ServerException(key + " not indexed");
     }
     return parasols.get(key);
-  }
-
-  @Activate
-  public void init() throws Exception {
-    load(Blindex.PARASOL).forEach(p -> parasols.put(p.getKey(), p.getName()));
   }
 
   public List<Blindex> load() {

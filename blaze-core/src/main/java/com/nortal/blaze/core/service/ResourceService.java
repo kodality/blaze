@@ -14,25 +14,21 @@ import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
-@Component(immediate = true)
-@Service(ResourceService.class)
+@Component(immediate = true, service = ResourceService.class)
 public class ResourceService {
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC)
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
   private volatile ResourceStorehouse storehouse;
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC)
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
   private volatile Google google;
-
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, referenceInterface = ResourceIndexer.class, policy = ReferencePolicy.DYNAMIC)
+  @Reference
   private final List<ResourceIndexer> indexers = new ArrayList<>();
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, referenceInterface = ResourceSaveHandler.class, policy = ReferencePolicy.DYNAMIC)
+  @Reference
   private final List<ResourceSaveHandler> handlers = new ArrayList<>();
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, referenceInterface = ResourceValidator.class, policy = ReferencePolicy.DYNAMIC)
+  @Reference
   private final List<ResourceValidator> validators = new ArrayList<>();
 
   public ResourceVersion save(VersionId id, ResourceContent input) {
@@ -81,7 +77,7 @@ public class ResourceService {
   }
 
   protected void bind(ResourceIndexer indexer) {
-    indexers.add(indexer);
+    this.indexers.add(indexer);
   }
 
   protected void bind(ResourceSaveHandler handler) {

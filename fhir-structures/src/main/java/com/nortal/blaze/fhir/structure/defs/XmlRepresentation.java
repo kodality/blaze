@@ -6,15 +6,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.hl7.fhir.dstu3.formats.XmlParser;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.osgi.service.component.annotations.Component;
 
-@Component(immediate = true)
-@Service(ResourceRepresentation.class)
+@Component(immediate = true, service = ResourceRepresentation.class)
 public class XmlRepresentation implements ResourceRepresentation {
-  
+
   @Override
   public List<String> getMimeTypes() {
     return Arrays.asList("application/xml+fhir", "application/xml", "text/xml", "xml");

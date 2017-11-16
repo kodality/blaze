@@ -4,13 +4,11 @@ import com.nortal.blaze.search.model.StructureElement;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@Component(immediate = true)
-@Service(ResourceStructureDao.class)
+@Component(immediate = true, service = ResourceStructureDao.class)
 public class ResourceStructureDao {
   @Reference
   private JdbcTemplate jdbcTemplate;

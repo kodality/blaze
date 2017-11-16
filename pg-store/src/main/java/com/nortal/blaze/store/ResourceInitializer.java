@@ -5,14 +5,12 @@ import com.nortal.fhir.conformance.content.ResourceDefinitionListener;
 import com.nortal.fhir.conformance.content.ResourceDefinitionsMonitor;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component(immediate = true)
-@Service(ResourceDefinitionListener.class)
+@Component(immediate = true, service = ResourceDefinitionListener.class)
 public class ResourceInitializer implements ResourceDefinitionListener {
   @Reference
   private ResourceFunctionsDao resourceFunctionsDao;

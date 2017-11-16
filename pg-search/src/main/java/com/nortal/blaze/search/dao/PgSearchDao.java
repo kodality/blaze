@@ -7,15 +7,13 @@ import com.nortal.blaze.search.sql.SqlToster;
 import com.nortal.blaze.store.dao.ResourceRowMapper;
 import com.nortal.blaze.util.sql.SqlBuilder;
 import java.util.List;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@Component(immediate = true)
-@Service(PgSearchDao.class)
+@Component(immediate = true, service = PgSearchDao.class)
 public class PgSearchDao {
   private static final Logger LOG = LogManager.getLogger(PgSearchDao.class);
   @Reference

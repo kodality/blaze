@@ -1,12 +1,10 @@
 package com.nortal.blaze.store.dao;
 
 import com.nortal.blaze.util.sql.FhirJdbcTemplate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component(immediate = true)
-@Service(ResourceFunctionsDao.class)
+@Component(immediate = true, service = ResourceFunctionsDao.class)
 public class ResourceFunctionsDao {
   @Reference
   private FhirJdbcTemplate jdbcTemplate;

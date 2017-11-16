@@ -22,7 +22,7 @@ public class ResourceComposer {
 
   public static <R extends Resource> R parse(File file) {
     try {
-      return parse(FileUtils.readFileToString(file));
+      return parse(FileUtils.readFileToString(file, "UTF8"));
     } catch (IOException e) {
       throw new ParseException(e);
     }

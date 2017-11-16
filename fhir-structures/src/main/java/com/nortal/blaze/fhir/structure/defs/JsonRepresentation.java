@@ -6,20 +6,18 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.hl7.fhir.dstu3.formats.JsonParser;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.osgi.service.component.annotations.Component;
 
-@Component(immediate = true)
-@Service(ResourceRepresentation.class)
+@Component(immediate = true, service = ResourceRepresentation.class)
 public class JsonRepresentation implements ResourceRepresentation {
 
   @Override
   public List<String> getMimeTypes() {
     return Arrays.asList("application/json+fhir", "application/json", "text/json", "json");
   }
-
+  
   @Override
   public String compose(Resource resource) {
     try {

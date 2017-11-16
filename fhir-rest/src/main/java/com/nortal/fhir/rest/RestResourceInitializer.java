@@ -12,17 +12,15 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.classloader.ClassLoaderUtils;
 import org.apache.cxf.endpoint.Server;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Service;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 
-@Component(immediate = true)
-@Service({CapabilityStatementListener.class, RestResourceInitializer.class})
+@Component(immediate = true, service = { CapabilityStatementListener.class, RestResourceInitializer.class })
 public class RestResourceInitializer implements CapabilityStatementListener {
   private final Map<String, Server> servers = new HashMap<>();
 

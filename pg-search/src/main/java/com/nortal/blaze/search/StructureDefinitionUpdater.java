@@ -7,15 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.hl7.fhir.dstu3.model.ElementDefinition;
 import org.hl7.fhir.dstu3.model.ElementDefinition.TypeRefComponent;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component(immediate = true)
-@Service(ResourceDefinitionListener.class)
+@Component(immediate = true, service = ResourceDefinitionListener.class)
 public class StructureDefinitionUpdater implements ResourceDefinitionListener {
   @Reference
   private ResourceStructureDao structureDefinitionDao;

@@ -4,17 +4,17 @@ import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.Service;
+// import org.apache.felix.scr.annotations.Reference;
+// import org.apache.felix.scr.annotations.ReferenceCardinality;
+// import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-@Component(immediate = true)
-@Service(ResourceRepresentationService.class)
+@Component(immediate = true, service = ResourceRepresentationService.class)
 public class ResourceRepresentationService {
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, referenceInterface = ResourceRepresentation.class, policy = ReferencePolicy.DYNAMIC)
+  @Reference(policy = ReferencePolicy.DYNAMIC)
   private final List<ResourceRepresentation> presenters = new ArrayList<>();
 
   public String compose(Resource resource, String mime) {

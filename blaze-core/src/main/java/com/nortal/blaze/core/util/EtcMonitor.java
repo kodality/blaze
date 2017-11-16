@@ -39,6 +39,7 @@ public abstract class EtcMonitor {
     try {
       monitor.start();
     } catch (Exception e) {
+      LOG.error(path.toString(), e);
       throw new RuntimeException(e);
     }
   }
