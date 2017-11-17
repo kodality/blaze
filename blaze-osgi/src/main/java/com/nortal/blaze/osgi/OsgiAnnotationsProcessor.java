@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.nortal.blaze.osgi;
 
 import java.lang.reflect.Field;
@@ -34,6 +52,9 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * @author https://github.com/openhab/felix/tree/trunk/tools/org.apache.felix.scr.ds-annotations/src/main/java/org/apache/felix/scrplugin/ds 
+ */
 public class OsgiAnnotationsProcessor implements AnnotationProcessor {
 
   /**
@@ -41,15 +62,14 @@ public class OsgiAnnotationsProcessor implements AnnotationProcessor {
    */
   @Override
   public String getName() {
-    return "DS Annotation Processor";
+    return "osgi Annotation Processor";
   }
 
   /**
-   * @see org.apache.felix.scrplugin.annotations.AnnotationProcessor#process(org.apache.felix.scrplugin.annotations.ScannedClass,
-   *      org.apache.felix.scrplugin.description.ClassDescription)
+     * @see org.apache.felix.scrplugin.annotations.AnnotationProcessor#process(org.apache.felix.scrplugin.annotations.ScannedClass, org.apache.felix.scrplugin.description.ClassDescription)
    */
-  @Override
-  public void process(final ScannedClass scannedClass, final ClassDescription describedClass)
+    public void process(final ScannedClass scannedClass,
+                        final ClassDescription describedClass)
       throws SCRDescriptorFailureException, SCRDescriptorException {
     final List<ClassAnnotation> componentTags = scannedClass.getClassAnnotations(Component.class.getName());
     scannedClass.processed(componentTags);
@@ -189,7 +209,8 @@ public class OsgiAnnotationsProcessor implements AnnotationProcessor {
           } else {
             if (propType != found.getType()) {
               throw new SCRDescriptorException("Multi value property '" + key + "' has different types: "
-                  + found.getType() + " & " + propType, describedClass.getSource());
+                                    + found.getType() + " & " + propType,
+                                    describedClass.getSource());
             }
             if (found.getValue() != null) {
               final String[] values = new String[2];

@@ -152,8 +152,8 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     String pageUrl = "/" + getEndpoint();
 
     String queryString = RequestContext.getUriInfo().getRequestUriBuilder().build().getQuery();
-    queryString = StringUtils.isEmpty(queryString) ? "" : StringUtils.removePattern(queryString, "[&?]_page=[0-9]+");
-    pageUrl += queryString + (StringUtils.contains(queryString, "?") ? "&" : "?") + "_page=";
+    queryString = StringUtils.isEmpty(queryString) ? "" : StringUtils.removePattern(queryString, "[&?]?_page=[0-9]+");
+    pageUrl += StringUtils.isEmpty(queryString) ? "?_page=" : ("?" + queryString + "&_page=");
 
     bundle.addLink().setRelation("self").setUrl(pageUrl + page);
     bundle.addLink().setRelation("first").setUrl(pageUrl + 1);

@@ -26,15 +26,6 @@
 
   <build>
     <defaultGoal>install</defaultGoal>
-<!--     <resources> -->
-<!--       <resource> -->
-<!--         <directory>${basedir}/src/main/resources</directory> -->
-<!--       </resource> -->
-<!--       <resource> -->
-<!--         <targetPath>META-INF</targetPath> -->
-<!--         <directory>${basedir}</directory> -->
-<!--       </resource> -->
-<!--     </resources> -->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -54,10 +45,4 @@
 
     </plugins>
   </build>
-
-  <properties>
-    <bundle.export-packages>
-      com.nortal.blaze.osgi
-    </bundle.export-packages>
-  </properties>
 </project>
