@@ -15,7 +15,7 @@ public class JsonRepresentation implements ResourceRepresentation {
 
   @Override
   public List<String> getMimeTypes() {
-    return Arrays.asList("application/json+fhir", "application/json", "text/json", "json");
+    return Arrays.asList("application/fhir+json", "application/json+fhir", "application/json", "text/json", "json");
   }
   
   @Override

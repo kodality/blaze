@@ -15,7 +15,7 @@ public class XmlRepresentation implements ResourceRepresentation {
 
   @Override
   public List<String> getMimeTypes() {
-    return Arrays.asList("application/xml+fhir", "application/xml", "text/xml", "xml");
+    return Arrays.asList("application/fhir+xml", "application/xml+fhir", "application/xml", "text/xml", "xml");
   }
 
   @Override
