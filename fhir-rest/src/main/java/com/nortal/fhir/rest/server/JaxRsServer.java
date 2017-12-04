@@ -8,6 +8,7 @@ import com.nortal.fhir.rest.filter.FormatInterceptor;
 import com.nortal.fhir.rest.filter.InInterceptor;
 import com.nortal.fhir.rest.filter.OutInterceptor;
 import com.nortal.fhir.rest.filter.RequestContext;
+import com.nortal.fhir.rest.filter.ResponseFormatInterceptor;
 import com.nortal.fhir.rest.filter.writer.FhirWriter;
 import com.nortal.fhir.rest.filter.writer.ResourceContentWriter;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public abstract class JaxRsServer {
     List<Object> providers = new ArrayList<>();
     providers.add(new RequestContext());
     providers.add(new FhirExceptionHandler());
+    providers.add(new ResponseFormatInterceptor());
     providers.add(new ResourceContentWriter());
     providers.add(new FhirWriter());
     return providers;

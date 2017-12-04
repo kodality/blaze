@@ -49,8 +49,8 @@ public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
     ResponseBuilder response = Response.status(e.getStatusCode());
     if (e.getDetail() != null) {
       OperationOutcome outcome = composeOutcome(e.getDetail());
-      response.entity(ResourceComposer.compose(outcome, RequestContext.getResponseMime()));
-      response.type(RequestContext.getResponseMime());
+      response.entity(ResourceComposer.compose(outcome, RequestContext.getAccept()));
+      response.type(RequestContext.getAccept());
     }
     return response.build();
   }

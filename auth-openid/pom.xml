@@ -29,7 +29,6 @@
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.auth
     </bundle.export-packages>
   </properties>
 </project>

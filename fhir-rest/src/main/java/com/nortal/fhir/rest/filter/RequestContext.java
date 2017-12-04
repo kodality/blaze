@@ -9,35 +9,40 @@ import org.apache.logging.log4j.LogManager;
 
 public class RequestContext implements ContainerRequestFilter {
   private static final ThreadLocal<UriInfo> uriInfo = new ThreadLocal<>();
-  private static final ThreadLocal<String> responseMime = new ThreadLocal<>();
+  private static final ThreadLocal<String> accept = new ThreadLocal<>();
   private static final String DEFAULT = "application/json";
 
   public static UriInfo getUriInfo() {
     return uriInfo.get();
   }
 
-  public static String getResponseMime() {
-    return responseMime.get();
+  public static String getAccept() {
+    return accept.get();
   }
 
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
     try {
       uriInfo.set(requestContext.getUriInfo());
-      String contentType = requestContext.getHeaderString("Content-Type");
-      String accept = requestContext.getHeaderString("Accept");
-      accept =
-          accept == null || accept.equals(MediaType.WILDCARD) ? contentType == null ? DEFAULT : contentType : accept;
-      responseMime.set(accept);
+      accept.set(readAccept(requestContext));
     } catch (Exception e) {
       LogManager.getLogger(RequestContext.class).error(e);
     }
   }
 
+  private String readAccept(ContainerRequestContext requestContext) {
+    String result = requestContext.getHeaderString("Accept");
+    if (result == null || result.equals(MediaType.WILDCARD)) {
+      String contentType = requestContext.getHeaderString("Content-Type");
+      return contentType == null ? DEFAULT : contentType;
+    }
+    return result;
+  }
+
   public static void clear() {
     try {
       uriInfo.remove();
-      responseMime.remove();
+      accept.remove();
     } catch (Exception e) {
       LogManager.getLogger(RequestContext.class).error(e);
     }
