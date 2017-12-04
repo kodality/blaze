@@ -3,24 +3,29 @@ package com.nortal.fhir.conformance.operations;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.util.EtcMonitor;
 import com.nortal.blaze.core.util.Osgi;
-import com.nortal.blaze.fhir.structure.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.SearchParameter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(immediate = true)
 public class SearchParameterMonitor extends EtcMonitor {
   protected static final String GLOBAL = "Resource";
   protected static final List<SearchParameter> all = new ArrayList<SearchParameter>();
   protected static final Map<String, Map<String, SearchParameter>> parameters = new HashMap<>();
+  @Reference
+  private ResourceRepresentationService representationService;
 
   public SearchParameterMonitor() {
     super("searchparameter");
@@ -69,7 +74,7 @@ public class SearchParameterMonitor extends EtcMonitor {
 
   @Override
   protected void file(File file) {
-    Resource res = ResourceComposer.parse(file);
+    Resource res = representationService.parse(readFile(file));
     if (ResourceType.SearchParameter != res.getResourceType()) {
       return;
     }
@@ -89,6 +94,14 @@ public class SearchParameterMonitor extends EtcMonitor {
       globalParams.forEach((k, v) -> resourceParameters.putIfAbsent(k, v));
     }
     Osgi.getBeans(SearchParameterListener.class).forEach(l -> l.comply(all));
+  }
+  
+  private String readFile(File file) {
+    try {
+      return FileUtils.readFileToString(file, "UTF8");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

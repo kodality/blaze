@@ -56,7 +56,8 @@
     <bundle.export-packages>
       com.nortal.fhir.rest.server,
       com.nortal.fhir.rest.interaction,
-      com.nortal.fhir.rest.search
+      com.nortal.fhir.rest.search,
+      com.nortal.fhir.rest.filter
     </bundle.export-packages>
     <bundle.import-packages>
       javax.annotation

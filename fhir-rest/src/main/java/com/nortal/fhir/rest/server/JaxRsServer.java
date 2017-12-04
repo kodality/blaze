@@ -49,8 +49,9 @@ public abstract class JaxRsServer {
   private List<Interceptor<? extends Message>> getInInterceptors() {
     List<Interceptor<? extends Message>> interceptors = new ArrayList<>();
     interceptors.add(new FormatInterceptor());
-    interceptors.add(new OsgiInterceptorProxy(Phase.PRE_INVOKE, InInterceptor.class));
     interceptors.add(new OsgiInterceptorProxy(Phase.RECEIVE, InInterceptor.class));
+    interceptors.add(new OsgiInterceptorProxy(Phase.READ, InInterceptor.class));
+    interceptors.add(new OsgiInterceptorProxy(Phase.PRE_INVOKE, InInterceptor.class));
     return interceptors;
   }
 

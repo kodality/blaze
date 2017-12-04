@@ -16,7 +16,7 @@ public class FormatInterceptor extends AbstractPhaseInterceptor<Message> {
   private static final String FORMAT = "_format";
 
   public FormatInterceptor() {
-    super(Phase.UNMARSHAL);
+    super(Phase.READ);
   }
 
   @Override

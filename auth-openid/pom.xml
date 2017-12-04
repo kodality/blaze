@@ -8,29 +8,28 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>com.nortal.blaze</groupId>
-  <artifactId>fhir-structures</artifactId>
+  <artifactId>auth-openid</artifactId>
   <packaging>bundle</packaging>
-  <name>fhir-structures</name>
+  <name>auth-openid</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>
     <dependency>
-      <groupId>ca.uhn.hapi.fhir</groupId>
-      <artifactId>hapi-fhir-base</artifactId>
-      <version>3.0.0</version>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>fhir-rest</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <artifactId>fhir-stu3</artifactId>
-      <groupId>org.hl7.fhir</groupId>
-      <version>SNAPSHOT</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
-
   </dependencies>
+
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.fhir.structure.api,
-      com.nortal.blaze.fhir.structure.service
+      com.nortal.blaze.auth
     </bundle.export-packages>
   </properties>
 </project>

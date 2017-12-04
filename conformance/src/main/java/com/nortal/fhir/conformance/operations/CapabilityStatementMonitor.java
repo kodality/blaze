@@ -1,10 +1,12 @@
 package com.nortal.fhir.conformance.operations;
 
 import com.nortal.blaze.core.util.EtcMonitor;
-import com.nortal.blaze.fhir.structure.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
@@ -20,6 +22,8 @@ public class CapabilityStatementMonitor extends EtcMonitor {
   private static CapabilityStatement capabilityStatement;
   @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, service = CapabilityStatementListener.class, bind = "bind", unbind = "unbind")
   private final List<CapabilityStatementListener> listeners = new ArrayList<>();
+  @Reference
+  private ResourceRepresentationService representationService;
 
   public CapabilityStatementMonitor() {
     super("capability");
@@ -46,7 +50,7 @@ public class CapabilityStatementMonitor extends EtcMonitor {
 
   @Override
   protected void file(File file) {
-    Resource res = ResourceComposer.parse(file);
+    Resource res = representationService.parse(readFile(file));
     if (ResourceType.CapabilityStatement != res.getResourceType()) {
       return;
     }
@@ -60,6 +64,14 @@ public class CapabilityStatementMonitor extends EtcMonitor {
 
   protected void unbind(CapabilityStatementListener listener) {
     listeners.remove(listener);
+  }
+
+  private String readFile(File file) {
+    try {
+      return FileUtils.readFileToString(file, "UTF8");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

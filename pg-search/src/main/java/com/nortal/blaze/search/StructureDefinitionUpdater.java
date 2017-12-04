@@ -13,7 +13,7 @@ import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(immediate = true, service = ResourceDefinitionListener.class)
+@Component(immediate = true)
 public class StructureDefinitionUpdater implements ResourceDefinitionListener {
   @Reference
   private ResourceStructureDao structureDefinitionDao;

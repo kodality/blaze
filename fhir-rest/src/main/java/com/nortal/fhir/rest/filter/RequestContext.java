@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 public class RequestContext implements ContainerRequestFilter {
   private static final ThreadLocal<UriInfo> uriInfo = new ThreadLocal<>();
   private static final ThreadLocal<String> responseMime = new ThreadLocal<>();
-  private static final String DEFAULT = "application/json+fhir";
+  private static final String DEFAULT = "application/json";
 
   public static UriInfo getUriInfo() {
     return uriInfo.get();

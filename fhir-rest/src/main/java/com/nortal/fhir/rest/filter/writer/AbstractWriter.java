@@ -43,6 +43,9 @@ public abstract class AbstractWriter<T> implements MessageBodyWriter<T>, Contain
     if (responseContext.getEntity() == null) {
       return;
     }
+    if(RequestContext.getResponseMime() == null){
+      return;
+    }
     for (String mime : StringUtils.split(RequestContext.getResponseMime(), ",")) {
       if (isWriteable(responseContext.getEntity().getClass(),
                       responseContext.getEntityType(),
