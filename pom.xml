@@ -205,7 +205,7 @@
     <module>pg-store</module>
     <module>pg-search</module>
     <module>resource-binary</module>
-    <module>auth-openid</module>
+    <!-- <module>auth-openid</module> -->
   </modules>
 
 </project>

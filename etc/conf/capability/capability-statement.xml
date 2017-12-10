@@ -475,6 +475,12 @@
       <interaction>
         <code value="search-type"/>
       </interaction>
+      <searchParam>
+        <name value="subject"/>
+        <definition value="http://hl7.org/fhir/SearchParameter/observation-subject"/>
+        <type value="reference"/>
+        <documentation value="The subject that the observation is about"/>
+      </searchParam>
     </resource>
     <resource>
       <type value="Immunization"/>
