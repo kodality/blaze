@@ -15,12 +15,14 @@ import org.apache.cxf.endpoint.Server;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.ConditionalDeleteStatus;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +37,13 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
   public void comply(List<StructureDefinition> definition) {
     comply();
   }
-  
+
   @Override
   public void comply(CapabilityStatement capabilityStatement) {
     comply();
   }
-  
-  private void comply(){
+
+  private void comply() {
     new Thread(() -> {
       // hack cxf when trying to load by class name from wrong classloader
       ClassLoaderUtils.setThreadContextClassloader(RestResourceInitializer.class.getClassLoader());
@@ -51,7 +53,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   private void reloadRest() {
     stop();
-    CapabilityStatement capabilityStatement = CapabilityStatementMonitor.getCapabilityStatement();
+    CapabilityStatement capabilityStatement = getCapability();
     if (capabilityStatement == null) {
       return;
     }
@@ -62,9 +64,29 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     }
   }
 
+  // TODO: unimplemented stuff. changes it also.
+  private CapabilityStatement getCapability() {
+    CapabilityStatement capabilityStatement = CapabilityStatementMonitor.getCapabilityStatement();
+    capabilityStatement.setText(null);
+    List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
+    capabilityStatement.getRest().forEach(rest -> {
+      rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
+    });
+    capabilityStatement.getRest().forEach(rest -> rest.getResource().forEach(rr -> {
+      rr.setConditionalCreate(false);
+      rr.setConditionalUpdate(false);
+      rr.setConditionalDelete(ConditionalDeleteStatus.NOTSUPPORTED);
+      rr.setReferencePolicy(Collections.emptyList());
+      rr.setSearchInclude(Collections.emptyList());
+      rr.setSearchRevInclude(Collections.emptyList());
+    }));
+
+    return capabilityStatement;
+  }
+
   @Activate
   private void start() {
-    comply(CapabilityStatementMonitor.getCapabilityStatement());
+    comply();
   }
 
   @Deactivate
@@ -75,8 +97,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   private void start(CapabilityStatementRestComponent rest) {
     start(null, new FhirRootServer(rest));
-    List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
-    rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).forEach(rr -> start(rr));
+    rest.getResource().forEach(rr -> start(rr));
   }
 
   private void start(CapabilityStatementRestResourceComponent resourceRest) {
