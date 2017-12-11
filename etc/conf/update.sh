@@ -27,7 +27,7 @@ for job in `jobs -p`; do
 done
 
 mkdir downloads && cd downloads
-wget https://www.hl7.org/fhir/definitions.json.zip &&\
+wget http://www.hl7.org/fhir/definitions.json.zip &&\
   unzip definitions.json.zip
 cd ..
 
@@ -36,7 +36,7 @@ rm capability/*
 cp -r downloads/profiles-resources.json capability
 
 #SEARCHPARAM
-rm searchparam/resources.json
-cp -r downlaods/search-parameters.json searchparam/resources.json
+rm searchparameter/resources.json
+cp -r downloads/search-parameters.json searchparameter/resources.json
 
 rm -rf downloads

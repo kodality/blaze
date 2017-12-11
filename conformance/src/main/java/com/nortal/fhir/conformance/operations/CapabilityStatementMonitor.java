@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.ConditionalDeleteStatus;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.osgi.service.component.annotations.Activate;
@@ -18,6 +19,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component(immediate = true)
@@ -69,6 +71,15 @@ public class CapabilityStatementMonitor extends EtcMonitor {
 
   private void readStatement(Resource res) {
     capabilityStatement = (CapabilityStatement) res;
+    capabilityStatement.getRest().forEach(rest -> rest.getResource().forEach(rr -> {
+      // TODO: implement
+      rr.setConditionalCreate(false);
+      rr.setConditionalUpdate(false);
+      rr.setConditionalDelete(ConditionalDeleteStatus.NOTSUPPORTED);
+      rr.setReferencePolicy(Collections.emptyList());
+      rr.setSearchInclude(Collections.emptyList());
+      rr.setSearchRevInclude(Collections.emptyList());
+    }));
     listeners.forEach(l -> l.comply(capabilityStatement));
   }
 
