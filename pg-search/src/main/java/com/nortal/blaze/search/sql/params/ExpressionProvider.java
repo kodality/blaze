@@ -14,15 +14,15 @@ public abstract class ExpressionProvider {
   public abstract SqlBuilder order(String resourceType, String key, String alias);
 
   protected static String path(QueryParam param) {
-    return "'" + getXpath(param.getResourceType(), param.getKey()) + "'";
+    return "'" + getPath(param.getResourceType(), param.getKey()) + "'";
   }
 
-  private static String getXpath(String resourceType, String key) {
-    String xpath = SearchParameterMonitor.require(resourceType, key).getXpath();
-    if (StringUtils.isEmpty(xpath)) {
-      throw new ServerException("config problem. xpath empty for param " + key);
+  private static String getPath(String resourceType, String key) {
+    String path = SearchParameterMonitor.require(resourceType, key).getExpression();
+    if (StringUtils.isEmpty(path)) {
+      throw new ServerException("config problem. path empty for param " + key);
     }
-    return xpath;
+    return StringUtils.removeFirst(path, resourceType + "\\.");
   }
 
   protected static String parasol(QueryParam param, String alias) {
@@ -30,7 +30,7 @@ public abstract class ExpressionProvider {
   }
 
   protected static String parasol(String resourceType, String key, String alias) {
-    String tblName = BlindexDao.getParasol(resourceType, getXpath(resourceType, key));
+    String tblName = BlindexDao.getParasol(resourceType, getPath(resourceType, key));
     return String.format(tblName + " WHERE resource_key = %s.key ", alias);
   }
 

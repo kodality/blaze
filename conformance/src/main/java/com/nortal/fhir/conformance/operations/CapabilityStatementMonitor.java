@@ -2,11 +2,9 @@ package com.nortal.fhir.conformance.operations;
 
 import com.nortal.blaze.core.util.EtcMonitor;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
@@ -16,6 +14,11 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component(immediate = true)
 public class CapabilityStatementMonitor extends EtcMonitor {
@@ -51,9 +54,20 @@ public class CapabilityStatementMonitor extends EtcMonitor {
   @Override
   protected void file(File file) {
     Resource res = representationService.parse(readFile(file));
-    if (ResourceType.CapabilityStatement != res.getResourceType()) {
+    if (ResourceType.CapabilityStatement == res.getResourceType()) {
+      readStatement(res);
       return;
     }
+    if (ResourceType.Bundle == res.getResourceType()) {
+      Bundle bundle = (Bundle) res;
+      BundleEntryComponent entry = bundle.getEntry().get(0);
+      if (ResourceType.CapabilityStatement == entry.getResource().getResourceType()) {
+        readStatement(entry.getResource());
+      }
+    }
+  }
+
+  private void readStatement(Resource res) {
     capabilityStatement = (CapabilityStatement) res;
     listeners.forEach(l -> l.comply(capabilityStatement));
   }

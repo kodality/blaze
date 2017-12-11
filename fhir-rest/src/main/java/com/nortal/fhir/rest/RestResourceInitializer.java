@@ -1,14 +1,14 @@
 package com.nortal.fhir.rest;
 
 import com.nortal.blaze.core.util.Osgi;
+import com.nortal.fhir.conformance.content.ResourceDefinitionListener;
+import com.nortal.fhir.conformance.content.ResourceDefinitionsMonitor;
 import com.nortal.fhir.conformance.operations.CapabilityStatementListener;
 import com.nortal.fhir.conformance.operations.CapabilityStatementMonitor;
 import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.FhirResourceServerFactory;
 import com.nortal.fhir.rest.server.FhirRootServer;
 import com.nortal.fhir.rest.server.JaxRsServer;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.classloader.ClassLoaderUtils;
 import org.apache.cxf.endpoint.Server;
@@ -16,25 +16,42 @@ import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
+import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
+
 @Component(immediate = true, service = { CapabilityStatementListener.class, RestResourceInitializer.class })
-public class RestResourceInitializer implements CapabilityStatementListener {
+public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
   private final Map<String, Server> servers = new HashMap<>();
 
   @Override
+  public void comply(List<StructureDefinition> definition) {
+    comply();
+  }
+  
+  @Override
   public void comply(CapabilityStatement capabilityStatement) {
+    comply();
+  }
+  
+  private void comply(){
     new Thread(() -> {
       // hack cxf when trying to load by class name from wrong classloader
       ClassLoaderUtils.setThreadContextClassloader(RestResourceInitializer.class.getClassLoader());
-      realComply(capabilityStatement);
+      reloadRest();
     }).run();
   }
 
-  private void realComply(CapabilityStatement capabilityStatement) {
+  private void reloadRest() {
     stop();
+    CapabilityStatement capabilityStatement = CapabilityStatementMonitor.getCapabilityStatement();
     if (capabilityStatement == null) {
       return;
     }
@@ -58,7 +75,8 @@ public class RestResourceInitializer implements CapabilityStatementListener {
 
   private void start(CapabilityStatementRestComponent rest) {
     start(null, new FhirRootServer(rest));
-    rest.getResource().forEach(rr -> start(rr));
+    List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
+    rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).forEach(rr -> start(rr));
   }
 
   private void start(CapabilityStatementRestResourceComponent resourceRest) {

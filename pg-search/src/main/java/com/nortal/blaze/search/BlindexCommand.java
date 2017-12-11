@@ -41,15 +41,15 @@ public class BlindexCommand implements Action {
         if (!defined.contains(base.getValue())) {
           continue;
         }
-        if (sp.getXpath() == null) {
+        if (sp.getExpression() == null) {
           continue;
         }
-        if (sp.getXpath().contains("|")) {
+        if (sp.getExpression().contains("|")) {
           // TODO: implement?
           continue;
         }
         // create.add(base.getValue() + "." + sp.getXpath());
-        create.add(sp.getXpath().replace("f:", "").replace("/", "."));
+        create.add(sp.getExpression());
       }
     }
     HashSet<String> ignore = new HashSet<>(create);
@@ -68,7 +68,8 @@ public class BlindexCommand implements Action {
         System.out.println("creating " + key);
         blindexDao.createIndex(StringUtils.substringBefore(key, "."), StringUtils.substringAfter(key, "."));
       } catch (Exception e) {
-        String err = e.getCause() instanceof PSQLException ? e.getCause().getMessage() : e.getMessage();
+        String err = e.getCause() instanceof PSQLException ? (e.getCause().getMessage().substring(0, e.getCause().getMessage().indexOf("\n")))
+                                                           : e.getMessage();
         System.err.println("failed " + key + ": " + err);
       }
     }
