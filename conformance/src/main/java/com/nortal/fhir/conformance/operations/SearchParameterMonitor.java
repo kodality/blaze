@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.SearchParameter;
@@ -75,10 +76,20 @@ public class SearchParameterMonitor extends EtcMonitor {
   @Override
   protected void file(File file) {
     Resource res = representationService.parse(readFile(file));
-    if (ResourceType.SearchParameter != res.getResourceType()) {
-      return;
+    if (ResourceType.SearchParameter == res.getResourceType()) {
+      readSearchParam((SearchParameter) res);
     }
-    SearchParameter sp = (SearchParameter) res;
+    if (ResourceType.Bundle == res.getResourceType()) {
+      Bundle bundle = (Bundle) res;
+      bundle.getEntry().stream().forEach(e -> {
+        if (ResourceType.SearchParameter == e.getResource().getResourceType()) {
+          readSearchParam((SearchParameter) e.getResource());
+        }
+      });
+    }
+  }
+
+  private void readSearchParam(SearchParameter sp) {
     sp.getBase().forEach(ct -> {
       String key = ct.getValue();
       parameters.putIfAbsent(key, new HashMap<String, SearchParameter>());
@@ -95,7 +106,7 @@ public class SearchParameterMonitor extends EtcMonitor {
     }
     Osgi.getBeans(SearchParameterListener.class).forEach(l -> l.comply(all));
   }
-  
+
   private String readFile(File file) {
     try {
       return FileUtils.readFileToString(file, "UTF8");
