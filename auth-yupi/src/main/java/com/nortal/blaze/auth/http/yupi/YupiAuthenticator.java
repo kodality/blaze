@@ -11,22 +11,18 @@ public class YupiAuthenticator implements AuthHeaderAuthenticator {
 
   @Override
   public User autheticate(HttpAuthorization auth, Message message) {
-    System.out.println("yupi1");
     if (!auth.isType(HttpAuthorization.BEARER)) {
       return null;
     }
-    System.out.println("yupi2");
     String token = auth.getCredential();
     if (token == null) {
       return null;
     }
-    System.out.println("yupi3");
     if (token.equals("yupi")) {
       User user = new User();
       user.setCode("yupi");
       return user;
     }
-    System.out.println("yupi4");
     return null;
   }
 
