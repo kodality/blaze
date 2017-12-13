@@ -1,20 +1,28 @@
-package com.nortal.blaze.auth;
+package com.nortal.blaze.auth.http;
 
+import com.nortal.blaze.auth.ClientIdentity;
+import com.nortal.blaze.auth.User;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.fhir.rest.filter.InInterceptor;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Component(immediate = true, service = InInterceptor.class)
-public class TokenCheckInterceptor extends InInterceptor {
+public class HttpAuthInterceptor extends InInterceptor {
   private static final String AUTHORIZATION = "Authorization";
   @Reference
   private ClientIdentity clientIdentity;
+  @Reference
+  private final List<AuthHeaderAuthenticator> authenticators = new ArrayList<>();
 
-  public TokenCheckInterceptor() {
+  public HttpAuthInterceptor() {
     super(Phase.READ);
   }
 
@@ -28,9 +36,9 @@ public class TokenCheckInterceptor extends InInterceptor {
     String authorizationHeader = request.getHeader(AUTHORIZATION);
     HttpAuthorization auth = HttpAuthorization.parse(authorizationHeader);
 
-    if (auth.isType(HttpAuthorization.BEARER)) {
-      clientIdentity.set(bearerAuth(auth));
-    }
+    User user =
+        authenticators.stream().map(a -> a.autheticate(auth, message)).filter(a -> a != null).findFirst().orElse(null);
+    clientIdentity.set(user);
 
     if (!clientIdentity.isAuthenticated()) {
       throw new FhirException(401, "not authenticated");
@@ -38,17 +46,12 @@ public class TokenCheckInterceptor extends InInterceptor {
 
   }
 
-  private User bearerAuth(HttpAuthorization auth) {
-    String token = auth.getCredential();
-    if (token == null) {
-      return null;
-    }
-    if (token.equals("yupi")) {
-      User user = new User();
-      user.setCode("yupi");
-      return user;
-    }
-    return null;
+  protected void bind(AuthHeaderAuthenticator authenticator) {
+    authenticators.add(authenticator);
+  }
+
+  protected void unbind(AuthHeaderAuthenticator authenticator) {
+    authenticators.remove(authenticator);
   }
 
 }

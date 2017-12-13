@@ -1,5 +1,6 @@
-package com.nortal.blaze.auth;
+package com.nortal.blaze.auth.http;
 
+import com.nortal.blaze.auth.ClientIdentity;
 import com.nortal.fhir.rest.filter.OutInterceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;

@@ -1,4 +1,4 @@
-package com.nortal.blaze.auth;
+package com.nortal.blaze.auth.http;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;

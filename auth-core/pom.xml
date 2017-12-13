@@ -8,22 +8,18 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>com.nortal.blaze</groupId>
-  <artifactId>auth-openid</artifactId>
+  <artifactId>auth-core</artifactId>
   <packaging>bundle</packaging>
-  <name>auth-openid</name>
+  <name>auth-core</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>
-    <dependency>
-      <groupId>com.nortal.blaze</groupId>
-      <artifactId>auth-rest</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
   </dependencies>
 
 
   <properties>
     <bundle.export-packages>
+      com.nortal.blaze.auth
     </bundle.export-packages>
   </properties>
 </project>

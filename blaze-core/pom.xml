@@ -25,6 +25,11 @@
       <artifactId>fhir-structures</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>auth-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
   </dependencies>
 
   <properties>
