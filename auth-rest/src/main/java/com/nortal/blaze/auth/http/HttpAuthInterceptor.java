@@ -9,6 +9,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,7 +22,7 @@ public class HttpAuthInterceptor extends InInterceptor {
   private static final String AUTHORIZATION = "Authorization";
   @Reference
   private ClientIdentity clientIdentity;
-  @Reference
+  @Reference(policy = ReferencePolicy.DYNAMIC)
   private final List<AuthHeaderAuthenticator> authenticators = new ArrayList<>();
 
   public HttpAuthInterceptor() {
