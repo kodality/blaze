@@ -15,9 +15,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Response;
 
+import java.util.HashMap;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
 
 @Component(immediate = true, service = AuthHeaderAuthenticator.class, configurationPid = "com.nortal.blaze.auth")
 public class OidcAuthenticator implements AuthHeaderAuthenticator {
@@ -56,7 +55,11 @@ public class OidcAuthenticator implements AuthHeaderAuthenticator {
     Map<String, Object> userJson = fromJson(response.readEntity(String.class));
     User user = new User();
     user.setCode((String) userJson.get("sub"));
-    user.setClaims(userJson.keySet().stream().collect(toMap(k -> k, k -> (String) userJson.get(k))));
+    
+    Map<String, Object> claims = new HashMap<>(userJson);
+    claims.remove("sub");
+    claims.remove("auth_time");
+    user.setClaims(claims);
     return user;
   }
 

@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class User {
   private String code;
-  private Map<String, String> claims;
+  private Map<String, Object> claims;
 
   public String getCode() {
     return code;
@@ -14,11 +14,11 @@ public class User {
     this.code = code;
   }
 
-  public Map<String, String> getClaims() {
+  public Map<String, Object> getClaims() {
     return claims;
   }
 
-  public void setClaims(Map<String, String> claims) {
+  public void setClaims(Map<String, Object> claims) {
     this.claims = claims;
   }
 
