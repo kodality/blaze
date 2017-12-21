@@ -9,9 +9,9 @@ create table resource (
   id            text not null,
   last_version  smallint not null default 1,
   last_updated  timestamp not null default localtimestamp,
+  author        jsonb,
   content       jsonb not null,
-  sys_status    char(1) not null default 'A',
-  sys_created   jsonb
+  sys_status    char(1) not null default 'A'
 ) PARTITION BY LIST (type);
 --rollback drop table resource cascade;
 

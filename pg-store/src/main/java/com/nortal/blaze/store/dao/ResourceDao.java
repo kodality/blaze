@@ -1,5 +1,6 @@
 package com.nortal.blaze.store.dao;
 
+import com.google.gson.Gson;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
@@ -19,12 +20,13 @@ public class ResourceDao {
     if (version.getId().getResourceId() == null) {
       version.getId().setResourceId(key.toString());
     }
-    String sql = "INSERT INTO resource (key, type, id, last_version, content) VALUES (?,?,?,?,CAST(? as jsonb))";
+    String sql = "INSERT INTO resource (key, type, id, last_version, author, content) VALUES (?,?,?,?,?::jsonb,?::jsonb)";
     jdbcTemplate.update(sql,
                         key,
                         version.getId().getResourceType(),
                         version.getId().getResourceId(),
                         version.getId().getVersion(),
+                        new Gson().toJson(version.getAuthor()),
                         version.getContent().getValue());
   }
 

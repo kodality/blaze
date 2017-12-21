@@ -6,7 +6,8 @@ import com.nortal.blaze.auth.http.HttpAuthorization;
 import org.apache.cxf.message.Message;
 import org.osgi.service.component.annotations.Component;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component(immediate = true, service = AuthHeaderAuthenticator.class)
 public class YupiAuthenticator implements AuthHeaderAuthenticator {
@@ -22,8 +23,10 @@ public class YupiAuthenticator implements AuthHeaderAuthenticator {
     }
     if (token.equals("yupi")) {
       User user = new User();
-      user.setCode("yupi");
-      user.setClaims(Collections.singletonMap("org", "yupland"));
+      Map<String, Object> claims = new HashMap<>();
+      claims.put("sub", "yupi");
+      claims.put("org", "yupland");
+      user.setClaims(claims);
       return user;
     }
     return null;

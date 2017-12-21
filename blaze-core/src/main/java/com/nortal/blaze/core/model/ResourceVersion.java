@@ -2,11 +2,13 @@ package com.nortal.blaze.core.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 public class ResourceVersion implements Serializable {
   private VersionId id;
   private ResourceContent content;
 
+  private Map<String, Object> author;
   private Date modified;
   private boolean deleted;
 
@@ -57,6 +59,14 @@ public class ResourceVersion implements Serializable {
 
   public void setDeleted(boolean deleted) {
     this.deleted = deleted;
+  }
+
+  public Map<String, Object> getAuthor() {
+    return author;
+  }
+
+  public void setAuthor(Map<String, Object> author) {
+    this.author = author;
   }
 
 }

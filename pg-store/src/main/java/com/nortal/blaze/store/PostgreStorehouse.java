@@ -1,5 +1,6 @@
 package com.nortal.blaze.store;
 
+import com.nortal.blaze.auth.ClientIdentity;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.FhirNotFoundException;
 import com.nortal.blaze.core.iface.ResourceStorehouse;
@@ -9,12 +10,15 @@ import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.blaze.store.dao.ResourceDao;
-import java.util.List;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import java.util.List;
+
 @Component(immediate = true, service = ResourceStorehouse.class)
 public class PostgreStorehouse implements ResourceStorehouse {
+  @Reference
+  private ClientIdentity clientIdentity;
   @Reference
   private ResourceDao resourceDao;
 
@@ -25,6 +29,9 @@ public class PostgreStorehouse implements ResourceStorehouse {
     }
     ResourceVersion version = new ResourceVersion(id, content);
     version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
+    if (clientIdentity.get() != null) {
+      version.setAuthor(clientIdentity.get().getClaims());
+    }
     resourceDao.create(version);
     return version;
   }

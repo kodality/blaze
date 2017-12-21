@@ -54,10 +54,8 @@ public class OidcAuthenticator implements AuthHeaderAuthenticator {
 
     Map<String, Object> userJson = fromJson(response.readEntity(String.class));
     User user = new User();
-    user.setCode((String) userJson.get("sub"));
     
     Map<String, Object> claims = new HashMap<>(userJson);
-    claims.remove("sub");
     claims.remove("auth_time");
     user.setClaims(claims);
     return user;
