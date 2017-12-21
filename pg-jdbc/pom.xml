@@ -29,6 +29,15 @@
       <artifactId>spring-jdbc</artifactId>
       <version>4.2.5.RELEASE</version>
     </dependency>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>auth-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
   </dependencies>
 
   <properties>

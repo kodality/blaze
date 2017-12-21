@@ -1,17 +1,26 @@
 package com.nortal.blaze.util.sql;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
-import javax.sql.DataSource;
+import com.google.gson.Gson;
+import com.nortal.blaze.auth.ClientIdentity;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.sql.DataSource;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
 
 @Component(immediate = true, service = { FhirDataSource.class,
                                          DataSource.class }, configurationPid = "com.nortal.blaze.pg")
 public class FhirDataSource extends BasicDataSource {
+  @Reference
+  private ClientIdentity clientIdentity;
 
   @Activate
   void activate(Map<String, String> props) {
@@ -36,6 +45,18 @@ public class FhirDataSource extends BasicDataSource {
     } catch (SQLException e) {
       System.out.println("woo");
     }
+  }
+
+  @Override
+  public Connection getConnection() throws SQLException {
+    Connection c = super.getConnection();
+    String sql = "SELECT core.set_user(?::jsonb)";
+    try (PreparedStatement ps = c.prepareStatement(sql)) {
+      String json = new Gson().toJson(clientIdentity.get());
+      ps.setString(1, json);
+      ps.execute();
+    }
+    return c;
   }
 
 }

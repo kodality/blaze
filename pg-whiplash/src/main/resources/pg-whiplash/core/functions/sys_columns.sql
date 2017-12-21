@@ -1,61 +1,39 @@
-CREATE OR REPLACE FUNCTION meta.sys_columns()
+CREATE OR REPLACE FUNCTION core.sys_columns()
   RETURNS trigger AS
 $BODY$
 DECLARE
   l_client_id   VARCHAR := null;
-  l_ts          TIMESTAMP := NOW();
-  l_sys_columns VARCHAR;
+  l_ts          TIMESTAMPTZ := NOW();
+  sys_column    text;
 BEGIN
-  -- collect list of system columns presented in changed table
-  SELECT ','||string_agg(column_name,',')||',' into l_sys_columns
-    FROM information_schema.columns
-   WHERE table_name = TG_TABLE_NAME
-     AND column_name like 'sys%';
-  
-  IF (TG_OP = 'INSERT') THEN
-    IF strpos(l_sys_columns,'sys_delete_status')>0 THEN
-      NEW.sys_delete_status := 'N';
-    END IF;
-    IF strpos(l_sys_columns,'sys_status')>0 THEN
-      NEW.sys_status := 'A';
-    END IF;
-    IF strpos(l_sys_columns,'sys_create_time')>0 THEN
-      NEW.sys_create_time := l_ts;
-    END IF;
-    IF strpos(l_sys_columns,'sys_create_uid')>0 THEN
-      IF NEW.sys_create_uid IS NULL THEN
-        SELECT meta.session_user() INTO l_client_id;
-        NEW.sys_create_uid := l_client_id;
-      end if;
-    END IF;
-    IF strpos(l_sys_columns,'sys_version')>0 THEN
-      NEW.sys_version := coalesce(NEW.sys_version,0)+1;
-    END IF;
-  END IF;
-  IF (TG_OP = 'UPDATE') THEN
-    IF strpos(l_sys_columns,'sys_version')>0 THEN
-      NEW.sys_version := coalesce(NEW.sys_version,OLD.sys_version,0)+1;
-    END IF;
-    IF strpos(l_sys_columns,'sys_status')>0 THEN
-      IF NEW.sys_status is null THEN
-        NEW.sys_status := OLD.sys_status;
+  FOR sys_column IN 
+    SELECT column_name::text
+       FROM information_schema.columns
+       WHERE table_name = TG_TABLE_NAME
+       AND column_name like 'sys%'
+  LOOP
+    
+    IF sys_column = 'sys_status' THEN
+      IF new.sys_status IS NULL THEN
+        new.sys_status = CASE WHEN TG_OP = 'INSERT' THEN 'A'
+                              WHEN TG_OP = 'UPDATE' THEN old.sys_status END; 
       END IF;
+      
+    ELSEIF sys_column = 'sys_version' THEN
+        new.sys_version = CASE WHEN TG_OP = 'INSERT' THEN coalesce(new.sys_version,0)+1
+                               WHEN TG_OP = 'UPDATE' THEN coalesce(new.sys_version,old.sys_version,0)+1 END; 
+                               
+    ELSEIF sys_column = 'sys_modified' THEN
+      new.sys_modified = core.footprint();
+      
+    ELSEIF sys_column = 'sys_created' THEN
+      IF TG_OP = 'INSERT'
+        THEN new.sys_created = core.footprint();
+      END IF;
+    
     END IF;
-  END IF;
-  IF strpos(l_sys_columns,'sys_modify_time')>0 THEN
-    NEW.sys_modify_time := l_ts;
-  END IF;
-  IF strpos(l_sys_columns,'sys_modify_uid')>0 THEN
-    IF NEW.sys_modify_uid IS NULL THEN
-       IF l_client_id IS NULL THEN
-         SELECT meta.session_user() INTO l_client_id;
-       END IF;
-       NEW.sys_modify_uid := l_client_id;
-    end if;
-  END IF;
-  IF strpos(l_sys_columns,'sys_modify_sid')>0 THEN
-    NEW.sys_modify_sid := pg_backend_pid();
-  END IF;
+  END LOOP;
+  
   RETURN NEW;
 END;
 $BODY$

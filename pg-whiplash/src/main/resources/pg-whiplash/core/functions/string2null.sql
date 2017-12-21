@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION util.string2null(varchar) 
+CREATE OR REPLACE FUNCTION core.string2null(varchar) 
 RETURNS varchar AS 
 $BODY$ 
 BEGIN 

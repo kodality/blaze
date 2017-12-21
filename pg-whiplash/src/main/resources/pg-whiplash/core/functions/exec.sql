@@ -1,4 +1,4 @@
-create or replace function util.exec(p_sql text, p_ignore_error boolean default false) returns varchar language plpgsql volatile as 
+create or replace function core.exec(p_sql text, p_ignore_error boolean default false) returns varchar language plpgsql volatile as 
 $body$
 declare
   rc bigint;

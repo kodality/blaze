@@ -1,4 +1,4 @@
-create or replace function meta.session_terminate(
+create or replace function core.session_terminate(
  in_db               varchar default current_database(),  -- if null then session to all databases will be terminated
  in_kill_own_session boolean default false                -- if false then don't kill my own connection!
 ) returns boolean

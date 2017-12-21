@@ -10,7 +10,8 @@ create table resource (
   last_version  smallint not null default 1,
   last_updated  timestamp not null default localtimestamp,
   content       jsonb not null,
-  sys_status    char(1) not null default 'A'
+  sys_status    char(1) not null default 'A',
+  sys_created   jsonb
 ) PARTITION BY LIST (type);
 --rollback drop table resource cascade;
 

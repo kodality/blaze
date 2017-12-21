@@ -1,4 +1,4 @@
-create or replace function util.object_exists 
+create or replace function core.object_exists 
 (
   p_object_name varchar,
   p_object_type varchar default null,

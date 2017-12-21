@@ -13,12 +13,11 @@
   <changeSet id="create_schema_fhir" author="igor.bossenko@gmail.com">
     <sql>
        create schema if not exists fhir;
-       select meta.set_schema_search_path('fhir','BEGIN');
-       SET search_path TO fhir,util,meta,public;
+       select core.set_schema_search_path(current_user, 'fhir','BEGIN');
+       SET search_path TO fhir,core,public;
     </sql>
 	<rollback>
 	   drop schema if exists fhir cascade;
-	   --delete from sys_db_object where module_name='APM';
 	</rollback>
   </changeSet>
 

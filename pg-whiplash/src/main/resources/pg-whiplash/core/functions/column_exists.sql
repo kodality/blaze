@@ -1,4 +1,4 @@
-create or replace function util.column_exists 
+create or replace function core.column_exists 
 (
   p_table_name varchar,
   p_column_name varchar,

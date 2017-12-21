@@ -1,11 +1,11 @@
-CREATE OR REPLACE FUNCTION meta.set_schema_search_path(p_schema_name varchar,p_action varchar default 'END') RETURNS varchar AS $$
+CREATE OR REPLACE FUNCTION core.set_schema_search_path(p_user text, p_schema_name varchar,p_action varchar default 'END') RETURNS varchar AS $$
 DECLARE
   l_user oid;
   l_search_path varchar;
   l_sql varchar;
 BEGIN
   -- get current user oid
-  select usesysid into l_user from pg_user where usename=current_user;
+  select usesysid into l_user from pg_user where usename=(case when p_user is not null then p_user else current_user end);
   -- get search path for current user in current database
   select substr(param,ind+1) into l_search_path  
     from (
@@ -23,8 +23,8 @@ BEGIN
   elsif p_action='REWRITE' then
      l_search_path = trim(p_schema_name);
   end if;
-  l_sql = 'ALTER ROLE '|| current_user || ' IN DATABASE ' || current_database() || ' SET search_path = ' || l_search_path;
-  PERFORM util.exec(l_sql);
+  l_sql = 'ALTER ROLE '|| (case when p_user is not null then p_user else current_user end) || ' IN DATABASE ' || current_database() || ' SET search_path = ' || l_search_path;
+  PERFORM core.exec(l_sql);
   
   RETURN l_sql;
 END;
