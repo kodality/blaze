@@ -1,17 +1,19 @@
 package com.nortal.blaze.whiplash;
 
+import com.nortal.blaze.util.sql.SimpleDataSource;
 import com.nortal.blaze.whiplash.api.WhiplashRunner;
-import javax.sql.DataSource;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.sql.DataSource;
+
 @Component(immediate = true, service = WhiplashRunner.class)
 public class SchemaWhiplashRunner extends WhiplashRunner {
   @Reference
-  private DataSource dataSource;
-  
+  private SimpleDataSource dataSource;
+
   public SchemaWhiplashRunner() {
     super("pg-whiplash/core/changelog.xml");
   }
