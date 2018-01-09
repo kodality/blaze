@@ -1,13 +1,15 @@
 package com.nortal.blaze.core.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+
+import java.util.Collection;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public final class Osgi {
   private Osgi() {
@@ -40,15 +42,14 @@ public final class Osgi {
 
   public static <T> List<T> getBeans(Class<T> clazz, String filter, BundleContext bundleContext) {
     try {
+      if (bundleContext == null) {
+        throw new RuntimeException("bundle not started yet?");
+      }
       Collection<ServiceReference<T>> references = bundleContext.getServiceReferences(clazz, filter);
       if (references == null) {
         throw new RuntimeException(clazz.getName() + " not found");
       }
-      List<T> result = new ArrayList<>();
-      for (ServiceReference<T> reference : references) {
-        result.add(bundleContext.getService(reference));
-      }
-      return result;
+      return references.stream().map(ref -> bundleContext.getService(ref)).filter(s -> s != null).collect(toList());
     } catch (InvalidSyntaxException e) {
       throw new RuntimeException(e);
     }

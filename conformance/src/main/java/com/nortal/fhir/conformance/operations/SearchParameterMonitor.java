@@ -2,14 +2,7 @@ package com.nortal.fhir.conformance.operations;
 
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.util.EtcMonitor;
-import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Resource;
@@ -19,12 +12,23 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component(immediate = true)
 public class SearchParameterMonitor extends EtcMonitor {
   protected static final String GLOBAL = "Resource";
   protected static final List<SearchParameter> all = new ArrayList<SearchParameter>();
   protected static final Map<String, Map<String, SearchParameter>> parameters = new HashMap<>();
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+  private final List<SearchParameterListener> listeners = new ArrayList<>();
   @Reference
   private ResourceRepresentationService representationService;
 
@@ -104,7 +108,15 @@ public class SearchParameterMonitor extends EtcMonitor {
     for (Map<String, SearchParameter> resourceParameters : parameters.values()) {
       globalParams.forEach((k, v) -> resourceParameters.putIfAbsent(k, v));
     }
-    Osgi.getBeans(SearchParameterListener.class).forEach(l -> l.comply(all));
+    listeners.forEach(l -> l.comply(all));
+  }
+
+  protected void bind(SearchParameterListener listener) {
+    listeners.add(listener);
+  }
+
+  protected void unbind(SearchParameterListener listener) {
+    listeners.remove(listener);
   }
 
   private String readFile(File file) {

@@ -1,15 +1,7 @@
 package com.nortal.fhir.conformance.content;
 
 import com.nortal.blaze.core.util.EtcMonitor;
-import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.hl7.fhir.dstu3.model.Resource;
@@ -21,12 +13,24 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component(immediate = true)
 public class ResourceDefinitionsMonitor extends EtcMonitor {
   private static final Map<String, StructureDefinition> definitions = new HashMap<>();
   @Reference
   private ResourceRepresentationService representationService;
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+  private final List<ResourceDefinitionListener> listeners = new ArrayList<>();
 
   public ResourceDefinitionsMonitor() {
     super("definitions");
@@ -68,7 +72,7 @@ public class ResourceDefinitionsMonitor extends EtcMonitor {
 
   @Override
   protected void finish() {
-    Osgi.getBeans(ResourceDefinitionListener.class).forEach(l -> l.comply(get()));
+    listeners.forEach(l -> l.comply(get()));
   }
 
   private void validate(StructureDefinition definition) {
@@ -77,6 +81,14 @@ public class ResourceDefinitionsMonitor extends EtcMonitor {
       return;
     }
     throw new RuntimeException(errors.stream().map(e -> e.getMessage()).collect(Collectors.joining(",")));
+  }
+
+  protected void bind(ResourceDefinitionListener listener) {
+    listeners.add(listener);
+  }
+
+  protected void unbind(ResourceDefinitionListener listener) {
+    listeners.remove(listener);
   }
 
   private String readFile(File file) {

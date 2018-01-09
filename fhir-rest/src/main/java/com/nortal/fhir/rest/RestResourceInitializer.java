@@ -33,6 +33,17 @@ import static java.util.stream.Collectors.toList;
 public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
   private final Map<String, Server> servers = new HashMap<>();
 
+  @Activate
+  private void start() {
+    comply();
+  }
+
+  @Deactivate
+  private void stop() {
+    servers.values().forEach(s -> s.destroy());
+    servers.clear();
+  }
+
   @Override
   public void comply(List<StructureDefinition> definition) {
     comply();
@@ -82,17 +93,6 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     }));
 
     return capabilityStatement;
-  }
-
-  @Activate
-  private void start() {
-    comply();
-  }
-
-  @Deactivate
-  private void stop() {
-    servers.values().forEach(s -> s.destroy());
-    servers.clear();
   }
 
   private void start(CapabilityStatementRestComponent rest) {

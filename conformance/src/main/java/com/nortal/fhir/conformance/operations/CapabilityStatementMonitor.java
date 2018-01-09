@@ -23,7 +23,7 @@ import java.util.List;
 @Component(immediate = true)
 public class CapabilityStatementMonitor extends EtcMonitor {
   private static CapabilityStatement capabilityStatement;
-  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, service = CapabilityStatementListener.class, bind = "bind", unbind = "unbind")
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
   private final List<CapabilityStatementListener> listeners = new ArrayList<>();
   @Reference
   private ResourceRepresentationService representationService;

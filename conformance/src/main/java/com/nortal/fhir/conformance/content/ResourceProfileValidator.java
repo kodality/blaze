@@ -3,8 +3,9 @@ package com.nortal.fhir.conformance.content;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.iface.ResourceValidator;
 import com.nortal.blaze.core.model.ResourceContent;
-import java.util.List;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
+
+import java.util.List;
 
 //@Component(immediate = true)
 //@Service(value = { ResourceValidator.class, ResourceDefinitionListener.class })
