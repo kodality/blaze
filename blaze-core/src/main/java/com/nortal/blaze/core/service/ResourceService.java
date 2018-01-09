@@ -12,11 +12,13 @@ import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
-import java.util.ArrayList;
-import java.util.List;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component(immediate = true, service = ResourceService.class)
 public class ResourceService {
@@ -28,7 +30,7 @@ public class ResourceService {
   private final List<ResourceIndexer> indexers = new ArrayList<>();
   @Reference
   private final List<ResourceSaveHandler> handlers = new ArrayList<>();
-  @Reference
+  @Reference(policy=ReferencePolicy.DYNAMIC)
   private final List<ResourceValidator> validators = new ArrayList<>();
 
   public ResourceVersion save(VersionId id, ResourceContent input) {

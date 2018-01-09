@@ -9,7 +9,5 @@ public class FhirParseException extends FhirException {
   public FhirParseException(Throwable cause) {
     super(400, cause);
   }
-  
-  
 
 }

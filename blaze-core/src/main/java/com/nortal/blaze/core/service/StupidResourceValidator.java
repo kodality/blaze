@@ -17,7 +17,7 @@ public class StupidResourceValidator implements ResourceValidator {
     try {
       resourceRepresentationService.parse(content.getValue());
     } catch (Exception e) {
-      throw new FhirParseException(e);
+      throw new FhirParseException("error during resource parse: " + e.getMessage());
     }
   }
 
