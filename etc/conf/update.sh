@@ -15,6 +15,8 @@ medicationrequest
 medicationstatement
 immunization
 immunizationrecommendation
+condition
+detectedissue
 "
 
 #DEFINITIONS
