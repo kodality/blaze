@@ -2,6 +2,7 @@ package com.nortal.blaze.search.sql.params;
 
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.util.sql.SqlBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class TokenExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
-    return null; // TODO:
+    return new SqlBuilder("1"); // TODO:
   }
 
   private SqlBuilder token(String value, QueryParam param, String alias) {

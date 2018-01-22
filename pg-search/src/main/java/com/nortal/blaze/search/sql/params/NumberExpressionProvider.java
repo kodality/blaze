@@ -3,12 +3,13 @@ package com.nortal.blaze.search.sql.params;
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.search.sql.SearchPrefix;
 import com.nortal.blaze.util.sql.SqlBuilder;
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 public class NumberExpressionProvider extends ExpressionProvider {
   private static final Map<Integer, BigDecimal> precisions = new HashMap<Integer, BigDecimal>() {
@@ -42,7 +43,7 @@ public class NumberExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
-    return null; // TODO:
+    return new SqlBuilder("1"); // TODO:
   }
 
   private SqlBuilder date(String value, QueryParam param, String alias) {

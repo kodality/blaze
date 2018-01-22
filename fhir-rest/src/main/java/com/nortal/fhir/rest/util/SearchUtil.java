@@ -5,16 +5,20 @@ import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.fhir.rest.SearchConformance;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
+import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.ws.rs.core.MultivaluedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
-import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
+
+import static java.util.stream.Collectors.toList;
 
 public final class SearchUtil {
   private static final String UTF8 = "UTF8";
@@ -29,6 +33,7 @@ public final class SearchUtil {
     if (params == null || params.isEmpty()) {
       return Collections.emptyList();
     }
+    // return params.keySet().stream().flatMap(k -> parse(k, params.get(k), resourceType).stream()).collect(toList());
     List<QueryParam> result = new ArrayList<>();
     params.forEach((k, v) -> result.addAll(parse(k, v, resourceType)));
     return result;
@@ -36,14 +41,11 @@ public final class SearchUtil {
 
   public static List<QueryParam> parse(String rawKey, List<String> rawValues, String resourceType) {
     ChainForge chainsmith = buildForge(rawKey, resourceType);
-
-    List<QueryParam> result = new ArrayList<>();
-    for (String value : rawValues) {
+    return rawValues.stream().map(value -> {
       QueryParam param = chainsmith.forge();
       param.setValues(Arrays.asList(StringUtils.split(decode(value), ",")));
-      result.add(param);
-    }
-    return result;
+      return param;
+    }).collect(toList());
   }
 
   private static String decode(String s) {
@@ -59,11 +61,14 @@ public final class SearchUtil {
     String key = StringUtils.substringBefore(link, MODIFIER);
     String modifier = link.contains(MODIFIER) ? StringUtils.substringAfter(link, MODIFIER) : null;
 
+    if (SearchCriterion.resultParamKeys.contains(key)) {
+      return new ChainForge(key, modifier, null, resourceType);
+    }
+
     CapabilityStatementRestResourceSearchParamComponent conformance = SearchConformance.get(resourceType, key);
     validate(conformance, key, modifier);
-    SearchParamType paramType = conformance.getType();
 
-    ChainForge forge = new ChainForge(key, modifier, paramType, resourceType);
+    ChainForge forge = new ChainForge(key, modifier, conformance.getType(), resourceType);
     if (chain.contains(CHAIN)) {
       String remainder = chain.contains(CHAIN) ? StringUtils.substringAfter(chain, CHAIN) : null;
       if (modifier == null) {
@@ -74,10 +79,9 @@ public final class SearchUtil {
     return forge;
   }
 
-  private static void validate(CapabilityStatementRestResourceSearchParamComponent conformance, String key, String modifier) {
-    if (SearchCriterion.resultParamKeys.contains(key)) {
-      return;
-    }
+  private static void validate(CapabilityStatementRestResourceSearchParamComponent conformance,
+                               String key,
+                               String modifier) {
     if (conformance == null) {
       throw new FhirBadRequestException("search parameter '" + key + "' not supported by conformance");
     }
@@ -86,17 +90,18 @@ public final class SearchUtil {
     }
   }
 
-  private static boolean validateModifier(CapabilityStatementRestResourceSearchParamComponent conformance, String modifier) {
+  private static boolean validateModifier(CapabilityStatementRestResourceSearchParamComponent conformance,
+                                          String modifier) {
     if (StringUtils.isEmpty(modifier)) {
       return true;
     }
-    //FIXME
+    // FIXME
     return true;
-//    if (conformance.getType() == SearchParamType.REFERENCE) {
-//      return CollectionUtils.isEmpty(conformance.getTarget())
-//          || conformance.getTarget().stream().anyMatch(t -> t.getValue().equals(modifier));
-//    }
-//    return conformance.getModifier().stream().anyMatch(m -> m.getValue().toCode().equals(modifier));
+    // if (conformance.getType() == SearchParamType.REFERENCE) {
+    // return CollectionUtils.isEmpty(conformance.getTarget())
+    // || conformance.getTarget().stream().anyMatch(t -> t.getValue().equals(modifier));
+    // }
+    // return conformance.getModifier().stream().anyMatch(m -> m.getValue().toCode().equals(modifier));
   }
 
   private static class ChainForge {

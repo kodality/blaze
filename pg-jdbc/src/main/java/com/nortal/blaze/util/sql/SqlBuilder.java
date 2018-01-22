@@ -1,12 +1,13 @@
 package com.nortal.blaze.util.sql;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 public class SqlBuilder implements Serializable {
   protected StringBuilder sb = new StringBuilder();
@@ -106,7 +107,7 @@ public class SqlBuilder implements Serializable {
       return this.append(columnName + " = ?", params.iterator().next());
     }
     String sql = columnName + " IN(?" + StringUtils.repeat(",?", params.size() - 1) + ")";
-    return append(sql, params);
+    return append(sql, params.toArray());
   }
 
   public Object[] getParams() {

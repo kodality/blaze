@@ -16,7 +16,11 @@ public abstract class ExpressionProvider {
   public abstract SqlBuilder order(String resourceType, String key, String alias);
 
   protected static String path(QueryParam param) {
-    return "'" + getPath(param.getResourceType(), param.getKey()) + "'";
+    return path(param.getResourceType(), param.getKey());
+  }
+
+  protected static String path(String resourceType, String key) {
+    return "'" + getPath(resourceType, key) + "'";
   }
 
   private static String getPath(String resourceType, String key) {

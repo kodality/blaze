@@ -2,12 +2,13 @@ package com.nortal.blaze.search.sql.params;
 
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.util.sql.SqlBuilder;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
 
 public class StringExpressionProvider extends ExpressionProvider {
   private static final char S = '`';// separator
@@ -29,7 +30,7 @@ public class StringExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
-    return null; // TODO:
+    return new SqlBuilder(String.format("string(%s, %s)", alias, path(resourceType, key)));
   }
 
   private static String any(List<String> values, Function<String, String> mapper) {

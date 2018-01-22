@@ -17,6 +17,7 @@ immunization
 immunizationrecommendation
 condition
 detectedissue
+composition
 "
 
 #DEFINITIONS
