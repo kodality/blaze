@@ -14,7 +14,7 @@ for module in dstu3 utilities validation; do
 done;
 
 jar="fhir-stu3.jar"
-rm -rf $build/dstu2 $build/validation $build/conversion
+rm -rf $build/org/hl7/fhir/dstu2 $build/org/hl7/fhir/validation $build/org/hl7/fhir/conversion
 pushd $build && jar cfe $jar -C . && popd
 mv $build/$jar $this
 rm -r $build
