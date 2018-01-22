@@ -7,6 +7,8 @@ import com.nortal.blaze.util.sql.SqlBuilder;
 import com.nortal.fhir.conformance.operations.SearchParameterMonitor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.stream.Stream;
+
 public abstract class ExpressionProvider {
 
   public abstract SqlBuilder makeExpression(QueryParam param, String alias);
@@ -18,7 +20,9 @@ public abstract class ExpressionProvider {
   }
 
   private static String getPath(String resourceType, String key) {
-    String path = SearchParameterMonitor.require(resourceType, key).getExpression();
+    String expr = SearchParameterMonitor.require(resourceType, key).getExpression();
+    String path =
+        Stream.of(expr.split("\\|")).map((s) -> StringUtils.trim(s)).filter(e -> e.startsWith(resourceType)).findFirst().orElse(null);
     if (StringUtils.isEmpty(path)) {
       throw new ServerException("config problem. path empty for param " + key);
     }
