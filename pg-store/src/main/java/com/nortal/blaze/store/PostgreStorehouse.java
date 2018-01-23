@@ -8,12 +8,14 @@ import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
+import com.nortal.blaze.core.util.JsonUtil;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.blaze.store.dao.ResourceDao;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
+import java.util.Map;
 
 @Component(immediate = true, service = ResourceStorehouse.class)
 public class PostgreStorehouse implements ResourceStorehouse {
@@ -50,6 +52,11 @@ public class PostgreStorehouse implements ResourceStorehouse {
     if (id.getVersion() == null && version.isDeleted()) {
       throw new FhirException(410, "resource deleted");
     }
+    // TODO: maybe rewrite this when better times come and resource will be parsed until end.
+    Map<String, Object> hack = JsonUtil.fromJson(version.getContent().getValue());
+    hack.put("id", version.getId().getResourceId());
+    version.getContent().setValue(JsonUtil.toJson(hack));
+
     return version;
   }
 

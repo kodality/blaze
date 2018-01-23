@@ -1,6 +1,6 @@
 package com.nortal.blaze.search;
 
-import com.nortal.blaze.core.iface.Google;
+import com.nortal.blaze.core.iface.ResourceSearchHandler;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
@@ -9,8 +9,8 @@ import java.util.List;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(immediate = true, service = Google.class)
-public class PgSearch implements Google {
+@Component(immediate = true, service = ResourceSearchHandler.class)
+public class PgSearch implements ResourceSearchHandler {
   @Reference
   private PgSearchDao pgSearchDao;
 

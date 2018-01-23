@@ -20,7 +20,8 @@ public class ResourceDao {
     if (version.getId().getResourceId() == null) {
       version.getId().setResourceId(key.toString());
     }
-    String sql = "INSERT INTO resource (key, type, id, last_version, author, content) VALUES (?,?,?,?,?::jsonb,?::jsonb)";
+    String sql =
+        "INSERT INTO resource (key, type, id, last_version, author, content) VALUES (?,?,?,?,?::jsonb,?::jsonb)";
     jdbcTemplate.update(sql,
                         key,
                         version.getId().getResourceType(),
@@ -51,7 +52,10 @@ public class ResourceDao {
     try {
       return jdbcTemplate.queryForObject(sb.getSql(), new ResourceRowMapper(), sb.getParams());
     } catch (IncorrectResultSizeDataAccessException e) {
-      return null;
+      if (e.getActualSize() == 0) {
+        return null;
+      }
+      throw e;
     }
   }
 }
