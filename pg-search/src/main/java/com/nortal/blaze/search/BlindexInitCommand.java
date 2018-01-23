@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 @Command(scope = "blindex", name = "init", description = "init search indexes")
 @Service
-public class BlindexCommand implements Action {
+public class BlindexInitCommand implements Action {
   @Reference
   private BlindexDao blindexDao;
 
@@ -34,14 +34,6 @@ public class BlindexCommand implements Action {
     Set<String> create = new HashSet<>();
     List<String> defined = ResourceDefinitionsMonitor.get().stream().map(def -> def.getName()).collect(toList());
     for (SearchParameter sp : SearchParameterMonitor.get()) {
-      // for (CodeType base : sp.getBase()) {
-      // if (base.getValue().equals("Resource")) {
-      // continue;
-      // }
-      // if (!defined.contains(base.getValue())) {
-      // continue;
-      // }
-      // }
       if (sp.getExpression() == null) {
         continue;
       }
@@ -61,7 +53,7 @@ public class BlindexCommand implements Action {
     return null;
   }
 
-  public void save(Set<String> create, Set<String> drop) {
+  private void save(Set<String> create, Set<String> drop) {
     for (String key : create) {
       try {
         System.out.println("creating " + key);

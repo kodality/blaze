@@ -17,7 +17,7 @@ BEGIN
     FOR _param_type IN (SELECT param_type FROM search_configuration WHERE element_type = _element_type) LOOP
       CONTINUE WHEN EXISTS (SELECT 1 FROM blindex WHERE resource_type = _resource_type AND path = _path AND param_type = _param_type);
 
-      _idx_type := CASE WHEN _param_type IN ('string','token') THEN 'pizzelle' ELSE 'parasol' END;
+      _idx_type := CASE WHEN _param_type IN ('string','token','reference') THEN 'pizzelle' ELSE 'parasol' END;
       _idx_name := lower(_resource_type) || '_' || _param_type || '_' || lower(replace(_path, '.', '_'))  || '_' || _idx_type ;
 
       CASE
@@ -25,6 +25,8 @@ BEGIN
           EXECUTE format('CREATE INDEX %3$s ON %1$s USING gin (string(%1$s::resource, %2$L) gin_trgm_ops)', lower(_resource_type), _path, _idx_name);
         WHEN _param_type = 'token' THEN
           EXECUTE format('CREATE INDEX %3$s ON %1$s USING gin (token(%1$s::resource, %2$L))', lower(_resource_type), _path, _idx_name);
+        WHEN _param_type = 'reference' THEN
+          EXECUTE format('CREATE INDEX %3$s ON %1$s USING gin (reference(%1$s::resource, %2$L))', lower(_resource_type), _path, _idx_name);
         WHEN _param_type = 'date' THEN
           EXECUTE format('CREATE TABLE %1$s (resource_key bigint %3$s REFERENCES %2$s (key) ON DELETE CASCADE, range tstzrange)', _idx_name, _resource_type, CASE WHEN _struct.is_many THEN '' ELSE 'PRIMARY KEY' END);
           EXECUTE format('CREATE INDEX %2$s ON %1$s USING gist (resource_key, range);', _idx_name, 'idx_' || _idx_name);

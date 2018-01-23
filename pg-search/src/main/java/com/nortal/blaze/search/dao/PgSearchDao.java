@@ -49,14 +49,14 @@ public class PgSearchDao {
 
   private SqlBuilder joins(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder();
-    sb.append(SqlToster.makeMeASandwich(criteria.getChains(), "base"));
+    sb.append(SqlToster.chain(criteria.getChains(), "base"));
     return sb;
   }
 
   private SqlBuilder criteria(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder();
     for (QueryParam param : criteria.getConditions()) {
-      SqlBuilder peanut = SqlToster.addButter(param, "base");
+      SqlBuilder peanut = SqlToster.condition(param, "base");
       if (peanut != null) {
         sb.and("(").append(peanut).append(")");
       }

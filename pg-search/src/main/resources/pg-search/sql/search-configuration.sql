@@ -10,7 +10,7 @@ create table search_configuration (
 );
 --rollback drop table search_configuration;
 
---changeset blaze:search_configuration-data dbms:postgresql
+--changeset blaze:search_configuration-data2 dbms:postgresql
 delete from search_configuration;
 insert into search_configuration values (1,'date', 'date', array['{"start":"{}", "end":"{}"}']::jsonb[]);
 insert into search_configuration values (2,'instant', 'date', array['{"start":"{}", "end":"{}"}']::jsonb[]);
@@ -21,7 +21,7 @@ insert into search_configuration values (5,'dateTime', 'date', array['{"start":"
 insert into search_configuration values (6,'CodeableConcept', 'token', array['{"elements":"coding", "namespace":"{system}", "value":"{code}"}']::jsonb[]);
 insert into search_configuration values (7,'Identifier', 'token', array['{"namespace":"{system}", "value":"{value}"}']::jsonb[]);
 insert into search_configuration values (8,'HumanName', 'string', array['{"value":"{family}"}', '{"value":"{given}"}']::jsonb[]);
-insert into search_configuration values (9,'Reference', 'token', array['{"value":"{reference}"}']::jsonb[]);
+insert into search_configuration values (9,'Reference', 'reference', array['{"value":"{reference}"}']::jsonb[]);
 insert into search_configuration values (10,'Period', 'date', array['{"start":"{start}", "end":"{end}"}']::jsonb[]);
 insert into search_configuration values (11,'Quantity', 'number', array['{"value":"{value}"}']::jsonb[]);
 --rollback delete from search_configuration;

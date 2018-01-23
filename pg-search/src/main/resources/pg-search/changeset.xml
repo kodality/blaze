@@ -18,6 +18,7 @@
     <sqlFile splitStatements="false" path="functions/number.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/string.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/token.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/reference.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/merge_parasolindex.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/create_blindex.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/drop_blindex.sql" relativeToChangelogFile="true" />

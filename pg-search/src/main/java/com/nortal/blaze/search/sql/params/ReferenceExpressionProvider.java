@@ -4,15 +4,17 @@ import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.search.sql.SqlToster;
 import com.nortal.blaze.util.sql.SqlBuilder;
 import com.nortal.fhir.conformance.operations.SearchParameterMonitor;
-import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.hl7.fhir.dstu3.model.CodeType;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.hl7.fhir.dstu3.model.CodeType;
+
+import static java.util.stream.Collectors.toList;
 
 public class ReferenceExpressionProvider extends ExpressionProvider {
   private static ThreadLocalInteger I = new ThreadLocalInteger();
@@ -20,10 +22,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
   @Override
   public SqlBuilder makeExpression(QueryParam param, String alias) {
     Validate.isTrue(param.getChain() == null);
-    List<SqlBuilder> ors = new ArrayList<>();
-    for (String value : param.getValues()) {
-      ors.add(reference(value, param, alias));
-    }
+    List<SqlBuilder> ors = param.getValues().stream().map(v -> reference(v, param, alias)).collect(toList());
     return new SqlBuilder().or(ors);
   }
 
@@ -34,7 +33,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
 
   private static SqlBuilder reference(String value, QueryParam param, String alias) {
     SqlBuilder sb = new SqlBuilder();
-    sb.append(String.format("token(%s, %s)", alias, path(param)));
+    sb.append(String.format("reference(%s, %s)", alias, path(param)));
     if (StringUtils.isEmpty(value)) {
       return sb.append(" = array[null]");
     }
@@ -53,14 +52,14 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
   private static SqlBuilder chain(QueryParam param, String parentAlias) {
     SqlBuilder sb = new SqlBuilder();
     if (param.getChain() == null) {
-      sb.and("(").append(SqlToster.addButter(param, parentAlias)).append(")");
+      sb.and("(").append(SqlToster.condition(param, parentAlias)).append(")");
       return sb;
     }
     String[] refs = getReferencedTypes(param);
     String alias = generateAlias(refs.length == 1 ? refs[0].toLowerCase() : "friends");
     sb.append("INNER JOIN resource " + alias);
     sb.append(" ON ").in(alias + ".type", (Object[]) refs);
-    sb.and(String.format("token(%s, %s) && ref(%s.type, %s.id)", parentAlias, path(param), alias, alias));
+    sb.and(String.format("reference(%s, %s) && ref(%s.type, %s.id)", parentAlias, path(param), alias, alias));
     sb.append(chain(param.getChain(), alias));
     return sb;
   }

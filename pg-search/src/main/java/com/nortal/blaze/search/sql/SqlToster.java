@@ -37,11 +37,11 @@ public final class SqlToster {
     //
   }
 
-  public static SqlBuilder makeMeASandwich(List<QueryParam> params, String alias) {
+  public static SqlBuilder chain(List<QueryParam> params, String alias) {
     return ReferenceExpressionProvider.chain(params, alias);
   }
 
-  public static SqlBuilder addButter(QueryParam param, String alias) {
+  public static SqlBuilder condition(QueryParam param, String alias) {
     String key = param.getKey();
     if (specialParams.containsKey(key)) {
       return specialParams.get(key).build(param, alias);
