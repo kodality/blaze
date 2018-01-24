@@ -8,7 +8,7 @@
     <code value="issued"/>
     <base value="Observation"/>
     <type value="date"/>
-    <expression value="issued"/>
+    <expression value="Observation.issued"/>
     <xpath value="issued"/>
     <xpathUsage value="normal"/>
   </SearchParameter>
