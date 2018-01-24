@@ -4,6 +4,7 @@ import com.nortal.blaze.core.util.EtcMonitor;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
@@ -62,12 +63,21 @@ public class ResourceDefinitionsMonitor extends EtcMonitor {
   @Override
   protected void file(File file) {
     Resource res = representationService.parse(readFile(file));
-    if (ResourceType.StructureDefinition != res.getResourceType()) {
-      return;
+    if (ResourceType.StructureDefinition == res.getResourceType()) {
+      StructureDefinition definition = (StructureDefinition) res;
+      validate(definition);
+      definitions.put(definition.getName(), definition);
     }
-    StructureDefinition definition = (StructureDefinition) res;
-    validate(definition);
-    definitions.put(definition.getName(), definition);
+    if (ResourceType.Bundle == res.getResourceType()) {
+      ((Bundle) res).getEntry().stream().forEach(e -> {
+        if (ResourceType.StructureDefinition == e.getResource().getResourceType()) {
+          StructureDefinition definition = (StructureDefinition) e.getResource();
+          validate(definition);
+          definitions.put(definition.getName(), definition);
+        }
+      });
+    }
+
   }
 
   @Override

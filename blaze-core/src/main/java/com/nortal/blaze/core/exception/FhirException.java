@@ -1,40 +1,57 @@
 package com.nortal.blaze.core.exception;
 
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class FhirException extends RuntimeException {
   private final int statusCode;
-  private final String detail;
-  private String location;
+  private final List<OperationOutcomeIssueComponent> issues;
 
-  public FhirException(int statusCode, Throwable cause) {
-    super(cause);
+  public FhirException(int statusCode) {
+    this(statusCode, new ArrayList<>(0));
+  }
+
+  public FhirException(int statusCode, List<OperationOutcomeIssueComponent> issues) {
     this.statusCode = statusCode;
-    this.detail = cause.getMessage();
+    this.issues = issues;
   }
 
   public FhirException(Throwable cause) {
     this(500, cause);
   }
 
-  public FhirException(int statusCode, String detail) {
+  public FhirException(int statusCode, Throwable cause) {
+    super(cause);
     this.statusCode = statusCode;
-    this.detail = detail;
+    this.issues = Collections.singletonList(composeIssue(cause.getMessage()));
   }
 
-  public FhirException location(String location) {
-    this.location = location;
-    return this;
+  public FhirException(int statusCode, String detail) {
+    this.statusCode = statusCode;
+    this.issues = Collections.singletonList(composeIssue(detail));
   }
 
   public int getStatusCode() {
     return statusCode;
   }
 
-  public String getDetail() {
-    return detail;
+  public List<OperationOutcomeIssueComponent> getIssues() {
+    return issues;
   }
 
-  public String getLocation() {
-    return location;
+  private static OperationOutcomeIssueComponent composeIssue(String detail) {
+    CodeableConcept cc = new CodeableConcept();
+    cc.addCoding().setDisplay(detail);
+
+    OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
+    issue.setSeverity(IssueSeverity.ERROR);
+    issue.setDetails(cc);
+    return issue;
   }
 
 }

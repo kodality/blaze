@@ -3,8 +3,6 @@ package com.nortal.blaze.search;
 import com.nortal.blaze.search.dao.ResourceStructureDao;
 import com.nortal.blaze.search.model.StructureElement;
 import com.nortal.fhir.conformance.content.ResourceDefinitionListener;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.ElementDefinition;
@@ -12,6 +10,9 @@ import org.hl7.fhir.dstu3.model.ElementDefinition.TypeRefComponent;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component(immediate = true)
 public class StructureDefinitionUpdater implements ResourceDefinitionListener {
@@ -31,7 +32,17 @@ public class StructureDefinitionUpdater implements ResourceDefinitionListener {
   private void saveDefinition(StructureDefinition def) {
     List<String> many = new ArrayList<String>();
     List<StructureElement> elements = new ArrayList<>(def.getSnapshot().getElement().size());
+    if (def.getId().contains(":")) {
+      // XXX think if we should and how should we store definitions with modifier (:). problem - they have same path
+      // Quantity vs Quantity:simplequantity
+      return;
+    }
     for (ElementDefinition elementDef : def.getSnapshot().getElement()) {
+      if (elementDef.getId().contains(":")) {
+        // XXX think if we should and how should we store definitions with modifier (:). problem - they have same path
+        // Quantity vs Quantity:simplequantity
+        return;
+      }
       elements.add(new StructureElement(elementDef.getPath(), toCodeArray(elementDef.getType())));
       if (isMany(elementDef)) {
         many.add(elementDef.getPath());

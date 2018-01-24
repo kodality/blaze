@@ -29,7 +29,8 @@
   <properties>
     <bundle.export-packages>
       com.nortal.fhir.conformance.content,
-      com.nortal.fhir.conformance.operations
+      com.nortal.fhir.conformance.operations,
+      org.fhir.ucum
     </bundle.export-packages>
   </properties>
 </project>
