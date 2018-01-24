@@ -4,6 +4,10 @@ import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.iface.ResourceValidator;
 import com.nortal.blaze.core.model.ResourceContent;
+import com.nortal.blaze.fhir.structure.api.ParseException;
+import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
+import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.context.BaseWorkerContext;
 import org.hl7.fhir.dstu3.context.IWorkerContext;
 import org.hl7.fhir.dstu3.context.SimpleWorkerContext;
@@ -17,6 +21,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.utilities.validation.ValidationMessage;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -27,6 +32,8 @@ import static java.util.stream.Collectors.toList;
 
 @Component(immediate = true, service = { ResourceValidator.class, ResourceDefinitionListener.class })
 public class ResourceProfileValidator implements ResourceValidator, ResourceDefinitionListener {
+  @Reference
+  private ResourceRepresentationService representationService;
   private IWorkerContext fhirContext;
 
   @Activate
@@ -88,11 +95,18 @@ public class ResourceProfileValidator implements ResourceValidator, ResourceDefi
       List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
       InstanceValidator validator = new InstanceValidator(fhirContext, null);
       ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes());
-      validator.validate(null, messages, input, FhirFormat.JSON);
+      validator.validate(null, messages, input, getFhirFormat(content));
       return messages;
     } catch (Exception e) {
       throw new RuntimeException(":/", e);
     }
+  }
+
+  private FhirFormat getFhirFormat(ResourceContent content) {
+    String ct = StringUtils.substringBefore(content.getContentType(), ";");
+    ResourceRepresentation repr =
+        representationService.findPresenter(ct).orElseThrow(() -> new ParseException("unknown format"));
+    return repr.getFhirFormat();
   }
 
 }

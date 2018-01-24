@@ -2,13 +2,15 @@ package com.nortal.blaze.fhir.structure.defs;
 
 import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu3.elementmodel.Manager.FhirFormat;
 import org.hl7.fhir.dstu3.formats.XmlParser;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.osgi.service.component.annotations.Component;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.List;
 
 @Component(immediate = true, service = ResourceRepresentation.class)
 public class XmlRepresentation implements ResourceRepresentation {
@@ -16,6 +18,11 @@ public class XmlRepresentation implements ResourceRepresentation {
   @Override
   public List<String> getMimeTypes() {
     return Arrays.asList("application/fhir+xml", "application/xml+fhir", "application/xml", "text/xml", "xml");
+  }
+  
+  @Override
+  public FhirFormat getFhirFormat() {
+    return FhirFormat.XML;
   }
 
   @Override

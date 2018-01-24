@@ -2,8 +2,6 @@ package com.nortal.blaze.fhir.structure.service;
 
 import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
-import java.util.ArrayList;
-import java.util.List;
 // import org.apache.felix.scr.annotations.Reference;
 // import org.apache.felix.scr.annotations.ReferenceCardinality;
 // import org.apache.felix.scr.annotations.ReferencePolicy;
@@ -11,6 +9,10 @@ import org.hl7.fhir.dstu3.model.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Component(immediate = true, service = ResourceRepresentationService.class)
 public class ResourceRepresentationService {
@@ -21,10 +23,8 @@ public class ResourceRepresentationService {
     if (resource == null) {
       return null;
     }
-    ResourceRepresentation presenter = findPresenter(mime);
-    if (presenter == null) {
-      presenter = findPresenter("json");
-    }
+    ResourceRepresentation presenter =
+        findPresenter(mime).orElse(findPresenter("json").orElseThrow(() -> new ParseException("unknown format")));
     return presenter.compose(resource);
   }
 
@@ -32,8 +32,11 @@ public class ResourceRepresentationService {
     return guessPresenter(input).parse(input);
   }
 
-  private ResourceRepresentation findPresenter(String mime) {
-    return presenters.stream().filter(c -> c.getMimeTypes().contains(mime)).findFirst().orElse(null);
+  public Optional<ResourceRepresentation> findPresenter(String mime) {
+    if (mime == null) {
+      return null;
+    }
+    return presenters.stream().filter(c -> c.getMimeTypes().contains(mime)).findFirst();
   }
 
   private ResourceRepresentation guessPresenter(String content) {

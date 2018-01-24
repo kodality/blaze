@@ -1,10 +1,14 @@
 package com.nortal.blaze.fhir.structure.api;
 
-import java.util.List;
+import org.hl7.fhir.dstu3.elementmodel.Manager.FhirFormat;
 import org.hl7.fhir.dstu3.model.Resource;
+
+import java.util.List;
 
 public interface ResourceRepresentation {
   List<String> getMimeTypes();
+  
+  FhirFormat getFhirFormat();
 
   String compose(Resource resource);
 
