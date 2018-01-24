@@ -4,6 +4,7 @@ import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.iface.ResourceValidator;
 import com.nortal.blaze.core.model.ResourceContent;
+import org.hl7.fhir.dstu3.context.BaseWorkerContext;
 import org.hl7.fhir.dstu3.context.IWorkerContext;
 import org.hl7.fhir.dstu3.context.SimpleWorkerContext;
 import org.hl7.fhir.dstu3.elementmodel.Manager.FhirFormat;
@@ -40,6 +41,7 @@ public class ResourceProfileValidator implements ResourceValidator, ResourceDefi
     }
     try {
       fhirContext = SimpleWorkerContext.fromDefinitions(definition);
+      ((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
     } catch (IOException | FHIRException e) {
       throw new RuntimeException("fhir fhir ");
     }

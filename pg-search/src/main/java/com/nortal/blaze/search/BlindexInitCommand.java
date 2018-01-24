@@ -50,6 +50,7 @@ public class BlindexInitCommand implements Action {
     System.out.println("need to create: " + create + "\n");
     System.out.println("need to remove: " + current + "\n");
     save(create, current);
+    blindexDao.init();
     return null;
   }
 

@@ -22,7 +22,8 @@ public class BlindexDao {
   private JdbcTemplate jdbcTemplate;
 
   @Activate
-  public void init() throws Exception {
+  public void init() {
+    parasols.clear();
     load(Blindex.PARASOL).forEach(p -> parasols.put(p.getKey(), p.getName()));
   }
 
