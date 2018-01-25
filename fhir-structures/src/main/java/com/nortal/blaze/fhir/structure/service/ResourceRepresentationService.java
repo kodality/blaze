@@ -38,10 +38,11 @@ public class ResourceRepresentationService {
         + "]")).parse(input);
   }
 
-  public Optional<ResourceRepresentation> findPresenter(String mime) {
-    if (mime == null) {
-      return null;
+  public Optional<ResourceRepresentation> findPresenter(String ct) {
+    if (ct == null) {
+      return Optional.empty();
     }
+    String mime = StringUtils.substringBefore(ct, ";");
     return Stream.of(jsonRepresentation, xmlRepresentation).filter(c -> c.getMimeTypes().contains(mime)).findFirst();
     // return presenters.stream().filter(c -> c.getMimeTypes().contains(mime)).findFirst();
   }

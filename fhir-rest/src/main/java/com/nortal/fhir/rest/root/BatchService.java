@@ -54,7 +54,11 @@ public class BatchService {
     Validate.isTrue(type == BundleType.BATCH || type == BundleType.TRANSACTION);
 
     Bundle responseBundle = new Bundle();
-    bundle.getEntry().forEach(entry -> responseBundle.addEntry().setResponse(perform(entry)));
+    bundle.getEntry().forEach(entry -> {
+      BundleEntryComponent newEntry = responseBundle.addEntry();
+      newEntry.setResponse(perform(entry));
+      newEntry.addLink().setRelation("alternate").setUrl(entry.getId());
+    });
     responseBundle.setType(BundleType.TRANSACTIONRESPONSE);
     return responseBundle;
   }
@@ -84,22 +88,14 @@ public class BatchService {
   private Response invoke(FhirResourceServer server, String method, String path, Resource resource) {
     try {
       String contentType = "application/json+fhir";
-      MetadataMap<String, String> values = new MetadataMap<String, String>();
-      Message message = createDummyMessage();
-      List<MediaType> accept = Arrays.asList(MediaType.WILDCARD_TYPE);
-
-      JAXRSServiceImpl service = (JAXRSServiceImpl) server.getServerInstance().getEndpoint().getService();
-      Map<ClassResourceInfo, MultivaluedMap<String, String>> cri =
-          JAXRSUtils.selectResourceClass(service.getClassResourceInfos(), path, null);
-      OperationResourceInfo ori =
-          JAXRSUtils.findTargetMethod(cri, message, method, values, contentType, accept, false, true);
+      OperationResourceInfo ori = findTargetMethod(server, method, path, contentType);
 
       Map<String, String> params = new HashMap<String, String>();
       params.put(null, ResourceComposer.compose(resource, "json"));
       params.put("Content-Type", contentType);
       params.put("id", StringUtils.removeStart(path, "/"));
-
       List<Object> args = ori.getParameters().stream().map(p -> params.get(p.getName())).collect(toList());
+
       return (Response) ori.getMethodToInvoke().invoke(server, args.toArray());
 
     } catch (InvocationTargetException e) {
@@ -113,6 +109,21 @@ public class BatchService {
     } catch (Exception e) {
       throw new RuntimeException(method + " " + path, e);
     }
+  }
+
+  private OperationResourceInfo findTargetMethod(FhirResourceServer server,
+                                                 String method,
+                                                 String path,
+                                                 String contentType)
+      throws EndpointException {
+    MetadataMap<String, String> values = new MetadataMap<String, String>();
+    Message message = createDummyMessage();
+    List<MediaType> accept = Arrays.asList(MediaType.WILDCARD_TYPE);
+
+    JAXRSServiceImpl service = (JAXRSServiceImpl) server.getServerInstance().getEndpoint().getService();
+    Map<ClassResourceInfo, MultivaluedMap<String, String>> cri =
+        JAXRSUtils.selectResourceClass(service.getClassResourceInfos(), path, null);
+    return JAXRSUtils.findTargetMethod(cri, message, method, values, contentType, accept, false, true);
   }
 
   private Message createDummyMessage() throws EndpointException {
