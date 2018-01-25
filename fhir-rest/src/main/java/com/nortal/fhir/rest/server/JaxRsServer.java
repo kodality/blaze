@@ -11,8 +11,6 @@ import com.nortal.fhir.rest.filter.RequestContext;
 import com.nortal.fhir.rest.filter.ResponseFormatInterceptor;
 import com.nortal.fhir.rest.filter.writer.FhirWriter;
 import com.nortal.fhir.rest.filter.writer.ResourceContentWriter;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.endpoint.Server;
@@ -26,13 +24,20 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class JaxRsServer {
+  protected Server serverInstance;
 
   protected abstract String getEndpoint();
 
   protected abstract UserResource getResource();
 
   public Server createServer() {
+    if (serverInstance != null) {
+      return serverInstance;
+    }
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
     sf.setAddress("/" + getEndpoint());
     sf.setProviders(getProviders());
@@ -44,7 +49,12 @@ public abstract class JaxRsServer {
       cri.setResourceProvider(new SingletonResourceProvider(this));
     }
 
-    return sf.create();
+    this.serverInstance = sf.create();
+    return this.serverInstance;
+  }
+
+  public Server getServerInstance() {
+    return serverInstance;
   }
 
   private List<Interceptor<? extends Message>> getInInterceptors() {

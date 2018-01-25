@@ -11,7 +11,6 @@ import com.nortal.fhir.rest.server.FhirRootServer;
 import com.nortal.fhir.rest.server.JaxRsServer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.classloader.ClassLoaderUtils;
-import org.apache.cxf.endpoint.Server;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
@@ -31,7 +30,7 @@ import static java.util.stream.Collectors.toList;
 
 @Component(immediate = true, service = { CapabilityStatementListener.class, RestResourceInitializer.class })
 public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
-  private final Map<String, Server> servers = new HashMap<>();
+  private final Map<String, JaxRsServer> servers = new HashMap<>();
 
   @Activate
   private void start() {
@@ -40,7 +39,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Deactivate
   private void stop() {
-    servers.values().forEach(s -> s.destroy());
+    servers.values().forEach(s -> s.getServerInstance().destroy());
     servers.clear();
   }
 
@@ -115,10 +114,11 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
   }
 
   private void start(String type, JaxRsServer server) {
-    servers.put(type, server.createServer());
+    server.createServer();
+    servers.put(type, server);
   }
 
-  public Map<String, Server> getServers() {
+  public Map<String, JaxRsServer> getServers() {
     return servers;
   }
 

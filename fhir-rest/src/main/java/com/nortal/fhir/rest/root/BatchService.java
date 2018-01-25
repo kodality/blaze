@@ -5,27 +5,16 @@ import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.RestResourceInitializer;
 import com.nortal.fhir.rest.exception.FhirExceptionHandler;
 import com.nortal.fhir.rest.server.FhirResourceServer;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import com.nortal.fhir.rest.server.JaxRsServer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.endpoint.EndpointException;
 import org.apache.cxf.endpoint.EndpointImpl;
-import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServiceImpl;
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
-import org.apache.cxf.jaxrs.model.Parameter;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.ExchangeImpl;
 import org.apache.cxf.message.Message;
@@ -40,6 +29,19 @@ import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 // TODO: review or rewrite this shit
 @Component(immediate = true, service = BatchService.class)
@@ -75,31 +77,30 @@ public class BatchService {
     String type = StringUtils.substringBefore(url.getPath(), "/");
     String path = StringUtils.removeStart(url.getPath(), type);
 
-    JAXRSServiceImpl service = getService(type);
-    Response response = invoke(service, method, path, entry.getResource());
+    Response response = invoke(getServer(type), method, path, entry.getResource());
     return bundleResponse(response);
   }
 
-  private Response invoke(JAXRSServiceImpl service, String method, String path, Resource resource) {
+  private Response invoke(FhirResourceServer server, String method, String path, Resource resource) {
     try {
+      String contentType = "application/json+fhir";
       MetadataMap<String, String> values = new MetadataMap<String, String>();
       Message message = createDummyMessage();
       List<MediaType> accept = Arrays.asList(MediaType.WILDCARD_TYPE);
-      String contentType = "application/json+fhir";
+
+      JAXRSServiceImpl service = (JAXRSServiceImpl) server.getServerInstance().getEndpoint().getService();
+      Map<ClassResourceInfo, MultivaluedMap<String, String>> cri =
+          JAXRSUtils.selectResourceClass(service.getClassResourceInfos(), path, null);
+      OperationResourceInfo ori =
+          JAXRSUtils.findTargetMethod(cri, message, method, values, contentType, accept, false, true);
+
       Map<String, String> params = new HashMap<String, String>();
-      String json = ResourceComposer.compose(resource, "json");
-      params.put(null, json);
+      params.put(null, ResourceComposer.compose(resource, "json"));
       params.put("Content-Type", contentType);
       params.put("id", StringUtils.removeStart(path, "/"));
 
-      Map<ClassResourceInfo, MultivaluedMap<String, String>> cri =
-          JAXRSUtils.selectResourceClass(service.getClassResourceInfos(), path, null);
-      OperationResourceInfo ori = JAXRSUtils.findTargetMethod(cri, message, method, values, contentType, accept, false);
-
-      FhirResourceServer server =
-          (FhirResourceServer) cri.keySet().iterator().next().getResourceProvider().getInstance(message);
-      Object[] args = getArgs(ori.getParameters(), params).toArray();
-      return (Response) ori.getMethodToInvoke().invoke(server, args);
+      List<Object> args = ori.getParameters().stream().map(p -> params.get(p.getName())).collect(toList());
+      return (Response) ori.getMethodToInvoke().invoke(server, args.toArray());
 
     } catch (InvocationTargetException e) {
       if (e.getCause() instanceof FhirException) {
@@ -125,6 +126,9 @@ public class BatchService {
     BundleEntryResponseComponent bundle = new BundleEntryResponseComponent();
     bundle.setStatus("" + response.getStatus());
     bundle.setLocation(getLocation(response));
+    if (response.getStatus() >= 400) {
+      bundle.setOutcome(ResourceComposer.parse((String) response.getEntity()));
+    }
     return bundle;
   }
 
@@ -138,20 +142,15 @@ public class BatchService {
     return null;
   }
 
-  private List<Object> getArgs(List<Parameter> methodParameters, Map<String, String> params) {
-    List<Object> args = new ArrayList<>();
-    for (Parameter parameter : methodParameters) {
-      args.add(params.get(parameter.getName()));
-    }
-    return args;
-  }
-
-  private JAXRSServiceImpl getService(String type) {
-    Server server = restResourceInitializer.getServers().get(type);
+  private FhirResourceServer getServer(String type) {
+    JaxRsServer server = restResourceInitializer.getServers().get(type);
     if (server == null) {
       throw new FhirException(400, type + " not supported");
     }
-    return (JAXRSServiceImpl) server.getEndpoint().getService();
+    if (!(server instanceof FhirResourceServer)) {
+      throw new FhirException(500, type + " not supported");
+    }
+    return (FhirResourceServer) server;
   }
 
 }
