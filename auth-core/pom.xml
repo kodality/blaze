@@ -16,7 +16,6 @@
   <dependencies>
   </dependencies>
 
-
   <properties>
     <bundle.export-packages>
       com.nortal.blaze.auth

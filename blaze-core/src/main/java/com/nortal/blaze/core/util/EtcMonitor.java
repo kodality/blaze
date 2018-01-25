@@ -1,14 +1,16 @@
 package com.nortal.blaze.core.util;
 
-import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
 public abstract class EtcMonitor {
   private final static Logger LOG = LogManager.getLogger(EtcMonitor.class);
@@ -61,11 +63,12 @@ public abstract class EtcMonitor {
         file(cat);
       } catch (Exception e) {
         LOG.error(e);
+        throw e;
       }
       return;
     }
-    for (File file : cat.listFiles()) {
-      read(file);
+    if (cat.isDirectory()) {
+      Stream.of(cat.listFiles()).forEach(this::read);
     }
   }
 

@@ -78,6 +78,9 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
   // TODO: unimplemented stuff. changes it also.
   private CapabilityStatement getCapability() {
     CapabilityStatement capabilityStatement = CapabilityStatementMonitor.getCapabilityStatement();
+    if (capabilityStatement == null) {
+      return null;
+    }
     capabilityStatement.setText(null);
     List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
     capabilityStatement.getRest().forEach(rest -> {

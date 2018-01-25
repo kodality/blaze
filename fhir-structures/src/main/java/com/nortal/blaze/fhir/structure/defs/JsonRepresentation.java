@@ -12,19 +12,19 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-@Component(immediate = true, service = ResourceRepresentation.class)
+@Component(immediate = true, service = { JsonRepresentation.class, ResourceRepresentation.class })
 public class JsonRepresentation implements ResourceRepresentation {
 
   @Override
   public List<String> getMimeTypes() {
     return Arrays.asList("application/fhir+json", "application/json+fhir", "application/json", "text/json", "json");
   }
-  
+
   @Override
   public FhirFormat getFhirFormat() {
     return FhirFormat.JSON;
   }
-  
+
   @Override
   public String compose(Resource resource) {
     try {

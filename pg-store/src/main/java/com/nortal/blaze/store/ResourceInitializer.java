@@ -10,7 +10,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Component(immediate = true, service = ResourceDefinitionListener.class)
 public class ResourceInitializer implements ResourceDefinitionListener {

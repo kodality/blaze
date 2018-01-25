@@ -12,14 +12,14 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-@Component(immediate = true, service = ResourceRepresentation.class)
+@Component(immediate = true, service = { XmlRepresentation.class, ResourceRepresentation.class })
 public class XmlRepresentation implements ResourceRepresentation {
 
   @Override
   public List<String> getMimeTypes() {
     return Arrays.asList("application/fhir+xml", "application/xml+fhir", "application/xml", "text/xml", "xml");
   }
-  
+
   @Override
   public FhirFormat getFhirFormat() {
     return FhirFormat.XML;

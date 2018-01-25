@@ -37,34 +37,16 @@
       <version>1.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-    <!-- <dependency> -->
-    <!-- <groupId>org.apache.felix</groupId> -->
-    <!-- <artifactId>org.apache.felix.scr.ds-annotations</artifactId> -->
-    <!-- <version>1.2.10</version> -->
-    <!-- <scope>provided</scope> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!-- <groupId>org.apache.felix</groupId> -->
-    <!-- <artifactId>org.apache.felix.scr.annotations</artifactId> -->
-    <!-- <version>1.12.0</version> -->
-    <!-- <scope>provided</scope> -->
-    <!-- </dependency> -->
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
       <version>6.0.0</version>
     </dependency>
-    <!-- <dependency> -->
-    <!-- <groupId>org.osgi</groupId> -->
-    <!-- <artifactId>org.osgi.compendium</artifactId> -->
-    <!-- <version>5.0.0</version> -->
-    <!-- </dependency> -->
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.service.cm</artifactId>
       <version>1.5.0</version>
     </dependency>
-
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.service.component.annotations</artifactId>
@@ -211,9 +193,9 @@
     <module>pg-search</module>
     <module>resource-binary</module>
     <module>auth-core</module>
-    <!--  <module>auth-rest</module>
+    <module>auth-rest</module>
     <module>auth-openid</module>
-    <module>auth-yupi</module> -->
+    <module>auth-yupi</module>
   </modules>
 
 </project>
