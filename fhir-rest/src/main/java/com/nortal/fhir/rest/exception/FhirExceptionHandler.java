@@ -50,8 +50,9 @@ public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
     if (e.getIssues() != null) {
       OperationOutcome outcome = new OperationOutcome();
       outcome.setIssue(e.getIssues());
-      response.entity(ResourceComposer.compose(outcome, RequestContext.getAccept()));
-      response.type(RequestContext.getAccept());
+      String ct = RequestContext.getAccept() == null ? "application/json" : RequestContext.getAccept();
+      response.entity(ResourceComposer.compose(outcome, ct));
+      response.type(ct);
     }
     return response.build();
   }
