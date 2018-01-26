@@ -15,3 +15,6 @@ create table resource (
 ) PARTITION BY LIST (type);
 --rollback drop table resource cascade;
 
+--changeset blaze:resource-content-nullable dbms:postgresql
+alter table resource alter column content DROP NOT NULL;
+--rollback select 1

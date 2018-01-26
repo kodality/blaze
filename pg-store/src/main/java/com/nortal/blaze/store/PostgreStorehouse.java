@@ -44,7 +44,8 @@ public class PostgreStorehouse implements ResourceStorehouse {
     if (current.isDeleted()) {
       return;
     }
-    ResourceVersion version = new ResourceVersion(new VersionId(id), new ResourceContent("{}", "json"));
+    ResourceVersion version = new ResourceVersion();
+    version.setId(new VersionId(id));
     version.setDeleted(true);
     version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
     if (clientIdentity.get() != null) {
@@ -76,6 +77,9 @@ public class PostgreStorehouse implements ResourceStorehouse {
 
   private void fixId(ResourceVersion version) {
     // TODO: maybe rewrite this when better times come and resource will be parsed until end.
+    if (version.getContent() == null || version.getContent().getValue() == null) {
+      return;
+    }
     Map<String, Object> hack = JsonUtil.fromJson(version.getContent().getValue());
     hack.put("id", version.getId().getResourceId());
     version.getContent().setValue(JsonUtil.toJson(hack));

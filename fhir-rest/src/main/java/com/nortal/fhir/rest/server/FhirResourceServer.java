@@ -143,9 +143,10 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     bundle.setTotal(total == null ? versions.size() : total);
     bundle.setType(bundleType);
     for (ResourceVersion version : versions) {
-      Resource resource = ResourceComposer.parse(version.getContent().getValue());
-      bundle.addEntry().setResource(resource);
-      // .setId(version.getId().getResourceId());
+      if (version.getContent() != null && version.getContent().getValue() != null) {
+        Resource resource = ResourceComposer.parse(version.getContent().getValue());
+        bundle.addEntry().setResource(resource);// .setId(version.getId().getResourceId());
+      }
     }
     return bundle;
   }
