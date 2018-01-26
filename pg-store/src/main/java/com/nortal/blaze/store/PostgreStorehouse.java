@@ -52,17 +52,23 @@ public class PostgreStorehouse implements ResourceStorehouse {
     if (id.getVersion() == null && version.isDeleted()) {
       throw new FhirException(410, "resource deleted");
     }
-    // TODO: maybe rewrite this when better times come and resource will be parsed until end.
-    Map<String, Object> hack = JsonUtil.fromJson(version.getContent().getValue());
-    hack.put("id", version.getId().getResourceId());
-    version.getContent().setValue(JsonUtil.toJson(hack));
+    fixId(version);
 
     return version;
   }
 
   @Override
   public List<ResourceVersion> loadHistory(ResourceId id) {
-    throw new FhirException(501, "soon");
+    List<ResourceVersion> history = resourceDao.loadHistory(id);
+    history.forEach(this::fixId);
+    return history;
+  }
+
+  private void fixId(ResourceVersion version) {
+    // TODO: maybe rewrite this when better times come and resource will be parsed until end.
+    Map<String, Object> hack = JsonUtil.fromJson(version.getContent().getValue());
+    hack.put("id", version.getId().getResourceId());
+    version.getContent().setValue(JsonUtil.toJson(hack));
   }
 
 }

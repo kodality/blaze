@@ -10,6 +10,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import java.util.List;
+
 @Component(immediate = true, service = ResourceDao.class)
 public class ResourceDao {
   @Reference
@@ -57,5 +59,12 @@ public class ResourceDao {
       }
       throw e;
     }
+  }
+
+  public List<ResourceVersion> loadHistory(ResourceId id) {
+    SqlBuilder sb = new SqlBuilder();
+    sb.append("SELECT * FROM resource WHERE type = ? AND id = ?", id.getResourceType(), id.getResourceId());
+    sb.append(" ORDER BY last_version");
+    return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
 }

@@ -14,18 +14,21 @@ import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.filter.RequestContext;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.util.SearchUtil;
-import java.net.URI;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.jaxrs.model.UserResource;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.Resource;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.jaxrs.model.UserResource;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
-import org.hl7.fhir.dstu3.model.Resource;
+
+import java.net.URI;
+import java.util.List;
 
 public class FhirResourceServer extends JaxRsServer implements FhirResourceRest {
   private static final String ETAG = "ETag";
@@ -109,7 +112,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   @Override
   public Response history(String resourceId) {
     List<ResourceVersion> versions = service().loadHistory(new ResourceId(type, resourceId));
-    return Response.status(Status.OK).entity(compose(null, versions)).build();
+    return Response.status(Status.OK).entity(compose(null, versions, BundleType.HISTORY)).build();
   }
 
   @Override
@@ -128,17 +131,19 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     criteria.setType(type);
     criteria.setParams(SearchUtil.parse(params, type));
     SearchResult result = service().search(criteria);
-    Bundle bundle = compose(result.getTotal(), result.getEntries());
+    Bundle bundle = compose(result.getTotal(), result.getEntries(), BundleType.SEARCHSET);
     addPagingLinks(bundle, criteria.getCount(), criteria.getPage());
     return Response.status(Status.OK).entity(bundle).build();
   }
 
-  public static Bundle compose(Integer total, List<ResourceVersion> versions) {
+  public static Bundle compose(Integer total, List<ResourceVersion> versions, BundleType bundleType) {
     Bundle bundle = new Bundle();
-    bundle.setTotal(total);
+    bundle.setTotal(total == null ? versions.size() : total);
+    bundle.setType(bundleType);
     for (ResourceVersion version : versions) {
       Resource resource = ResourceComposer.parse(version.getContent().getValue());
-      bundle.addEntry().setResource(resource).setId(version.getId().getResourceId());
+      bundle.addEntry().setResource(resource);
+      // .setId(version.getId().getResourceId());
     }
     return bundle;
   }
