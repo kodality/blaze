@@ -1,9 +1,9 @@
 package com.nortal.blaze.core.service;
 
 import com.nortal.blaze.core.exception.ServerException;
-import com.nortal.blaze.core.iface.ResourceSearchHandler;
 import com.nortal.blaze.core.iface.ResourceIndexer;
 import com.nortal.blaze.core.iface.ResourceSaveHandler;
+import com.nortal.blaze.core.iface.ResourceSearchHandler;
 import com.nortal.blaze.core.iface.ResourceStorehouse;
 import com.nortal.blaze.core.iface.ResourceValidator;
 import com.nortal.blaze.core.model.ResourceContent;

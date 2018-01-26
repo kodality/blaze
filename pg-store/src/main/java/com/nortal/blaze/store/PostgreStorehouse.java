@@ -40,7 +40,17 @@ public class PostgreStorehouse implements ResourceStorehouse {
 
   @Override
   public void delete(ResourceId id) {
-    resourceDao.delete(id);
+    ResourceVersion current = resourceDao.load(new VersionId(id));
+    if (current.isDeleted()) {
+      return;
+    }
+    ResourceVersion version = new ResourceVersion(new VersionId(id), new ResourceContent("{}", "json"));
+    version.setDeleted(true);
+    version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
+    if (clientIdentity.get() != null) {
+      version.setAuthor(clientIdentity.get().getClaims());
+    }
+    resourceDao.create(version);
   }
 
   @Override

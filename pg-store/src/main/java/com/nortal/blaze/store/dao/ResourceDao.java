@@ -23,19 +23,15 @@ public class ResourceDao {
       version.getId().setResourceId(key.toString());
     }
     String sql =
-        "INSERT INTO resource (key, type, id, last_version, author, content) VALUES (?,?,?,?,?::jsonb,?::jsonb)";
+        "INSERT INTO resource (key, type, id, last_version, author, content, sys_status) VALUES (?,?,?,?,?::jsonb,?::jsonb,?)";
     jdbcTemplate.update(sql,
                         key,
                         version.getId().getResourceType(),
                         version.getId().getResourceId(),
                         version.getId().getVersion(),
                         new Gson().toJson(version.getAuthor()),
-                        version.getContent().getValue());
-  }
-
-  public void delete(ResourceId id) {
-    String sql = "UPDATE resource SET sys_status = 'C' WHERE type = ? AND id = ? AND sys_status != 'T'";
-    jdbcTemplate.update(sql, id.getResourceType(), id.getResourceId());
+                        version.getContent() == null ? null : version.getContent().getValue(),
+                        version.isDeleted() ? "C" : "A");
   }
 
   public Integer getLastVersion(ResourceId id) {
