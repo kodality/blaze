@@ -3,6 +3,7 @@ package com.nortal.fhir.rest.filter;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
@@ -16,6 +17,9 @@ import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class FormatInterceptor extends AbstractPhaseInterceptor<Message> {
 
@@ -33,24 +37,30 @@ public class FormatInterceptor extends AbstractPhaseInterceptor<Message> {
   }
 
   private void fixHeaderType(Message message, String header) {
-    String value = getHeader(message, header);
-    if (value == null) {
+    String headerValue = getHeader(message, header);
+    if (headerValue == null) {
       return;
     }
-    MediaType mediaType = MediaType.valueOf(value);
-    if (mediaType.isWildcardSubtype() && mediaType.isWildcardType()) {
-      return;
+    List<String> newTypes = Stream.of(StringUtils.split(headerValue, ",")).map(value -> {
+      MediaType mediaType = MediaType.valueOf(StringUtils.trim(value));
+      if (mediaType.isWildcardSubtype() && mediaType.isWildcardType()) {
+        return mediaType.toString();
+      }
+      String contentType = mediaType.getType() + "/" + mediaType.getSubtype();
+      String charset = mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);
+      String newType = FhirContentType.getMimeType(contentType);
+      if (newType == null) {
+        return null;
+      }
+      if (charset != null) {
+        newType = newType + ";" + MediaType.CHARSET_PARAMETER + "=" + charset;
+      }
+      return newType;
+    }).distinct().filter(n -> n != null).collect(toList());
+    if (CollectionUtils.isEmpty(newTypes)) {
+      throw new FhirException(415, headerValue + " not supported");
     }
-    String type = mediaType.getType() + "/" + mediaType.getSubtype();
-    String charset = mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);
-    String newType = FhirContentType.getMimeType(type);
-    if (newType == null) {
-      throw new FhirException(415, value + " not supported");
-    }
-    if (charset != null) {
-      newType = newType + ";" + MediaType.CHARSET_PARAMETER + "=" + charset;
-    }
-    setHeader(message, header, newType);
+    setHeader(message, header, newTypes.get(0));
   }
 
   private void readUrlFormat(Message message) {
