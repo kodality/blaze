@@ -21,6 +21,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -85,14 +86,17 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     capabilityStatement.getRest().forEach(rest -> {
       rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
     });
-    capabilityStatement.getRest().forEach(rest -> rest.getResource().forEach(rr -> {
-      rr.setConditionalCreate(false);
-      rr.setConditionalUpdate(false);
-      rr.setConditionalDelete(ConditionalDeleteStatus.NOTSUPPORTED);
-      rr.setReferencePolicy(Collections.emptyList());
-      rr.setSearchInclude(Collections.emptyList());
-      rr.setSearchRevInclude(Collections.emptyList());
-    }));
+    capabilityStatement.getRest().forEach(rest -> {
+      rest.setOperation(new ArrayList<>());
+      rest.getResource().forEach(rr -> {
+        rr.setConditionalCreate(false);
+        rr.setConditionalUpdate(false);
+        rr.setConditionalDelete(ConditionalDeleteStatus.NOTSUPPORTED);
+        rr.setReferencePolicy(Collections.emptyList());
+        rr.setSearchInclude(Collections.emptyList());
+        rr.setSearchRevInclude(Collections.emptyList());
+      });
+    });
 
     return capabilityStatement;
   }
