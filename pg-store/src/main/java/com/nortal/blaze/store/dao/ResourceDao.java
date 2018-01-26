@@ -60,7 +60,7 @@ public class ResourceDao {
   public List<ResourceVersion> loadHistory(ResourceId id) {
     SqlBuilder sb = new SqlBuilder();
     sb.append("SELECT * FROM resource WHERE type = ? AND id = ?", id.getResourceType(), id.getResourceId());
-    sb.append(" ORDER BY last_version");
+    sb.append(" ORDER BY last_version desc");
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
 }
