@@ -17,9 +17,9 @@ import com.nortal.fhir.rest.util.SearchUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
-import org.hl7.fhir.dstu3.model.Resource;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -143,10 +143,9 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     bundle.setTotal(total == null ? versions.size() : total);
     bundle.setType(bundleType);
     for (ResourceVersion version : versions) {
-      if (version.getContent() != null && version.getContent().getValue() != null) {
-        Resource resource = ResourceComposer.parse(version.getContent().getValue());
-        bundle.addEntry().setResource(resource);// .setId(version.getId().getResourceId());
-      }
+      BundleEntryComponent entry = bundle.addEntry();
+      entry.setResource(ResourceComposer.parse(version.getContent().getValue()));
+      // .setId(version.getId().getResourceId());
     }
     return bundle;
   }

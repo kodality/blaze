@@ -14,6 +14,7 @@ import com.nortal.blaze.store.dao.ResourceDao;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class PostgreStorehouse implements ResourceStorehouse {
     if (id.getVersion() == null && version.isDeleted()) {
       throw new FhirException(410, "resource deleted");
     }
-    fixId(version);
+    decorate(version);
 
     return version;
   }
@@ -71,18 +72,22 @@ public class PostgreStorehouse implements ResourceStorehouse {
   @Override
   public List<ResourceVersion> loadHistory(ResourceId id) {
     List<ResourceVersion> history = resourceDao.loadHistory(id);
-    history.forEach(this::fixId);
+    history.forEach(this::decorate);
     return history;
   }
 
-  private void fixId(ResourceVersion version) {
+  private void decorate(ResourceVersion version) {
     // TODO: maybe rewrite this when better times come and resource will be parsed until end.
-    if (version.getContent() == null || version.getContent().getValue() == null) {
-      return;
-    }
-    Map<String, Object> hack = JsonUtil.fromJson(version.getContent().getValue());
-    hack.put("id", version.getId().getResourceId());
-    version.getContent().setValue(JsonUtil.toJson(hack));
+
+    Map<String, Object> resource =
+        version.getContent().getValue() != null ? JsonUtil.fromJson(version.getContent().getValue()) : new HashMap<>();
+    resource.put("id", version.getId().getResourceId());
+    resource.put("resourceType", version.getId().getResourceType());
+    HashMap<Object, Object> meta = new HashMap<>();
+    meta.put("versionId", "" + version.getId().getVersion());
+    resource.put("meta", meta);
+
+    version.getContent().setValue(JsonUtil.toJson(resource));
   }
 
 }
