@@ -23,6 +23,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +91,13 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     capabilityStatement.setRest(originalCapability.getRest());
     capabilityStatement.setText(null);
     List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
+    defined.removeAll(Arrays.asList("Bundle",
+                                    "Binary",
+                                    "CapabilityStatement",
+                                    "StructureDefinition",
+                                    "ImplementationGuide",
+                                    "SearchParameter",
+                                    "ImplementationGuide"));
     capabilityStatement.getRest().forEach(rest -> {
       rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
     });
