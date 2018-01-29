@@ -11,3 +11,5 @@ $client feature:repo-add file://$karaf/etc/features.xml
 $client feature:install blaze-deps blaze-pg blaze-liquibase
 
 echo OK
+
+

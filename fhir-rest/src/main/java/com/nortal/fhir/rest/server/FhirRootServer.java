@@ -4,7 +4,7 @@ import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
-import com.nortal.fhir.conformance.capability.CapabilityStatementMonitor;
+import com.nortal.fhir.rest.RestResourceInitializer;
 import com.nortal.fhir.rest.interaction.Interaction;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.root.BatchService;
@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 
 import javax.ws.rs.core.Response;
@@ -43,7 +44,8 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
 
   @Override
   public Response conformance() {
-    return Response.ok().entity(CapabilityStatementMonitor.getCapabilityStatement()).build();
+    CapabilityStatement capability = Osgi.getBean(RestResourceInitializer.class).getModifiedCapability();
+    return Response.ok().entity(capability).build();
   }
 
   @Override
@@ -56,7 +58,7 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
     if (StringUtils.isEmpty(bundle)) {
       return Response.status(204).build();
     }
-    Bundle responseBundle = Osgi.getBean(BatchService.class).batch(ResourceComposer.<Bundle> parse(bundle));
+    Bundle responseBundle = Osgi.getBean(BatchService.class).batch(ResourceComposer.<Bundle>parse(bundle));
     return Response.ok().entity(ResourceComposer.compose(responseBundle, contentType)).build();
   }
 

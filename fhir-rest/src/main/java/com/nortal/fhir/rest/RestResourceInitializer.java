@@ -9,6 +9,7 @@ import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.FhirResourceServerFactory;
 import com.nortal.fhir.rest.server.FhirRootServer;
 import com.nortal.fhir.rest.server.JaxRsServer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.classloader.ClassLoaderUtils;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
@@ -34,12 +35,12 @@ import static java.util.stream.Collectors.toList;
 @Component(immediate = true, service = { CapabilityStatementListener.class, RestResourceInitializer.class })
 public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
   private final Map<String, JaxRsServer> servers = new HashMap<>();
-  private CapabilityStatement originalCapability;
+  private CapabilityStatement modifiedCapability;
 
   @Activate
   private void start() {
-    CapabilityStatement cs = CapabilityStatementMonitor.getCapabilityStatement();
-    originalCapability = cs == null ? null : cs.copy();
+    modifiedCapability =
+        modifyCapability(CapabilityStatementMonitor.getCapabilityStatement(), ResourceDefinitionsMonitor.get());
     comply();
   }
 
@@ -51,14 +52,19 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Override
   public void comply(List<StructureDefinition> definition) {
+    modifiedCapability =
+        modifyCapability(CapabilityStatementMonitor.getCapabilityStatement(), ResourceDefinitionsMonitor.get());
     comply();
   }
 
   @Override
   public void comply(CapabilityStatement capabilityStatement) {
-    CapabilityStatement cs = CapabilityStatementMonitor.getCapabilityStatement();
-    originalCapability = cs == null ? null : cs.copy();
+    modifiedCapability = modifyCapability(capabilityStatement, ResourceDefinitionsMonitor.get());
     comply();
+  }
+
+  public CapabilityStatement getModifiedCapability() {
+    return modifiedCapability;
   }
 
   private void comply() {
@@ -69,35 +75,41 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     }).run();
   }
 
-  private void reloadRest() {
+  private synchronized void reloadRest() {
     stop();
-    CapabilityStatement capabilityStatement = getCapability();
-    if (capabilityStatement == null) {
+    if (modifiedCapability == null) {
       return;
     }
-    for (CapabilityStatementRestComponent rest : capabilityStatement.getRest()) {
+    for (CapabilityStatementRestComponent rest : modifiedCapability.getRest()) {
       if (rest.getMode() == RestfulCapabilityMode.SERVER) {
         start(rest);
       }
     }
   }
 
-  // XXX: unimplemented stuff. changes it also.
-  private CapabilityStatement getCapability() {
-    CapabilityStatement capabilityStatement = CapabilityStatementMonitor.getCapabilityStatement();
-    if (capabilityStatement == null) {
+  // XXX: unimplemented stuff
+  private CapabilityStatement modifyCapability(CapabilityStatement capabilityStatement,
+                                               List<StructureDefinition> definitions) {
+    if (capabilityStatement == null || CollectionUtils.isEmpty(definitions)) {
       return null;
     }
-    capabilityStatement.setRest(originalCapability.getRest());
+    capabilityStatement = capabilityStatement.copy();
     capabilityStatement.setText(null);
-    List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
+    List<String> defined = definitions.stream().map(d -> d.getName()).collect(toList());
     defined.removeAll(Arrays.asList("Bundle",
                                     "Binary",
                                     "CapabilityStatement",
                                     "StructureDefinition",
                                     "ImplementationGuide",
                                     "SearchParameter",
-                                    "ImplementationGuide"));
+                                    "ImplementationGuide",
+                                    "MessageDefinition",
+                                    "OperationDefinition",
+                                    "CompartmentDefinition",
+                                    "StructureMap",
+                                    "GraphDefinition",
+                                    "DataElement",
+                                    "AuditEvent"));
     capabilityStatement.getRest().forEach(rest -> {
       rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
     });
