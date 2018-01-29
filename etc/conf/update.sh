@@ -29,13 +29,13 @@ cd ..
 
 #DEFINITIONS
 rm definitions/* || true
-for res in $resources; do
-  [[ -z "$res" ]] || wget "http://hl7.org/fhir/$res.profile.xml" -O definitions/$res.profile.xml -q  &
-done
-for job in `jobs -p`; do
-  wait $job || echo "some failed"
-done
-
+#for res in $resources; do
+#  [[ -z "$res" ]] || wget "http://hl7.org/fhir/$res.profile.xml" -O definitions/$res.profile.xml -q  &
+#done
+#for job in `jobs -p`; do
+#  wait $job || echo "some failed"
+#done
+cp downloads/profiles-resources.json definitions/
 cp downloads/profiles-types.json definitions/
 
 #CAPABILITY

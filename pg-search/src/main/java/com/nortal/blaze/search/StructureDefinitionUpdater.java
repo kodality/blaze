@@ -2,7 +2,7 @@ package com.nortal.blaze.search;
 
 import com.nortal.blaze.search.dao.ResourceStructureDao;
 import com.nortal.blaze.search.model.StructureElement;
-import com.nortal.fhir.conformance.content.ResourceDefinitionListener;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionListener;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.ElementDefinition;

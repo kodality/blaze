@@ -1,8 +1,8 @@
 package com.nortal.blaze.store;
 
 import com.nortal.blaze.store.dao.ResourceFunctionsDao;
-import com.nortal.fhir.conformance.content.ResourceDefinitionListener;
-import com.nortal.fhir.conformance.content.ResourceDefinitionsMonitor;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionListener;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;

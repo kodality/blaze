@@ -9,7 +9,8 @@ import com.nortal.blaze.search.sql.params.ReferenceExpressionProvider;
 import com.nortal.blaze.search.sql.params.StringExpressionProvider;
 import com.nortal.blaze.search.sql.params.TokenExpressionProvider;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import com.nortal.fhir.conformance.operations.SearchParameterMonitor;
+import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

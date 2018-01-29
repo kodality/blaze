@@ -1,10 +1,10 @@
 package com.nortal.fhir.rest;
 
 import com.nortal.blaze.core.util.Osgi;
-import com.nortal.fhir.conformance.content.ResourceDefinitionListener;
-import com.nortal.fhir.conformance.content.ResourceDefinitionsMonitor;
-import com.nortal.fhir.conformance.operations.CapabilityStatementListener;
-import com.nortal.fhir.conformance.operations.CapabilityStatementMonitor;
+import com.nortal.fhir.conformance.capability.CapabilityStatementListener;
+import com.nortal.fhir.conformance.capability.CapabilityStatementMonitor;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionListener;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
 import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.FhirResourceServerFactory;
 import com.nortal.fhir.rest.server.FhirRootServer;
@@ -32,9 +32,11 @@ import static java.util.stream.Collectors.toList;
 @Component(immediate = true, service = { CapabilityStatementListener.class, RestResourceInitializer.class })
 public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
   private final Map<String, JaxRsServer> servers = new HashMap<>();
+  private CapabilityStatement originalCapability;
 
   @Activate
   private void start() {
+    originalCapability = CapabilityStatementMonitor.getCapabilityStatement();
     comply();
   }
 
@@ -51,6 +53,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Override
   public void comply(CapabilityStatement capabilityStatement) {
+    originalCapability = CapabilityStatementMonitor.getCapabilityStatement();
     comply();
   }
 
@@ -75,12 +78,13 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     }
   }
 
-  // TODO: unimplemented stuff. changes it also.
+  // XXX: unimplemented stuff. changes it also.
   private CapabilityStatement getCapability() {
     CapabilityStatement capabilityStatement = CapabilityStatementMonitor.getCapabilityStatement();
     if (capabilityStatement == null) {
       return null;
     }
+    capabilityStatement.setRest(originalCapability.copy().getRest());
     capabilityStatement.setText(null);
     List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
     capabilityStatement.getRest().forEach(rest -> {

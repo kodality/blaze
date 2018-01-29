@@ -3,7 +3,7 @@ package com.nortal.blaze.search.sql.params;
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.search.sql.SqlToster;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import com.nortal.fhir.conformance.operations.SearchParameterMonitor;
+import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.dstu3.model.CodeType;

@@ -4,7 +4,7 @@ import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.search.dao.BlindexDao;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import com.nortal.fhir.conformance.operations.SearchParameterMonitor;
+import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.Stream;

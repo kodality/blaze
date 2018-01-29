@@ -1,6 +1,8 @@
 package com.nortal.fhir.conformance.operations;
 
 import java.util.HashMap;
+
+import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
 import org.hl7.fhir.dstu3.model.SearchParameter;
 
 public class TestSearchParameterMonitor extends SearchParameterMonitor {

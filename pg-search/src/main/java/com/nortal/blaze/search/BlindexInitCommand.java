@@ -2,8 +2,8 @@ package com.nortal.blaze.search;
 
 import com.nortal.blaze.search.dao.BlindexDao;
 import com.nortal.blaze.search.model.Blindex;
-import com.nortal.fhir.conformance.content.ResourceDefinitionsMonitor;
-import com.nortal.fhir.conformance.operations.SearchParameterMonitor;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
+import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;

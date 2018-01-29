@@ -1,12 +1,13 @@
 package com.nortal.fhir.rest;
 
-import com.nortal.fhir.conformance.operations.CapabilityStatementListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.nortal.fhir.conformance.capability.CapabilityStatementListener;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
