@@ -16,6 +16,7 @@ import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestCompo
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.ConditionalDeleteStatus;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.UnknownContentCode;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -90,8 +91,10 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     capabilityStatement.getRest().forEach(rest -> {
       rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
     });
+    capabilityStatement.setAcceptUnknown(UnknownContentCode.NO);// no extensions
     capabilityStatement.getRest().forEach(rest -> {
       rest.setOperation(new ArrayList<>());
+      rest.setInteraction(new ArrayList<>()); // add transactions and batch some day
       rest.getResource().forEach(rr -> {
         rr.setConditionalCreate(false);
         rr.setConditionalUpdate(false);
