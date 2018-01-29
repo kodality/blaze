@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toMap;
+
 @Component(immediate = true)
 public class ResourceDefinitionsMonitor extends EtcMonitor {
   private static final Map<String, StructureDefinition> definitions = new HashMap<>();
@@ -63,25 +65,23 @@ public class ResourceDefinitionsMonitor extends EtcMonitor {
   @Override
   protected void file(File file) {
     Resource res = representationService.parse(readFile(file));
+
+    List<StructureDefinition> defs = new ArrayList<>();
+
     if (ResourceType.StructureDefinition == res.getResourceType()) {
-      putDefinition((StructureDefinition) res);
+      defs.add((StructureDefinition) res);
     }
     if (ResourceType.Bundle == res.getResourceType()) {
       ((Bundle) res).getEntry().stream().forEach(e -> {
         if (ResourceType.StructureDefinition == e.getResource().getResourceType()) {
-          putDefinition((StructureDefinition) e.getResource());
+          defs.add((StructureDefinition) e.getResource());
         }
       });
     }
 
-  }
-
-  private void putDefinition(StructureDefinition definition) {
-    if ("group".equalsIgnoreCase(definition.getName())) {
-      return; // TODO XXX define_resource table name -> group
-    }
-    validate(definition);
-    definitions.put(definition.getName(), definition);
+    defs.forEach(def -> validate(def));
+    definitions.putAll(defs.stream().filter(d -> !"group".equalsIgnoreCase(d.getName())).collect(toMap(def -> def.getName(),
+                                                                                                       def -> def)));
   }
 
   @Override
