@@ -37,7 +37,8 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Activate
   private void start() {
-    originalCapability = CapabilityStatementMonitor.getCapabilityStatement();
+    CapabilityStatement cs = CapabilityStatementMonitor.getCapabilityStatement();
+    originalCapability = cs == null ? null : cs.copy();
     comply();
   }
 
@@ -54,7 +55,8 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Override
   public void comply(CapabilityStatement capabilityStatement) {
-    originalCapability = CapabilityStatementMonitor.getCapabilityStatement();
+    CapabilityStatement cs = CapabilityStatementMonitor.getCapabilityStatement();
+    originalCapability = cs == null ? null : cs.copy();
     comply();
   }
 
@@ -85,7 +87,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     if (capabilityStatement == null) {
       return null;
     }
-    capabilityStatement.setRest(originalCapability.copy().getRest());
+    capabilityStatement.setRest(originalCapability.getRest());
     capabilityStatement.setText(null);
     List<String> defined = ResourceDefinitionsMonitor.get().stream().map(d -> d.getName()).collect(toList());
     capabilityStatement.getRest().forEach(rest -> {
