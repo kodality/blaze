@@ -1,10 +1,9 @@
 package com.nortal.blaze.search;
 
 import com.nortal.blaze.search.dao.BlindexDao;
-import com.nortal.blaze.search.model.Blindex;
 import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
 import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
@@ -19,6 +18,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.split;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 @Command(scope = "blindex", name = "init", description = "init search indexes")
 @Service
@@ -28,25 +31,28 @@ public class BlindexInitCommand implements Action {
 
   @Override
   public Object execute() throws Exception {
-    List<Blindex> indexes = blindexDao.load();
-    Set<String> current = indexes.stream().map(i -> i.getKey()).collect(Collectors.toSet());
-    System.out.println("currently indexed: " + current + "\n");
-    Set<String> create = new HashSet<>();
     List<String> defined = ResourceDefinitionsMonitor.get().stream().map(def -> def.getName()).collect(toList());
+    if (CollectionUtils.isEmpty(defined)) {
+      System.err.println("will not run. definitions either empty, either definitions not yet loaded.");
+      return null;
+    }
+    Set<String> create = new HashSet<>();
     for (SearchParameter sp : SearchParameterMonitor.get()) {
       if (sp.getExpression() == null) {
         continue;
       }
-      List<String> exprs =
-          Stream.of(StringUtils.split(sp.getExpression(), "|")).map((s) -> StringUtils.trim(s)).filter(s -> {
-            return defined.contains(StringUtils.substringBefore(s, "."));
-          }).collect(toList());
+      List<String> exprs = Stream.of(split(sp.getExpression(), "|")).map((s) -> trim(s)).filter(s -> {
+        return defined.contains(substringBefore(s, "."));
+      }).collect(toList());
       create.addAll(exprs);
     }
+
+    Set<String> current = blindexDao.load().stream().map(i -> i.getKey()).collect(Collectors.toSet());
     HashSet<String> ignore = new HashSet<>(create);
     ignore.retainAll(current);
     create.removeAll(ignore);
     current.removeAll(ignore);
+    System.out.println("currently indexed: " + current + "\n");
     System.out.println("need to create: " + create + "\n");
     System.out.println("need to remove: " + current + "\n");
     save(create, current);
@@ -58,7 +64,7 @@ public class BlindexInitCommand implements Action {
     for (String key : create) {
       try {
         System.out.println("creating " + key);
-        blindexDao.createIndex(StringUtils.substringBefore(key, "."), StringUtils.substringAfter(key, "."));
+        blindexDao.createIndex(substringBefore(key, "."), substringAfter(key, "."));
       } catch (Exception e) {
         String err = e.getMessage();
         if (e.getCause() instanceof PSQLException) {
@@ -70,7 +76,7 @@ public class BlindexInitCommand implements Action {
     for (String key : drop) {
       try {
         System.out.println("dropping " + key);
-        blindexDao.dropIndex(StringUtils.substringBefore(key, "."), StringUtils.substringAfter(key, "."));
+        blindexDao.dropIndex(substringBefore(key, "."), substringAfter(key, "."));
       } catch (Exception e) {
         String err = e.getCause() instanceof PSQLException ? e.getCause().getMessage() : e.getMessage();
         System.err.println("failed " + key + ": " + err);

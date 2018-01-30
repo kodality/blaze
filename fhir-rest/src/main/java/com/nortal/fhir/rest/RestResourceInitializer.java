@@ -23,7 +23,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,13 +31,14 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-@Component(immediate = true, service = { CapabilityStatementListener.class, RestResourceInitializer.class })
+@Component(immediate = true, service = { CapabilityStatementListener.class, ResourceDefinitionListener.class,
+                                         RestResourceInitializer.class })
 public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
   private final Map<String, JaxRsServer> servers = new HashMap<>();
   private CapabilityStatement modifiedCapability;
 
   @Activate
-  private void start() {
+  public void restart() {
     modifiedCapability =
         modifyCapability(CapabilityStatementMonitor.getCapabilityStatement(), ResourceDefinitionsMonitor.get());
     comply();
@@ -52,8 +52,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Override
   public void comply(List<StructureDefinition> definition) {
-    modifiedCapability =
-        modifyCapability(CapabilityStatementMonitor.getCapabilityStatement(), ResourceDefinitionsMonitor.get());
+    modifiedCapability = modifyCapability(CapabilityStatementMonitor.getCapabilityStatement(), definition);
     comply();
   }
 
@@ -115,8 +114,8 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     });
     capabilityStatement.setAcceptUnknown(UnknownContentCode.NO);// no extensions
     capabilityStatement.getRest().forEach(rest -> {
-      rest.setOperation(new ArrayList<>());
-      rest.setInteraction(new ArrayList<>()); // add transactions and batch some day
+      rest.setOperation(null);
+      rest.setInteraction(null); // add transactions and batch some day
       rest.getResource().forEach(rr -> {
         rr.setConditionalCreate(false);
         rr.setConditionalUpdate(false);

@@ -14,9 +14,9 @@ public class RestListCommand implements Action {
   @Override
   public Object execute() throws Exception {
     restResourceInitializer.getServers().forEach((name, server) -> {
-      String state = server.getServerInstance().isStarted() ? "STARTED" : "NOT STARTED";
+      String state = server.getServerInstance().isStarted() ? "STARTED" : "unknown";
       String path = server.getServerInstance().getDestination().getAddress().getAddress().getValue();
-      System.out.println(name + "\t" + state + "\t" + path);
+      System.out.println(String.format("%-26s", name) + " " + state + " " + path);
     });
     return null;
   }
