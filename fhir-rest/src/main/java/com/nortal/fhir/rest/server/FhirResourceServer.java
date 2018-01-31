@@ -111,6 +111,10 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
 
   @Override
   public Response history(String resourceId, UriInfo uriInfo) {
+    ResourceVersion version = service().load(new VersionId(type, resourceId));
+    if (version.isDeleted()) {
+      return Response.status(Status.GONE).header(ETAG, version.getETag()).build();
+    }
     HistorySearchCriterion criteria = new HistorySearchCriterion(type, resourceId);
     criteria.setSince(uriInfo.getQueryParameters(true).getFirst(HistorySearchCriterion._SINCE));
     List<ResourceVersion> versions = service().loadHistory(criteria);
