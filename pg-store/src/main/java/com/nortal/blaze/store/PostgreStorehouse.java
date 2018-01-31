@@ -8,12 +8,15 @@ import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
+import com.nortal.blaze.core.model.search.HistorySearchCriterion;
+import com.nortal.blaze.core.util.DateUtil;
 import com.nortal.blaze.core.util.JsonUtil;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.blaze.store.dao.ResourceDao;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +73,8 @@ public class PostgreStorehouse implements ResourceStorehouse {
   }
 
   @Override
-  public List<ResourceVersion> loadHistory(ResourceId id) {
-    List<ResourceVersion> history = resourceDao.loadHistory(id);
+  public List<ResourceVersion> loadHistory(HistorySearchCriterion criteria) {
+    List<ResourceVersion> history = resourceDao.loadHistory(criteria);
     history.forEach(this::decorate);
     return history;
   }
@@ -85,6 +88,7 @@ public class PostgreStorehouse implements ResourceStorehouse {
     resource.put("resourceType", version.getId().getResourceType());
     HashMap<Object, Object> meta = new HashMap<>();
     meta.put("versionId", "" + version.getId().getVersion());
+    meta.put("lastUpdated", new SimpleDateFormat(DateUtil.FHIR_DATETIME).format(version.getModified()));
     resource.put("meta", meta);
 
     version.getContent().setValue(JsonUtil.toJson(resource));

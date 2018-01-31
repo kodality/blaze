@@ -10,6 +10,7 @@ import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
+import com.nortal.blaze.core.model.search.HistorySearchCriterion;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
 import org.osgi.service.component.annotations.Component;
@@ -28,9 +29,9 @@ public class ResourceService {
   private volatile ResourceSearchHandler searchHandler;
   @Reference
   private final List<ResourceIndexer> indexers = new ArrayList<>();
-  @Reference(policy=ReferencePolicy.DYNAMIC)
+  @Reference(policy = ReferencePolicy.DYNAMIC)
   private final List<ResourceSaveHandler> handlers = new ArrayList<>();
-  @Reference(policy=ReferencePolicy.DYNAMIC)
+  @Reference(policy = ReferencePolicy.DYNAMIC)
   private final List<ResourceValidator> validators = new ArrayList<>();
 
   public ResourceVersion save(VersionId id, ResourceContent input) {
@@ -58,8 +59,8 @@ public class ResourceService {
     return storehouse.load(id);
   }
 
-  public List<ResourceVersion> loadHistory(ResourceId id) {
-    return storehouse.loadHistory(id);
+  public List<ResourceVersion> loadHistory(HistorySearchCriterion criteria) {
+    return storehouse.loadHistory(criteria);
   }
 
   public SearchResult search(SearchCriterion criteria) {

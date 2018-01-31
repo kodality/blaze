@@ -1,13 +1,7 @@
 package com.nortal.fhir.rest.server;
 
-import static com.nortal.fhir.rest.interaction.Interaction.DELETE;
-import static com.nortal.fhir.rest.interaction.Interaction.HISTORYINSTANCE;
-import static com.nortal.fhir.rest.interaction.Interaction.READ;
-import static com.nortal.fhir.rest.interaction.Interaction.SEARCHTYPE;
-import static com.nortal.fhir.rest.interaction.Interaction.UPDATE;
-import static com.nortal.fhir.rest.interaction.Interaction.VREAD;
-
 import com.nortal.fhir.rest.interaction.Interaction;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -21,6 +15,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import static com.nortal.fhir.rest.interaction.Interaction.DELETE;
+import static com.nortal.fhir.rest.interaction.Interaction.HISTORYINSTANCE;
+import static com.nortal.fhir.rest.interaction.Interaction.HISTORYTYPE;
+import static com.nortal.fhir.rest.interaction.Interaction.READ;
+import static com.nortal.fhir.rest.interaction.Interaction.SEARCHTYPE;
+import static com.nortal.fhir.rest.interaction.Interaction.UPDATE;
+import static com.nortal.fhir.rest.interaction.Interaction.VREAD;
 
 public interface FhirResourceRest {
 
@@ -54,7 +56,12 @@ public interface FhirResourceRest {
   @GET
   @Path("{id}/_history")
   @Interaction(HISTORYINSTANCE)
-  Response history(@PathParam("id") String resourceId);
+  Response history(@PathParam("id") String resourceId, @Context UriInfo uriInfo);
+
+  @GET
+  @Path("_history")
+  @Interaction(HISTORYTYPE)
+  Response historyType(@Context UriInfo uriInfo);
 
   @GET
   @Interaction(SEARCHTYPE)

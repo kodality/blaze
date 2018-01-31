@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 public class ResourceRowMapper implements RowMapper<ResourceVersion> {
 
@@ -18,6 +19,7 @@ public class ResourceRowMapper implements RowMapper<ResourceVersion> {
     resource.setContent(mapContent(rs));
     resource.setDeleted(rs.getString("sys_status").equals("C"));
     resource.setAuthor(JsonUtil.fromJson(rs.getString("author")));
+    resource.setModified(new Date(rs.getTimestamp("last_updated").getTime()));
     return resource;
   }
 

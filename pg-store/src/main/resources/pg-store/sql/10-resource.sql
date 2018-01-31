@@ -18,3 +18,7 @@ create table resource (
 --changeset blaze:resource-content-nullable dbms:postgresql
 alter table resource alter column content DROP NOT NULL;
 --rollback select 1
+
+--changeset blaze:resource-last_updated_timestamptz dbms:postgresql
+alter table resource alter column last_updated type timestamptz
+--rollback select 1

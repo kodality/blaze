@@ -1,6 +1,9 @@
 package com.nortal.fhir.rest.server;
 
 import com.nortal.blaze.core.exception.FhirException;
+import com.nortal.blaze.core.model.ResourceVersion;
+import com.nortal.blaze.core.model.search.HistorySearchCriterion;
+import com.nortal.blaze.core.service.ResourceService;
 import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
@@ -8,14 +11,18 @@ import com.nortal.fhir.rest.RestResourceInitializer;
 import com.nortal.fhir.rest.interaction.Interaction;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.root.BatchService;
+import com.nortal.fhir.rest.util.BundleUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import java.util.List;
 
@@ -58,13 +65,16 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
     if (StringUtils.isEmpty(bundle)) {
       return Response.status(204).build();
     }
-    Bundle responseBundle = Osgi.getBean(BatchService.class).batch(ResourceComposer.<Bundle>parse(bundle));
+    Bundle responseBundle = Osgi.getBean(BatchService.class).batch(ResourceComposer.<Bundle> parse(bundle));
     return Response.ok().entity(ResourceComposer.compose(responseBundle, contentType)).build();
   }
 
   @Override
-  public Response history() {
-    throw new FhirException(501, "well sorry");
+  public Response history(UriInfo uriInfo) {
+    HistorySearchCriterion criteria = new HistorySearchCriterion();
+    criteria.setSince(uriInfo.getQueryParameters(true).getFirst(HistorySearchCriterion._SINCE));
+    List<ResourceVersion> versions = Osgi.getBean(ResourceService.class).loadHistory(criteria);
+    return Response.status(Status.OK).entity(BundleUtil.compose(null, versions, BundleType.HISTORY)).build();
   }
 
   @Override

@@ -4,20 +4,20 @@ import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
+import com.nortal.blaze.core.model.search.HistorySearchCriterion;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
 import com.nortal.blaze.core.service.ResourceService;
 import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.core.util.ResourceUtil;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
-import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.filter.RequestContext;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
+import com.nortal.fhir.rest.util.BundleUtil;
 import com.nortal.fhir.rest.util.SearchUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 
@@ -110,9 +110,19 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   }
 
   @Override
-  public Response history(String resourceId) {
-    List<ResourceVersion> versions = service().loadHistory(new ResourceId(type, resourceId));
-    return Response.status(Status.OK).entity(compose(null, versions, BundleType.HISTORY)).build();
+  public Response history(String resourceId, UriInfo uriInfo) {
+    HistorySearchCriterion criteria = new HistorySearchCriterion(type, resourceId);
+    criteria.setSince(uriInfo.getQueryParameters(true).getFirst(HistorySearchCriterion._SINCE));
+    List<ResourceVersion> versions = service().loadHistory(criteria);
+    return Response.status(Status.OK).entity(BundleUtil.compose(null, versions, BundleType.HISTORY)).build();
+  }
+
+  @Override
+  public Response historyType(UriInfo uriInfo) {
+    HistorySearchCriterion criteria = new HistorySearchCriterion(type);
+    criteria.setSince(uriInfo.getQueryParameters(true).getFirst(HistorySearchCriterion._SINCE));
+    List<ResourceVersion> versions = service().loadHistory(criteria);
+    return Response.status(Status.OK).entity(BundleUtil.compose(null, versions, BundleType.HISTORY)).build();
   }
 
   @Override
@@ -133,21 +143,9 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
     criteria.setType(type);
     criteria.setParams(SearchUtil.parse(params, type));
     SearchResult result = service().search(criteria);
-    Bundle bundle = compose(result.getTotal(), result.getEntries(), BundleType.SEARCHSET);
+    Bundle bundle = BundleUtil.compose(result.getTotal(), result.getEntries(), BundleType.SEARCHSET);
     addPagingLinks(bundle, criteria.getCount(), criteria.getPage());
     return Response.status(Status.OK).entity(bundle).build();
-  }
-
-  public static Bundle compose(Integer total, List<ResourceVersion> versions, BundleType bundleType) {
-    Bundle bundle = new Bundle();
-    bundle.setTotal(total == null ? versions.size() : total);
-    bundle.setType(bundleType);
-    for (ResourceVersion version : versions) {
-      BundleEntryComponent entry = bundle.addEntry();
-      entry.setResource(ResourceComposer.parse(version.getContent().getValue()));
-      // .setId(version.getId().getResourceId());
-    }
-    return bundle;
   }
 
   private void addPagingLinks(Bundle bundle, Integer count, Integer page) {

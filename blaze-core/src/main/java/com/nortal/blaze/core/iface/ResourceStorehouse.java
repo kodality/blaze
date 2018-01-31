@@ -4,6 +4,8 @@ import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
+import com.nortal.blaze.core.model.search.HistorySearchCriterion;
+
 import java.util.List;
 
 public interface ResourceStorehouse {
@@ -13,6 +15,6 @@ public interface ResourceStorehouse {
 
   ResourceVersion load(VersionId id);
 
-  List<ResourceVersion> loadHistory(ResourceId id);
+  List<ResourceVersion> loadHistory(HistorySearchCriterion criteria);
 
 }
