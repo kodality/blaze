@@ -56,6 +56,7 @@ public class ResourceProfileValidator implements ResourceValidator, ResourceDefi
 
   @Override
   public void validate(String type, ResourceContent content) {
+    if(true) return;
     StructureDefinition definition = ResourceDefinitionsMonitor.getDefinition(type);
     if (definition == null) {
       throw new ServerException("definition for " + type + " not found");

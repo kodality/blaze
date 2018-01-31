@@ -14,6 +14,7 @@ public class StupidResourceValidator implements ResourceValidator {
 
   @Override
   public void validate(String type, ResourceContent content) {
+    if(true) return;
     try {
       resourceRepresentationService.parse(content.getValue());
     } catch (Exception e) {
