@@ -1,13 +1,10 @@
-package com.nortal.fhir.rest;
+package com.nortal.fhir.conformance.capability;
 
-import com.nortal.fhir.conformance.capability.CapabilityStatementListener;
-import com.nortal.fhir.conformance.capability.CapabilityStatementMonitor;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 import java.util.Collections;
@@ -18,15 +15,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component(immediate = true, service = CapabilityStatementListener.class)
-public class SearchConformance implements CapabilityStatementListener {
+public class CapabilitySearchConformance implements CapabilityStatementListener {
   // resource type -> search param key -> search param
   private static final Map<String, Map<String, CapabilityStatementRestResourceSearchParamComponent>> params =
       new HashMap<>();
-
-  @Activate
-  private void init() {
-    comply(CapabilityStatementMonitor.getCapabilityStatement());
-  }
 
   public static CapabilityStatementRestResourceSearchParamComponent get(String resourceType, String element) {
     return params.getOrDefault(resourceType, Collections.emptyMap()).get(element);

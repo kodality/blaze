@@ -128,7 +128,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   @Override
   public Response searchForm(MultivaluedMap<String, String> params) {
     params.remove("");
-    params.remove(null);// will this is strange
+    params.remove(null);// well this is strange
     SearchCriterion criteria = new SearchCriterion();
     criteria.setType(type);
     criteria.setParams(SearchUtil.parse(params, type));

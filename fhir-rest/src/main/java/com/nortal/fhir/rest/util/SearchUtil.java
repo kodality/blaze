@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
 import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import java.io.UnsupportedEncodingException;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -29,11 +31,18 @@ public final class SearchUtil {
     //
   }
 
+  public static List<QueryParam> parse(String query, String resourceType) {
+    MultivaluedMap<String, String> params = new MultivaluedHashMap<String, String>();
+    Stream.of(query.split("&")).forEach(q -> {
+      params.add(q.split("=")[0], q.split("=")[1]);
+    });
+    return parse(params, resourceType);
+  }
+
   public static List<QueryParam> parse(MultivaluedMap<String, String> params, String resourceType) {
     if (params == null || params.isEmpty()) {
       return Collections.emptyList();
     }
-    // return params.keySet().stream().flatMap(k -> parse(k, params.get(k), resourceType).stream()).collect(toList());
     List<QueryParam> result = new ArrayList<>();
     params.forEach((k, v) -> result.addAll(parse(k, v, resourceType)));
     return result;

@@ -115,7 +115,8 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     capabilityStatement.setAcceptUnknown(UnknownContentCode.NO);// no extensions
     capabilityStatement.getRest().forEach(rest -> {
       rest.setOperation(null);
-      rest.setInteraction(null); // add transactions and batch some day
+      List<String> interactions = Arrays.asList("transaction", "batch");
+      rest.setInteraction(rest.getInteraction().stream().filter(i -> interactions.contains(i.getCode().toCode())).collect(toList()));
       rest.getResource().forEach(rr -> {
         rr.setConditionalCreate(false);
         rr.setConditionalUpdate(false);
@@ -130,7 +131,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
   }
 
   private void start(CapabilityStatementRestComponent rest) {
-    start(null, new FhirRootServer(rest));
+    start("$root", new FhirRootServer(rest));
     rest.getResource().forEach(rr -> start(rr));
   }
 

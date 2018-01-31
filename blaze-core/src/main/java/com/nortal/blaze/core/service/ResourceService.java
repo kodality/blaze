@@ -25,10 +25,10 @@ public class ResourceService {
   @Reference(cardinality = ReferenceCardinality.OPTIONAL)
   private volatile ResourceStorehouse storehouse;
   @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-  private volatile ResourceSearchHandler google;
+  private volatile ResourceSearchHandler searchHandler;
   @Reference
   private final List<ResourceIndexer> indexers = new ArrayList<>();
-  @Reference
+  @Reference(policy=ReferencePolicy.DYNAMIC)
   private final List<ResourceSaveHandler> handlers = new ArrayList<>();
   @Reference(policy=ReferencePolicy.DYNAMIC)
   private final List<ResourceValidator> validators = new ArrayList<>();
@@ -63,10 +63,10 @@ public class ResourceService {
   }
 
   public SearchResult search(SearchCriterion criteria) {
-    if (google == null) {
+    if (searchHandler == null) {
       throw new ServerException("search not installed");
     }
-    SearchResult result = google.search(criteria);
+    SearchResult result = searchHandler.search(criteria);
     if (result.isEmpty()) {
       return result;
     }

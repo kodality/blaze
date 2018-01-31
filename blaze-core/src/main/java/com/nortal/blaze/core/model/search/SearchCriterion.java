@@ -1,11 +1,12 @@
 package com.nortal.blaze.core.model.search;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 
 public class SearchCriterion {
   public static final String _SORT = "_sort";
@@ -24,6 +25,14 @@ public class SearchCriterion {
   private List<QueryParam> conditions;
   private List<QueryParam> resultParams;
 
+  public SearchCriterion() {
+  }
+
+  public SearchCriterion(String type, List<QueryParam> params) {
+    this.type = type;
+    setParams(params);
+  }
+
   public String getType() {
     return type;
   }
@@ -38,6 +47,10 @@ public class SearchCriterion {
 
   public List<QueryParam> getConditions() {
     return conditions;
+  }
+
+  public List<QueryParam> getResultParams() {
+    return resultParams;
   }
 
   public List<QueryParam> getResultParams(String key) {

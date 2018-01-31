@@ -1,5 +1,6 @@
-package com.nortal.fhir.rest;
+package com.nortal.fhir.rest.command;
 
+import com.nortal.fhir.rest.RestResourceInitializer;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
