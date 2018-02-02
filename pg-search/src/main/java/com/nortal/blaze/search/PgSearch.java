@@ -1,6 +1,6 @@
 package com.nortal.blaze.search;
 
-import com.nortal.blaze.core.iface.ResourceSearchHandler;
+import com.nortal.blaze.core.api.ResourceSearchHandler;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;

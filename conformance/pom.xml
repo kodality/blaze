@@ -30,8 +30,7 @@
     <bundle.export-packages>
       com.nortal.fhir.conformance.capability,
       com.nortal.fhir.conformance.definition,
-      com.nortal.fhir.conformance.searchparam,
-      org.fhir.ucum
+      com.nortal.fhir.conformance.searchparam
     </bundle.export-packages>
   </properties>
 </project>

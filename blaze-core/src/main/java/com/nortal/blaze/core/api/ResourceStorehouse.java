@@ -1,4 +1,4 @@
-package com.nortal.blaze.core.iface;
+package com.nortal.blaze.core.api;
 
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;

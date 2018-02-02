@@ -186,6 +186,7 @@
     <module>blaze-core</module>
     <module>fhir-structures</module>
     <module>conformance</module>
+    <module>validation-profile</module>
     <module>fhir-rest</module>
     <module>pg-jdbc</module>
     <module>pg-whiplash</module>

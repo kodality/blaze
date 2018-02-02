@@ -3,7 +3,6 @@ package com.nortal.fhir.rest.root;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.RestResourceInitializer;
-import com.nortal.fhir.rest.exception.FhirExceptionHandler;
 import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.JaxRsServer;
 import org.apache.commons.lang3.StringUtils;
@@ -20,11 +19,9 @@ import org.apache.cxf.message.ExchangeImpl;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.cxf.service.model.EndpointInfo;
-import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryResponseComponent;
-import org.hl7.fhir.dstu3.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.osgi.service.component.annotations.Component;
@@ -34,7 +31,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,27 +39,13 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-// TODO: review or rewrite this shit
-@Component(immediate = true, service = BatchService.class)
-public class BatchService {
+//TODO: review or rewrite this shit
+@Component(immediate = true, service = BundleEntryCxfProcessor.class)
+public class BundleEntryCxfProcessor {
   @Reference
   private RestResourceInitializer restResourceInitializer;
 
-  public Bundle batch(Bundle bundle) {
-    BundleType type = bundle.getType();
-    Validate.isTrue(type == BundleType.BATCH || type == BundleType.TRANSACTION);
-
-    Bundle responseBundle = new Bundle();
-    bundle.getEntry().forEach(entry -> {
-      BundleEntryComponent newEntry = responseBundle.addEntry();
-      newEntry.setResponse(perform(entry));
-      newEntry.addLink().setRelation("alternate").setUrl(entry.getId());
-    });
-    responseBundle.setType(BundleType.TRANSACTIONRESPONSE);
-    return responseBundle;
-  }
-
-  private BundleEntryResponseComponent perform(BundleEntryComponent entry) {
+  public BundleEntryResponseComponent perform(BundleEntryComponent entry) {
     Validate.isTrue(entry.hasRequest() || entry.hasResource());
     if (!entry.hasRequest()) {
       entry.setRequest(new BundleEntryRequestComponent());
@@ -97,15 +79,6 @@ public class BatchService {
       List<Object> args = ori.getParameters().stream().map(p -> params.get(p.getName())).collect(toList());
 
       return (Response) ori.getMethodToInvoke().invoke(server, args.toArray());
-
-    } catch (InvocationTargetException e) {
-      if (e.getCause() instanceof FhirException) {
-        FhirException fhirException = (FhirException) e.getCause();
-        if (fhirException.getStatusCode() < 500) {
-          return FhirExceptionHandler.getResponse(fhirException);
-        }
-      }
-      throw new RuntimeException(method + " " + path, e.getCause());
     } catch (Exception e) {
       throw new RuntimeException(method + " " + path, e);
     }
@@ -163,5 +136,4 @@ public class BatchService {
     }
     return (FhirResourceServer) server;
   }
-
 }

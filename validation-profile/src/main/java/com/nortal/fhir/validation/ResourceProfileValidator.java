@@ -1,12 +1,14 @@
-package com.nortal.fhir.conformance.definition;
+package com.nortal.fhir.validation;
 
+import com.nortal.blaze.core.api.ResourceValidator;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.ServerException;
-import com.nortal.blaze.core.iface.ResourceValidator;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionListener;
+import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.context.BaseWorkerContext;
 import org.hl7.fhir.dstu3.context.IWorkerContext;
@@ -56,7 +58,7 @@ public class ResourceProfileValidator implements ResourceValidator, ResourceDefi
 
   @Override
   public void validate(String type, ResourceContent content) {
-    if(true) return;
+    //    if(true) return;
     StructureDefinition definition = ResourceDefinitionsMonitor.getDefinition(type);
     if (definition == null) {
       throw new ServerException("definition for " + type + " not found");

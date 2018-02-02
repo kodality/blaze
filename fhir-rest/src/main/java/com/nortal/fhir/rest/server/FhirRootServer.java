@@ -10,7 +10,7 @@ import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.RestResourceInitializer;
 import com.nortal.fhir.rest.interaction.Interaction;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
-import com.nortal.fhir.rest.root.BatchService;
+import com.nortal.fhir.rest.root.BundleService;
 import com.nortal.fhir.rest.util.BundleUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
@@ -65,7 +65,7 @@ public class FhirRootServer extends JaxRsServer implements FhirRootRest {
     if (StringUtils.isEmpty(bundle)) {
       return Response.status(204).build();
     }
-    Bundle responseBundle = Osgi.getBean(BatchService.class).batch(ResourceComposer.<Bundle> parse(bundle));
+    Bundle responseBundle = Osgi.getBean(BundleService.class).save(ResourceComposer.<Bundle> parse(bundle));
     return Response.ok().entity(ResourceComposer.compose(responseBundle, contentType)).build();
   }
 

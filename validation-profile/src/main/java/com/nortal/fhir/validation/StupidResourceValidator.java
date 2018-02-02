@@ -1,7 +1,7 @@
-package com.nortal.blaze.core.service;
+package com.nortal.fhir.validation;
 
+import com.nortal.blaze.core.api.ResourceValidator;
 import com.nortal.blaze.core.exception.FhirParseException;
-import com.nortal.blaze.core.iface.ResourceValidator;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
 import org.osgi.service.component.annotations.Component;
@@ -14,7 +14,6 @@ public class StupidResourceValidator implements ResourceValidator {
 
   @Override
   public void validate(String type, ResourceContent content) {
-    if(true) return;
     try {
       resourceRepresentationService.parse(content.getValue());
     } catch (Exception e) {

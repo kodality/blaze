@@ -1,6 +1,6 @@
 package com.nortal.fhir.conformance.searchparam;
 
-import com.nortal.blaze.core.iface.ResourceIndexer;
+import com.nortal.blaze.core.api.ResourceIndexer;
 
 /**
  * Implement this to index search parameters during resource save

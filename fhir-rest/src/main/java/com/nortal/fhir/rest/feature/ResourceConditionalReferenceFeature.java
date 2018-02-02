@@ -1,7 +1,7 @@
 package com.nortal.fhir.rest.feature;
 
+import com.nortal.blaze.core.api.ResourceSaveHandler;
 import com.nortal.blaze.core.exception.FhirException;
-import com.nortal.blaze.core.iface.ResourceSaveHandler;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;

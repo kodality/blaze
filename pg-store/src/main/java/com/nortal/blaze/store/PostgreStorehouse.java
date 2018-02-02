@@ -1,9 +1,9 @@
 package com.nortal.blaze.store;
 
 import com.nortal.blaze.auth.ClientIdentity;
+import com.nortal.blaze.core.api.ResourceStorehouse;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.FhirNotFoundException;
-import com.nortal.blaze.core.iface.ResourceStorehouse;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
@@ -27,35 +27,41 @@ public class PostgreStorehouse implements ResourceStorehouse {
   private ClientIdentity clientIdentity;
   @Reference
   private ResourceDao resourceDao;
+  @Reference
+  private PgTransactionManager tx;
 
   @Override
   public ResourceVersion save(VersionId id, ResourceContent content) {
-    if (!content.getContentType().contains("json")) {
-      content.setValue(ResourceComposer.compose(ResourceComposer.parse(content.getValue()), "json"));
-    }
-    ResourceVersion version = new ResourceVersion(id, content);
-    version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
-    if (clientIdentity.get() != null) {
-      version.setAuthor(clientIdentity.get().getClaims());
-    }
-    resourceDao.create(version);
-    return version;
+    return tx.transaction(() -> {
+      if (!content.getContentType().contains("json")) {
+        content.setValue(ResourceComposer.compose(ResourceComposer.parse(content.getValue()), "json"));
+      }
+      ResourceVersion version = new ResourceVersion(id, content);
+      version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
+      if (clientIdentity.get() != null) {
+        version.setAuthor(clientIdentity.get().getClaims());
+      }
+      resourceDao.create(version);
+      return version;
+    });
   }
 
   @Override
   public void delete(ResourceId id) {
-    ResourceVersion current = resourceDao.load(new VersionId(id));
-    if (current.isDeleted()) {
-      return;
-    }
-    ResourceVersion version = new ResourceVersion();
-    version.setId(new VersionId(id));
-    version.setDeleted(true);
-    version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
-    if (clientIdentity.get() != null) {
-      version.setAuthor(clientIdentity.get().getClaims());
-    }
-    resourceDao.create(version);
+    tx.transaction(() -> {
+      ResourceVersion current = resourceDao.load(new VersionId(id));
+      if (current.isDeleted()) {
+        return;
+      }
+      ResourceVersion version = new ResourceVersion();
+      version.setId(new VersionId(id));
+      version.setDeleted(true);
+      version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
+      if (clientIdentity.get() != null) {
+        version.setAuthor(clientIdentity.get().getClaims());
+      }
+      resourceDao.create(version);
+    });
   }
 
   @Override

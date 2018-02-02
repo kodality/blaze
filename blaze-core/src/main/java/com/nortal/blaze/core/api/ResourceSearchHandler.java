@@ -1,4 +1,4 @@
-package com.nortal.blaze.core.iface;
+package com.nortal.blaze.core.api;
 
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;

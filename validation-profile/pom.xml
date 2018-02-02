@@ -8,17 +8,16 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>com.nortal.blaze</groupId>
-  <artifactId>blaze-core</artifactId>
+  <artifactId>validation-profile</artifactId>
   <packaging>bundle</packaging>
-  <name>blaze-core</name>
+  <name>validation-profile</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
-      <artifactId>blaze-osgi</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>provided</scope>
+      <artifactId>blaze-core</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
@@ -27,19 +26,14 @@
     </dependency>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
-      <artifactId>auth-core</artifactId>
+      <artifactId>conformance</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.core.exception,
-      com.nortal.blaze.core.api,
-      com.nortal.blaze.core.model,
-      com.nortal.blaze.core.model.search,
-      com.nortal.blaze.core.service,
-      com.nortal.blaze.core.util,
+      org.fhir.ucum
     </bundle.export-packages>
   </properties>
 </project>
