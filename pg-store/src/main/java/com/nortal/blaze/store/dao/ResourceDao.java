@@ -64,7 +64,9 @@ public class ResourceDao {
     sb.append("SELECT * FROM resource WHERE 1=1");
     sb.appendIfNotNull(" AND type = ?", criteria.getResourceType());
     sb.appendIfNotNull(" AND id = ?", criteria.getResourceId());
-    sb.appendIfNotNull(" AND last_updated >= ?", DateUtil.parse(criteria.getSince()));
+    if (criteria.getSince() != null) {
+      sb.append(" AND last_updated >= ?", DateUtil.parse(criteria.getSince()));
+    }
     sb.append(" ORDER BY last_updated desc");
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
