@@ -5,6 +5,7 @@ import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.model.search.HistorySearchCriterion;
+import com.nortal.blaze.core.util.DateUtil;
 import com.nortal.blaze.util.sql.FhirJdbcTemplate;
 import com.nortal.blaze.util.sql.SqlBuilder;
 import org.osgi.service.component.annotations.Component;
@@ -63,8 +64,8 @@ public class ResourceDao {
     sb.append("SELECT * FROM resource WHERE 1=1");
     sb.appendIfNotNull(" AND type = ?", criteria.getResourceType());
     sb.appendIfNotNull(" AND id = ?", criteria.getResourceId());
-    sb.appendIfNotNull(" AND last_updated >= to_timestamp(?, 'YYYY-MM-DD\"T\"HH24:MI:SS')", criteria.getSince());
-    sb.append(" ORDER BY last_version desc");
+    sb.appendIfNotNull(" AND last_updated >= ?", DateUtil.parse(criteria.getSince()));
+    sb.append(" ORDER BY last_updated desc");
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
 

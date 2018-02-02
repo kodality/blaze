@@ -16,13 +16,14 @@ public class BundleUtil {
     Bundle bundle = new Bundle();
     bundle.setTotal(total == null ? versions.size() : total);
     bundle.setType(bundleType);
+
     for (ResourceVersion version : versions) {
       BundleEntryComponent entry = bundle.addEntry();
       entry.setResource(ResourceComposer.parse(version.getContent().getValue()));
-      if (version.isDeleted()) {
-        entry.setRequest(new BundleEntryRequestComponent().setMethod(HTTPVerb.DELETE));
-      }
-      // .setFullUrl(version.getId().getResourceId());
+
+      BundleEntryRequestComponent request = new BundleEntryRequestComponent();
+      request.setMethod(version.isDeleted() ? HTTPVerb.DELETE : HTTPVerb.PUT);//XXX PUT OR POST???
+      entry.setRequest(request);
     }
     return bundle;
   }
