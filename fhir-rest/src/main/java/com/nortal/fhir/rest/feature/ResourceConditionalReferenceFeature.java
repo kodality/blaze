@@ -37,7 +37,7 @@ public class ResourceConditionalReferenceFeature implements ResourceSaveHandler 
     Resource resource = representationService.parse(content.getValue());
     ResourcePropertyUtil.findProperties(resource, new HashSet<>(), Reference.class).forEach(reference -> {
       String uri = reference.getReference();
-      if (!uri.contains("?")) {
+      if (uri == null || !uri.contains("?")) {
         return;
       }
       String resourceType = StringUtils.substringBefore(uri, "?");
