@@ -1,5 +1,6 @@
 package com.nortal.fhir.rest.server;
 
+import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
@@ -76,6 +77,9 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   @Override
   public Response vread(String resourceId, Integer ver) {
     ResourceVersion version = service().load(new VersionId(type, resourceId, ver));
+    if (version.isDeleted()) {
+      return Response.status(Status.GONE).header(ETAG, version.getETag()).build();
+    }
 
     ResponseBuilder response = Response.status(Status.OK);
     response.entity(version.getContent());
@@ -111,11 +115,10 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
 
   @Override
   public Response history(String resourceId, UriInfo uriInfo) {
-    // XXX don't know should it be here or not
-    //    ResourceVersion version = service().load(new VersionId(type, resourceId));
-    //    if (version.isDeleted()) {
-    //      return Response.status(Status.GONE).header(ETAG, version.getETag()).build();
-    //    }
+    ResourceVersion version = service().load(new VersionId(type, resourceId));
+    if (version == null) {
+      throw new FhirException(404, "resource id does not exist");//XXX same thrown from inside. ugly
+    }
     HistorySearchCriterion criteria = new HistorySearchCriterion(type, resourceId);
     criteria.setSince(uriInfo.getQueryParameters(true).getFirst(HistorySearchCriterion._SINCE));
     List<ResourceVersion> versions = service().loadHistory(criteria);

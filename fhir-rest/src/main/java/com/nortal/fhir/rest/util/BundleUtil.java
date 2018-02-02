@@ -22,7 +22,10 @@ public class BundleUtil {
       entry.setResource(ResourceComposer.parse(version.getContent().getValue()));
 
       BundleEntryRequestComponent request = new BundleEntryRequestComponent();
-      request.setMethod(version.isDeleted() ? HTTPVerb.DELETE : HTTPVerb.PUT);//XXX PUT OR POST???
+      request.setMethod(version.isDeleted()
+                                            ? HTTPVerb.DELETE
+                                            : version.getId().getVersion() == 1 ? HTTPVerb.POST : HTTPVerb.PUT);
+      //XXX: this is NOT how it should be.
       entry.setRequest(request);
     }
     return bundle;
