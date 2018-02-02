@@ -2,7 +2,6 @@ package com.nortal.blaze.store;
 
 import com.nortal.blaze.auth.ClientIdentity;
 import com.nortal.blaze.core.api.ResourceStorehouse;
-import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.FhirNotFoundException;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
@@ -74,9 +73,6 @@ public class PostgreStorehouse implements ResourceStorehouse {
     ResourceVersion version = resourceDao.load(id);
     if (version == null) {
       throw new FhirNotFoundException(id.getReference() + " not found");
-    }
-    if (id.getVersion() == null && version.isDeleted()) {
-      throw new FhirException(410, "resource deleted");
     }
     decorate(version);
 
