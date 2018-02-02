@@ -50,6 +50,10 @@ public class ResourceService {
     return content;
   }
 
+  public String prepareId() {
+    return storehouse.prepareId();
+  }
+
   public void delete(ResourceId id) {
     storehouse.delete(id);
     indexers.forEach(i -> i.delete(id));

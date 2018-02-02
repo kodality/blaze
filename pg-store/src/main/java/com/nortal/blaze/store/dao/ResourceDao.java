@@ -67,4 +67,8 @@ public class ResourceDao {
     sb.append(" ORDER BY last_version desc");
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
+
+  public String getNextResourceId() {
+    return String.valueOf(jdbcTemplate.queryForObject("select nextval('resource_key_seq')", Long.class));
+  }
 }

@@ -6,7 +6,6 @@ import com.nortal.fhir.rest.RestResourceInitializer;
 import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.JaxRsServer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.endpoint.EndpointException;
 import org.apache.cxf.endpoint.EndpointImpl;
@@ -20,9 +19,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.cxf.service.model.EndpointInfo;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryResponseComponent;
-import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,18 +43,6 @@ public class BundleEntryCxfProcessor {
   private RestResourceInitializer restResourceInitializer;
 
   public BundleEntryResponseComponent perform(BundleEntryComponent entry) {
-    Validate.isTrue(entry.hasRequest() || entry.hasResource());
-    if (!entry.hasRequest()) {
-      entry.setRequest(new BundleEntryRequestComponent());
-      if (entry.getResource().hasId()) {
-        entry.getRequest().setMethod(HTTPVerb.PUT);
-        entry.getRequest().setUrl(entry.getResource().getResourceType().name() + "/" + entry.getResource().getId());
-      } else {
-        entry.getRequest().setMethod(HTTPVerb.POST);
-        entry.getRequest().setUrl(entry.getResource().getResourceType().name());
-      }
-    }
-
     String method = entry.getRequest().getMethod().toCode();
     URI url = URI.create(entry.getRequest().getUrl());
     String type = StringUtils.substringBefore(url.getPath(), "/");

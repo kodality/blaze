@@ -9,19 +9,14 @@ import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
 import com.nortal.blaze.core.service.ResourceService;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
+import com.nortal.fhir.rest.util.ResourcePropertyUtil;
 import com.nortal.fhir.rest.util.SearchUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.osgi.service.component.annotations.Component;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * https://www.hl7.org/fhir/http.html#transaction 
@@ -40,7 +35,7 @@ public class ResourceConditionalReferenceFeature implements ResourceSaveHandler 
   @Override
   public ResourceContent beforeSave(VersionId id, ResourceContent content) {
     Resource resource = representationService.parse(content.getValue());
-    findProperties(resource, new HashSet<>(), Reference.class).forEach(reference -> {
+    ResourcePropertyUtil.findProperties(resource, new HashSet<>(), Reference.class).forEach(reference -> {
       String uri = reference.getReference();
       if (!uri.contains("?")) {
         return;
@@ -64,47 +59,6 @@ public class ResourceConditionalReferenceFeature implements ResourceSaveHandler 
   @Override
   public void afterSave(ResourceVersion savedVersion) {
     // nothing
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T> Stream<T> findProperties(Object object, Set<Object> exclude, Class<T> fieldClazz) {
-    if (object == null) {
-      return Stream.empty();
-    }
-    // if (fieldClazz.equals(object.getClass())) {
-    //   return Stream.of((T) object);
-    // }
-
-    Field[] fields = FieldUtils.getAllFields(object.getClass());
-    return Stream.of(fields).flatMap(field -> {
-      field.setAccessible(true);
-      Object obj = getFieldValue(field, object);
-      if (obj == null) {
-        return Stream.empty();
-      }
-      if (exclude.contains(obj)) {
-        return Stream.empty();
-      }
-      exclude.add(obj);
-      if (fieldClazz.equals(field.getType())) {
-        return Stream.of((T) obj);
-      }
-      if (Type.class.equals(field.getType()) && fieldClazz.equals(obj.getClass())) {
-        return Stream.of((T) obj);
-      }
-      if (obj instanceof Collection) {
-        return ((Collection<?>) obj).stream().flatMap(o -> findProperties(o, exclude, fieldClazz));
-      }
-      return findProperties(obj, exclude, fieldClazz);
-    });
-  }
-
-  private Object getFieldValue(Field field, Object from) {
-    try {
-      return field.get(from);
-    } catch (IllegalArgumentException | IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
   }
 
 }

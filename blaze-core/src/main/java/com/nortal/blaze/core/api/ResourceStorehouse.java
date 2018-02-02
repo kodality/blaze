@@ -17,4 +17,6 @@ public interface ResourceStorehouse {
 
   List<ResourceVersion> loadHistory(HistorySearchCriterion criteria);
 
+  String prepareId();
+
 }

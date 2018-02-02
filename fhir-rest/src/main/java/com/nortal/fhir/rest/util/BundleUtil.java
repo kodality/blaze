@@ -22,7 +22,7 @@ public class BundleUtil {
       if (version.isDeleted()) {
         entry.setRequest(new BundleEntryRequestComponent().setMethod(HTTPVerb.DELETE));
       }
-      // .setId(version.getId().getResourceId());
+      // .setFullUrl(version.getId().getResourceId());
     }
     return bundle;
   }

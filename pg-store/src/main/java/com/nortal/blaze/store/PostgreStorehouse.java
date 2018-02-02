@@ -47,6 +47,11 @@ public class PostgreStorehouse implements ResourceStorehouse {
   }
 
   @Override
+  public String prepareId() {
+    return resourceDao.getNextResourceId();
+  }
+
+  @Override
   public void delete(ResourceId id) {
     tx.transaction(() -> {
       ResourceVersion current = resourceDao.load(new VersionId(id));
