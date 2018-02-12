@@ -10,6 +10,7 @@ docker run -d -t \
   -e JAVA_MAX_MEM="1024M" \
   -e JAVA_PERM_MEM="128M" \
   -e JAVA_MAX_PERM_MEM="256M" \
+  --restart unless-stopped \
   mkroli/karaf
 
 docker cp `dirname $0`/run $name:/
