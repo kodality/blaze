@@ -3,7 +3,7 @@ package com.nortal.fhir.rest.server;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.search.HistorySearchCriterion;
-import com.nortal.blaze.core.service.ResourceService;
+import com.nortal.blaze.core.service.resource.ResourceService;
 import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;

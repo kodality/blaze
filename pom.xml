@@ -185,7 +185,7 @@
     <module>blaze-osgi</module>
     <module>blaze-core</module>
     <module>fhir-structures</module>
-    <module>conformance</module>
+    <module>etc-conformance</module>
     <module>validation-profile</module>
     <module>fhir-rest</module>
     <module>pg-jdbc</module>

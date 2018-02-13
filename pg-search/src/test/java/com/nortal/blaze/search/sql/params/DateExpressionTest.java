@@ -1,13 +1,14 @@
 package com.nortal.blaze.search.sql.params;
 
 import com.nortal.blaze.core.model.search.QueryParam;
+import com.nortal.blaze.service.conformance.TestConformanceHolder;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import com.nortal.fhir.conformance.operations.TestSearchParameterMonitor;
-import java.util.Arrays;
 import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
 import org.hl7.fhir.dstu3.model.SearchParameter;
 import org.junit.Assert;
 import org.junit.Before;
+
+import java.util.Arrays;
 
 public class DateExpressionTest {
   private final DateExpressionProvider testMe = new DateExpressionProvider();
@@ -18,7 +19,7 @@ public class DateExpressionTest {
 //    sp.setBase("NotAResource");
     sp.setCode("barabashka");
     sp.setXpath("h.u.y");
-    TestSearchParameterMonitor.apply(sp);
+    TestConformanceHolder.apply(sp);
   }
 
 //  @Test

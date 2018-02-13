@@ -1,8 +1,8 @@
 package com.nortal.blaze.store;
 
+import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.store.dao.ResourceFunctionsDao;
-import com.nortal.fhir.conformance.definition.ResourceDefinitionListener;
-import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;
@@ -18,7 +18,7 @@ public class ResourceInitializer implements ResourceDefinitionListener {
 
   @Activate
   private void init() {
-    comply(ResourceDefinitionsMonitor.get());
+    comply(ConformanceHolder.getDefinitions());
   }
 
   @Override
@@ -27,7 +27,9 @@ public class ResourceInitializer implements ResourceDefinitionListener {
       return;
     }
     String domainResource = "http://hl7.org/fhir/StructureDefinition/DomainResource";
-    definitions.stream().filter(def -> domainResource.equals(def.getBaseDefinition())).forEach(d -> resourceFunctionsDao.defineResource(d.getName()));
+    definitions.stream()
+        .filter(def -> domainResource.equals(def.getBaseDefinition()))
+        .forEach(d -> resourceFunctionsDao.defineResource(d.getName()));
   }
 
 }

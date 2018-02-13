@@ -24,11 +24,6 @@
       <artifactId>fhir-structures</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.nortal.blaze</groupId>
-      <artifactId>conformance</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
   </dependencies>
 
   <properties>

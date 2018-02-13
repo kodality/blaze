@@ -8,14 +8,14 @@ import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.model.search.HistorySearchCriterion;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
-import com.nortal.blaze.core.service.ResourceService;
+import com.nortal.blaze.core.service.resource.ResourceService;
+import com.nortal.blaze.core.service.resource.SearchUtil;
 import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.core.util.ResourceUtil;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
 import com.nortal.fhir.rest.filter.RequestContext;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.util.BundleUtil;
-import com.nortal.fhir.rest.util.SearchUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -147,9 +147,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   public Response searchForm(MultivaluedMap<String, String> params) {
     params.remove("");
     params.remove(null);// well this is strange
-    SearchCriterion criteria = new SearchCriterion();
-    criteria.setType(type);
-    criteria.setParams(SearchUtil.parse(params, type));
+    SearchCriterion criteria = new SearchCriterion(type, SearchUtil.parse(params, type));
     SearchResult result = service().search(criteria);
     Bundle bundle = BundleUtil.compose(result.getTotal(), result.getEntries(), BundleType.SEARCHSET);
     addPagingLinks(bundle, criteria.getCount(), criteria.getPage());

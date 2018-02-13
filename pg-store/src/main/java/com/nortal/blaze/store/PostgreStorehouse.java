@@ -1,7 +1,7 @@
 package com.nortal.blaze.store;
 
 import com.nortal.blaze.auth.ClientIdentity;
-import com.nortal.blaze.core.api.ResourceStorehouse;
+import com.nortal.blaze.core.api.resource.ResourceStorehouse;
 import com.nortal.blaze.core.exception.FhirNotFoundException;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;

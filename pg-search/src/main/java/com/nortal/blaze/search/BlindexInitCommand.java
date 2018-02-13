@@ -1,8 +1,7 @@
 package com.nortal.blaze.search;
 
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.search.dao.BlindexDao;
-import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
-import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -18,10 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.split;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
-import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.*;
 
 @Command(scope = "blindex", name = "init", description = "init search indexes")
 @Service
@@ -31,13 +27,13 @@ public class BlindexInitCommand implements Action {
 
   @Override
   public Object execute() throws Exception {
-    List<String> defined = ResourceDefinitionsMonitor.get().stream().map(def -> def.getName()).collect(toList());
+    List<String> defined = ConformanceHolder.getDefinitions().stream().map(def -> def.getName()).collect(toList());
     if (CollectionUtils.isEmpty(defined)) {
       System.err.println("will not run. definitions either empty, either definitions not yet loaded.");
       return null;
     }
     Set<String> create = new HashSet<>();
-    for (SearchParameter sp : SearchParameterMonitor.get()) {
+    for (SearchParameter sp : ConformanceHolder.getSearchParams()) {
       if (sp.getExpression() == null) {
         continue;
       }

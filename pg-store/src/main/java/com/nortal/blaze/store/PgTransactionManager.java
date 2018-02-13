@@ -1,7 +1,7 @@
 package com.nortal.blaze.store;
 
-import com.nortal.blaze.core.api.TransactionManager;
-import com.nortal.blaze.core.api.TransactionRef;
+import com.nortal.blaze.core.api.transaction.TransactionManager;
+import com.nortal.blaze.core.api.transaction.TransactionRef;
 import com.nortal.blaze.util.sql.FhirDataSource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

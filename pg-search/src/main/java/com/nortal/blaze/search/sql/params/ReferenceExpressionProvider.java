@@ -1,9 +1,9 @@
 package com.nortal.blaze.search.sql.params;
 
 import com.nortal.blaze.core.model.search.QueryParam;
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.search.sql.SqlToster;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.dstu3.model.CodeType;
@@ -77,7 +77,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
   }
 
   private static Set<String> getParamTargets(QueryParam param) {
-    List<CodeType> targets = SearchParameterMonitor.require(param.getResourceType(), param.getKey()).getTarget();
+    List<CodeType> targets = ConformanceHolder.requireSearchParam(param.getResourceType(), param.getKey()).getTarget();
     return targets.stream().map(c -> c.getValue()).collect(Collectors.toSet());
   }
 

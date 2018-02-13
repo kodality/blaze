@@ -2,19 +2,14 @@ package com.nortal.blaze.search.sql;
 
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.model.search.QueryParam;
-import com.nortal.blaze.search.sql.params.DateExpressionProvider;
-import com.nortal.blaze.search.sql.params.ExpressionProvider;
-import com.nortal.blaze.search.sql.params.NumberExpressionProvider;
-import com.nortal.blaze.search.sql.params.ReferenceExpressionProvider;
-import com.nortal.blaze.search.sql.params.StringExpressionProvider;
-import com.nortal.blaze.search.sql.params.TokenExpressionProvider;
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
+import com.nortal.blaze.search.sql.params.*;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
+import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
 
 public final class SqlToster {
   private static final Map<String, SpecialParamBuilder> specialParams;
@@ -55,7 +50,7 @@ public final class SqlToster {
 
   public static SqlBuilder order(QueryParam param, String alias) {
     String value = param.getValues().get(0);
-    SearchParamType type = SearchParameterMonitor.require(param.getResourceType(), value).getType();
+    SearchParamType type = ConformanceHolder.requireSearchParam(param.getResourceType(), value).getType();
     // String key = param.getKey();
     // if (specialParams.containsKey(key)) {
     // return specialParams.get(key).build(param, alias);

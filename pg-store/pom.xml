@@ -36,7 +36,7 @@
     </dependency>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
-      <artifactId>conformance</artifactId>
+      <artifactId>etc-conformance</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
   </dependencies>

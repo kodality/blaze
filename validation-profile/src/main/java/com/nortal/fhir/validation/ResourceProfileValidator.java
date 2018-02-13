@@ -1,14 +1,14 @@
 package com.nortal.fhir.validation;
 
-import com.nortal.blaze.core.api.ResourceValidator;
+import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
+import com.nortal.blaze.core.api.resource.ResourceValidator;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.model.ResourceContent;
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
-import com.nortal.fhir.conformance.definition.ResourceDefinitionListener;
-import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.context.BaseWorkerContext;
 import org.hl7.fhir.dstu3.context.IWorkerContext;
@@ -40,7 +40,7 @@ public class ResourceProfileValidator implements ResourceValidator, ResourceDefi
 
   @Activate
   private void init() {
-    comply(ResourceDefinitionsMonitor.get());
+    comply(ConformanceHolder.getDefinitions());
   }
 
   @Override
@@ -59,7 +59,7 @@ public class ResourceProfileValidator implements ResourceValidator, ResourceDefi
   @Override
   public void validate(String type, ResourceContent content) {
     //    if(true) return;
-    StructureDefinition definition = ResourceDefinitionsMonitor.getDefinition(type);
+    StructureDefinition definition = ConformanceHolder.getDefinition(type);
     if (definition == null) {
       throw new ServerException("definition for " + type + " not found");
     }

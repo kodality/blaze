@@ -1,10 +1,9 @@
 package com.nortal.fhir.rest;
 
+import com.nortal.blaze.core.api.conformance.CapabilityStatementListener;
+import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.core.util.Osgi;
-import com.nortal.fhir.conformance.capability.CapabilityStatementListener;
-import com.nortal.fhir.conformance.capability.CapabilityStatementMonitor;
-import com.nortal.fhir.conformance.definition.ResourceDefinitionListener;
-import com.nortal.fhir.conformance.definition.ResourceDefinitionsMonitor;
 import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.FhirResourceServerFactory;
 import com.nortal.fhir.rest.server.FhirRootServer;
@@ -13,22 +12,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.classloader.ClassLoaderUtils;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.ConditionalDeleteStatus;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.SystemRestfulInteraction;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.UnknownContentCode;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.*;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -41,7 +31,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
   @Activate
   public void restart() {
     modifiedCapability =
-        modifyCapability(CapabilityStatementMonitor.getCapabilityStatement(), ResourceDefinitionsMonitor.get());
+        modifyCapability(ConformanceHolder.getCapabilityStatement(), ConformanceHolder.getDefinitions());
     comply();
   }
 
@@ -53,13 +43,13 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Override
   public void comply(List<StructureDefinition> definition) {
-    modifiedCapability = modifyCapability(CapabilityStatementMonitor.getCapabilityStatement(), definition);
+    modifiedCapability = modifyCapability(ConformanceHolder.getCapabilityStatement(), definition);
     comply();
   }
 
   @Override
   public void comply(CapabilityStatement capabilityStatement) {
-    modifiedCapability = modifyCapability(capabilityStatement, ResourceDefinitionsMonitor.get());
+    modifiedCapability = modifyCapability(capabilityStatement, ConformanceHolder.getDefinitions());
     comply();
   }
 
@@ -118,7 +108,10 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
       rest.setOperation(null);
       List<String> interactions =
           Arrays.asList("transaction", "batch", SystemRestfulInteraction.HISTORYSYSTEM.toCode());
-      rest.setInteraction(rest.getInteraction().stream().filter(i -> interactions.contains(i.getCode().toCode())).collect(toList()));
+      rest.setInteraction(rest.getInteraction()
+          .stream()
+          .filter(i -> interactions.contains(i.getCode().toCode()))
+          .collect(toList()));
       rest.getResource().forEach(rr -> {
         rr.setConditionalCreate(false);
         rr.setConditionalUpdate(false);

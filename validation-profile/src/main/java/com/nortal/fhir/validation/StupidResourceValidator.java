@@ -1,6 +1,6 @@
 package com.nortal.fhir.validation;
 
-import com.nortal.blaze.core.api.ResourceValidator;
+import com.nortal.blaze.core.api.resource.ResourceValidator;
 import com.nortal.blaze.core.exception.FhirParseException;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;

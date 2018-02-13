@@ -1,7 +1,7 @@
 package com.nortal.fhir.rest.root;
 
-import com.nortal.blaze.core.api.TransactionManager;
-import com.nortal.blaze.core.api.TransactionRef;
+import com.nortal.blaze.core.api.transaction.TransactionManager;
+import com.nortal.blaze.core.api.transaction.TransactionRef;
 import com.nortal.blaze.core.exception.FhirException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hl7.fhir.dstu3.model.Bundle;

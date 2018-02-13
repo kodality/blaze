@@ -31,7 +31,7 @@
     </dependency>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
-      <artifactId>conformance</artifactId>
+      <artifactId>etc-conformance</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
@@ -41,7 +41,7 @@
     </dependency>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
-      <artifactId>conformance</artifactId>
+      <artifactId>blaze-core</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
       <scope>test</scope>

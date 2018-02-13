@@ -1,7 +1,7 @@
 package com.nortal.fhir.rest.root;
 
 import com.nortal.blaze.core.model.VersionId;
-import com.nortal.blaze.core.service.ResourceService;
+import com.nortal.blaze.core.service.resource.ResourceService;
 import com.nortal.blaze.core.util.ResourceUtil;
 import com.nortal.fhir.rest.util.ResourcePropertyUtil;
 import org.hl7.fhir.dstu3.model.Bundle;

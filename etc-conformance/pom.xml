@@ -8,46 +8,26 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>com.nortal.blaze</groupId>
-  <artifactId>blaze-core</artifactId>
+  <artifactId>etc-conformance</artifactId>
   <packaging>bundle</packaging>
-  <name>blaze-core</name>
+  <name>etc-conformance</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
-      <artifactId>blaze-osgi</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>provided</scope>
+      <artifactId>blaze-core</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
       <artifactId>fhir-structures</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.nortal.blaze</groupId>
-      <artifactId>auth-core</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
-        <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.core.exception,
-      com.nortal.blaze.core.util,
-      com.nortal.blaze.core.api,
-      com.nortal.blaze.core.api.*,
-      com.nortal.blaze.core.api.conformance,
-      com.nortal.blaze.core.model,
-      com.nortal.blaze.core.model.*,
-      com.nortal.blaze.core.service,
-      com.nortal.blaze.core.service.*,
     </bundle.export-packages>
   </properties>
 </project>

@@ -2,9 +2,9 @@ package com.nortal.blaze.search.sql.params;
 
 import com.nortal.blaze.core.exception.ServerException;
 import com.nortal.blaze.core.model.search.QueryParam;
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.search.dao.BlindexDao;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import com.nortal.fhir.conformance.searchparam.SearchParameterMonitor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.Stream;
@@ -24,7 +24,7 @@ public abstract class ExpressionProvider {
   }
 
   private static String getPath(String resourceType, String key) {
-    String expr = SearchParameterMonitor.require(resourceType, key).getExpression();
+    String expr = ConformanceHolder.requireSearchParam(resourceType, key).getExpression();
     String path =
         Stream.of(expr.split("\\|")).map((s) -> StringUtils.trim(s)).filter(e -> e.startsWith(resourceType)).findFirst().orElse(null);
     if (StringUtils.isEmpty(path)) {

@@ -1,16 +1,16 @@
 package com.nortal.fhir.rest.feature;
 
-import com.nortal.blaze.core.api.ResourceSaveHandler;
+import com.nortal.blaze.core.api.resource.ResourceSaveHandler;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
-import com.nortal.blaze.core.service.ResourceService;
+import com.nortal.blaze.core.service.resource.ResourceService;
+import com.nortal.blaze.core.service.resource.SearchUtil;
 import com.nortal.blaze.fhir.structure.service.ResourceRepresentationService;
 import com.nortal.fhir.rest.util.ResourcePropertyUtil;
-import com.nortal.fhir.rest.util.SearchUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
