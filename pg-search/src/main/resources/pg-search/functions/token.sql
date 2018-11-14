@@ -3,8 +3,8 @@ CREATE OR REPLACE FUNCTION token(r resource, path text) RETURNS text[] AS $$
        paths as (select (p->>'value')::text[] val, (p->>'namespace')::text[] ns, p->>'elements' elements FROM subpaths(r.type, path, 'token') p),
        subdata as (select unnest(jsonpath(d, elements)) d, val, ns from data, paths)
   SELECT array_agg(v) FROM (
-       SELECT d#>>val FROM subdata
+       SELECT lower(d#>>val) FROM subdata
        union all
-       SELECT COALESCE((d#>>ns), '') || '|' || (d#>>val) FROM subdata WHERE ns IS NOT NULL
+       SELECT COALESCE((lower(d#>>ns)), '') || '|' || (lower(d#>>val)) FROM subdata WHERE ns IS NOT NULL
   ) v(v)
 $$ LANGUAGE SQL IMMUTABLE COST 1000;

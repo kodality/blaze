@@ -1,11 +1,23 @@
-package com.nortal.blaze.store.dao;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.store.dao;
 
-import com.google.gson.Gson;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.model.search.HistorySearchCriterion;
 import com.nortal.blaze.core.util.DateUtil;
+import com.nortal.blaze.core.util.JsonUtil;
 import com.nortal.blaze.util.sql.FhirJdbcTemplate;
 import com.nortal.blaze.util.sql.SqlBuilder;
 import org.osgi.service.component.annotations.Component;
@@ -19,19 +31,22 @@ public class ResourceDao {
   @Reference
   private FhirJdbcTemplate jdbcTemplate;
 
+  public String getNextResourceId() {
+    //TODO: may already exist
+    return String.valueOf(jdbcTemplate.queryForObject("select nextval('resource_id_seq')", Long.class));
+  }
+
   public void create(ResourceVersion version) {
-    Long key = jdbcTemplate.queryForObject("select nextval('resource_key_seq')", Long.class);
     if (version.getId().getResourceId() == null) {
-      version.getId().setResourceId(key.toString());
+      version.getId().setResourceId(getNextResourceId());
     }
     String sql =
-        "INSERT INTO resource (key, type, id, last_version, author, content, sys_status) VALUES (?,?,?,?,?::jsonb,?::jsonb,?)";
+        "INSERT INTO resource (type, id, last_version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
     jdbcTemplate.update(sql,
-                        key,
                         version.getId().getResourceType(),
                         version.getId().getResourceId(),
                         version.getId().getVersion(),
-                        new Gson().toJson(version.getAuthor()),
+                        JsonUtil.toJson(version.getAuthor()),
                         version.getContent() == null ? null : version.getContent().getValue(),
                         version.isDeleted() ? "C" : "A");
   }
@@ -71,7 +86,4 @@ public class ResourceDao {
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
 
-  public String getNextResourceId() {
-    return String.valueOf(jdbcTemplate.queryForObject("select nextval('resource_key_seq')", Long.class));
-  }
 }

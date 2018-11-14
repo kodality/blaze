@@ -1,10 +1,23 @@
-package com.nortal.blaze.core.service.conformance;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.core.service.conformance;
 
 import com.nortal.blaze.core.api.conformance.CapabilityStatementListener;
 import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
 import com.nortal.blaze.core.api.conformance.SearchParameterListener;
-import com.nortal.blaze.core.exception.ServerException;
+import com.nortal.blaze.core.exception.FhirException;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
 import org.hl7.fhir.dstu3.model.SearchParameter;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.osgi.service.component.annotations.Component;
@@ -66,7 +79,8 @@ public class ConformanceHolder {
   public static SearchParameter requireSearchParam(String type, String code) {
     SearchParameter param = getSearchParam(type, code);
     if (param == null) {
-      throw new ServerException(type + "/" + code + " searchparam does not exist in search config");
+      String details = type + "/" + code + " searchparam does not exist in search config";
+      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
     }
     return param;
   }

@@ -1,11 +1,18 @@
-package com.nortal.fhir.rest.interaction;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.fhir.rest.interaction;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
+import com.nortal.blaze.core.model.InteractionType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
@@ -16,7 +23,15 @@ import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResou
 import org.hl7.fhir.dstu3.model.CapabilityStatement.ResourceInteractionComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.SystemInteractionComponent;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
+
+import java.lang.reflect.Method;
+import java.util.*;
+
 public final class InteractionUtil {
+  private static final Map<Method, String> interactionCache = new HashMap<>();
+
   private InteractionUtil() {
     //
   }
@@ -41,6 +56,7 @@ public final class InteractionUtil {
       }
       ops.addAll(create(resourceInteraction.getCode().toCode(), server));
     }
+    ops.addAll(create(InteractionType.OPERATION, server)); //XXX should be here?
     return ops;
   }
 
@@ -86,12 +102,25 @@ public final class InteractionUtil {
     }
   }
 
-  private static String getMethodInteraction(Method m) {
-    Interaction interaction = m.getAnnotation(Interaction.class);
-    if (interaction == null) {
+  public static String getMethodInteraction(Method method) {
+    return interactionCache.computeIfAbsent(method, (m) -> {
+      if (m.isAnnotationPresent(Interaction.class)) {
+        return m.getAnnotation(Interaction.class).value();
+      }
+
+      for (Class<?> iface : m.getDeclaringClass().getInterfaces()) {
+        try {
+          String result = getMethodInteraction(iface.getMethod(m.getName(), m.getParameterTypes()));
+          if (result != null) {
+            return result;
+          }
+        } catch (NoSuchMethodException e) {
+          //continue
+        }
+      }
+
       return null;
-    }
-    return interaction.value();
+    });
   }
 
 }

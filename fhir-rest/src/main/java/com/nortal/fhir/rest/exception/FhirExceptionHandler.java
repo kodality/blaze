@@ -1,12 +1,22 @@
-package com.nortal.fhir.rest.exception;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.fhir.rest.exception;
 
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.filter.RequestContext;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 
 import javax.ws.rs.WebApplicationException;
@@ -16,9 +26,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import static java.util.stream.Collectors.joining;
 
+@Slf4j
 public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
-  private final static Logger LOG = LogManager.getLogger(FhirExceptionHandler.class);
-
   @Override
   public Response toResponse(Throwable e) {
     return getResponse(e);
@@ -34,7 +43,7 @@ public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
       return toResponse((FhirException) root);
     }
 
-    LOG.error("hello", e);
+    log.error("hello", e);
     if (e instanceof WebApplicationException) {
       return ((WebApplicationException) e).getResponse();
     }
@@ -49,7 +58,9 @@ public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
     ResponseBuilder response = Response.status(e.getStatusCode());
     if (e.getIssues() != null) {
       OperationOutcome outcome = new OperationOutcome();
+      outcome.setExtension(e.getExtensions());
       outcome.setIssue(e.getIssues());
+      outcome.setContained(e.getContained());
       String ct = RequestContext.getAccept() == null ? "application/json" : RequestContext.getAccept();
       response.entity(ResourceComposer.compose(outcome, ct));
       response.type(ct);
@@ -60,7 +71,11 @@ public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
   private static void log(FhirException e) {
     String issues = e.getIssues().stream().map(i -> i.getDetails().getText()).collect(joining(", "));
     String msg = "hello " + e.getStatusCode() + " = " + issues;
-    LOG.log(e.getStatusCode() >= 500 ? Level.ERROR : Level.INFO, msg);
+    if (e.getStatusCode() >= 500) {
+      log.error(msg);
+    } else {
+      log.info(msg);
+    }
   }
 
 }

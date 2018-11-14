@@ -27,12 +27,27 @@
     </dependency>
     <dependency>
       <groupId>com.nortal.blaze</groupId>
+      <artifactId>tx-manager</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
       <artifactId>auth-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-        <dependency>
+    <dependency>
+      <groupId>org.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+      <version>9.8.0-8</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

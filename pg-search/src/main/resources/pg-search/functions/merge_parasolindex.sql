@@ -10,7 +10,7 @@ BEGIN
         --EXECUTE format('DELETE FROM %I WHERE resource_key = %s', _blindex.index_name, _resource.key);
         EXECUTE format('INSERT INTO %I (SELECT %s, unnest(''%s''::tstzrange[]))', _blindex.index_name, _resource.key, COALESCE(date(_resource, _blindex.path), '{}'));
       ELSE
-        RAISE EXCEPTION 'unknown type %', _param_type;
+        RAISE EXCEPTION 'unknown type %', _blindex.param_type;
     END CASE;
   END LOOP;
   RETURN new;

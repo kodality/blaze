@@ -24,13 +24,28 @@
       <groupId>org.hl7.fhir</groupId>
       <version>SNAPSHOT</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+      <version>9.8.0-8</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <properties>
     <bundle.export-packages>
       com.nortal.blaze.fhir.structure.api,
-      com.nortal.blaze.fhir.structure.service
+      com.nortal.blaze.fhir.structure.service,
+      com.nortal.blaze.fhir.structure.util
     </bundle.export-packages>
   </properties>
 </project>

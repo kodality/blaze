@@ -1,17 +1,34 @@
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.nortal.blaze.search.sql.params;
 
+import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.search.QueryParam;
+import com.nortal.blaze.core.util.DateUtil;
 import com.nortal.blaze.search.sql.SearchPrefix;
 import com.nortal.blaze.util.sql.SqlBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 public class DateExpressionProvider extends ExpressionProvider {
   private static final Map<Integer, String> intervals;
-  private static final Map<String, String> operators;
+  private static final String[] operators =
+      { null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt };
 
   static {
     intervals = new HashMap<>();
@@ -21,15 +38,8 @@ public class DateExpressionProvider extends ExpressionProvider {
     intervals.put(4, "1 hour");
     intervals.put(5, "1 minute");
     intervals.put(6, "1 second");
-  }
-
-  static {
-    operators = new HashMap<>();
-    operators.put(null, "&&");
-    operators.put(SearchPrefix.le, "<");
-    operators.put(SearchPrefix.lt, "<<");
-    operators.put(SearchPrefix.ge, ">");
-    operators.put(SearchPrefix.gt, ">>");
+    intervals.put(7, "1 second");
+    intervals.put(8, "1 second");
   }
 
   @Override
@@ -62,20 +72,39 @@ public class DateExpressionProvider extends ExpressionProvider {
   }
 
   private static String rangeSql(String field, String value) {
-    SearchPrefix prefix = SearchPrefix.parse(value, operators.keySet().toArray(new String[] {}));
-    return field + " " + operators.get(prefix.getPrefix()) + " " + range(prefix.getValue());
+    SearchPrefix prefix = SearchPrefix.parse(value, operators);
+    String search = range(prefix.getValue());
+    if (prefix.getPrefix() == null) {
+      return field + " && " + search;
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.lt)) {
+      return field + " << " + search;
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.gt)) {
+      return field + " >> " + search;
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.le)) {
+      return "(" + field + " && " + search + " OR " + field + " << " + search + ")";
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.ge)) {
+      return "(" + field + " && " + search + " OR " + field + " >> " + search + ")";
+    }
+
+    throw new FhirException(400, IssueType.INVALID, "prefix " + prefix.getPrefix() + " not supported");
   }
 
   private static String range(String value) {
-    String[] input = StringUtils.split(value, "-T:");
+    value = StringUtils.replace(value, "Z", "+00:00");
+    String[] input = StringUtils.split(value, "-T:+");
     String interval = intervals.get(input.length);
     String[] mask = mask(input);
-    String date = String.format("%s-%s-%sT%s:%s:%s", (Object[]) mask);
+    String date = String.format("%s-%s-%sT%s:%s:%s+%s:%s", (Object[]) mask);
+    DateUtil.parse(date, DateUtil.ISO_DATETIME).orElseThrow(() -> new IllegalArgumentException("Cannot parse date " + date)); //just for validation
     return "range('" + date + "', '" + interval + "')";
   }
 
   private static String[] mask(String[] input) {
-    String[] mask = new String[] { "0000", "01", "01", "00", "00", "00" };
+    String[] mask = new String[] { "0000", "01", "01", "00", "00", "00", "00", "00" };
     System.arraycopy(input, 0, mask, 0, input.length);
     return mask;
   }

@@ -1,8 +1,22 @@
-package com.nortal.blaze.core.model.search;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.core.model.search;
 
-import java.util.List;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QueryParam {
   private final String key;
@@ -10,7 +24,7 @@ public class QueryParam {
   private final SearchParamType type;
   private final String resourceType;
 
-  private QueryParam chain;
+  private List<QueryParam> chains;
   private List<String> values;
 
   public QueryParam(String key, String modifier, SearchParamType type, String resourceType) {
@@ -36,25 +50,28 @@ public class QueryParam {
     return modifier;
   }
 
-  public void setChain(QueryParam chain) {
+  public void addChain(QueryParam chain) {
     Validate.isTrue(values == null);
-    this.chain = chain;
+    if (chains == null) {
+      chains = new ArrayList<>();
+    }
+    this.chains.add(chain);
   }
 
-  public QueryParam getChain() {
-    return chain;
+  public List<QueryParam> getChains() {
+    return chains;
   }
 
   public void setValues(List<String> values) {
-    if (chain != null) {
-      chain.setValues(values);
+    if (chains != null) {
+      chains.forEach(c -> c.setValues(values));
       return;
     }
     this.values = values;
   }
 
   public List<String> getValues() {
-    Validate.isTrue(chain == null);
+    Validate.isTrue(chains == null);
     return values;
   }
 

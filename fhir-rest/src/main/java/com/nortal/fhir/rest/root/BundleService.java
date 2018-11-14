@@ -1,8 +1,23 @@
-package com.nortal.fhir.rest.root;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.fhir.rest.root;
 
-import com.nortal.blaze.core.api.transaction.TransactionManager;
-import com.nortal.blaze.core.api.transaction.TransactionRef;
 import com.nortal.blaze.core.exception.FhirException;
+import com.nortal.blaze.core.model.search.SearchCriterion;
+import com.nortal.blaze.core.model.search.SearchResult;
+import com.nortal.blaze.core.service.resource.ResourceSearchService;
+import com.nortal.blaze.core.service.resource.SearchUtil;
+import com.nortal.blaze.tx.TransactionService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
@@ -10,48 +25,65 @@ import org.hl7.fhir.dstu3.model.Bundle.BundleEntryResponseComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Supplier;
-
-import static java.util.stream.Collectors.toList;
 
 @Component(immediate = true, service = BundleService.class)
 public class BundleService {
   @Reference
+  private ResourceSearchService searchService;
+  @Reference
   private BundleReferenceHandler bundleReferenceHandler;
   @Reference
   private BundleEntryCxfProcessor bundleEntryProcessor;
-  @Reference(policy = ReferencePolicy.DYNAMIC)
-  private final List<TransactionManager> txManagers = new ArrayList<>();
+  @Reference
+  private TransactionService tx;
 
-  public Bundle save(Bundle bundle) {
+  public Bundle save(Bundle bundle, String prefer) {
     if (bundle.getEntry().stream().anyMatch(e -> !e.hasRequest())) {
-      throw new FhirException(400, "request element required");
+      throw new FhirException(400, IssueType.INVALID, "Bundle.request element required");
     }
-    bundleReferenceHandler.replaceIds(bundle);
     bundle.getEntry().sort(new EntityMethodOrderComparator());
 
     if (bundle.getType() == BundleType.BATCH) {
-      return batch(bundle);
+      return batch(bundle, prefer);
     }
     if (bundle.getType() == BundleType.TRANSACTION) {
-      return transaction(bundle);
+      validateTransaction(bundle);
+      bundleReferenceHandler.replaceIds(bundle);
+      return transaction(bundle, prefer);
     }
-    throw new FhirException(400, "only batch or transaction supported");
+    throw new FhirException(400, IssueType.INVALID, "only batch or transaction supported");
   }
 
-  private Bundle batch(Bundle bundle) {
+  private void validateTransaction(Bundle bundle) {
+    bundle.getEntry().forEach(entry -> {
+      if (entry.getRequest().getMethod() == HTTPVerb.POST && entry.getRequest().getIfNoneExist() != null) {
+        String ifNoneExist = entry.getRequest().getIfNoneExist() + "&_count=0";
+        String type = entry.getResource().getResourceType().name();
+        SearchCriterion criteria = new SearchCriterion(type, SearchUtil.parse(ifNoneExist, type));
+        SearchResult result = searchService.search(criteria);
+        if (result.getTotal() == 1) {
+          entry.getRequest().setMethod(HTTPVerb.NULL); //ignore
+        }
+        if (result.getTotal() > 1) {
+          String msg = "was expecting 0 or 1 resources. found " + result.getTotal();
+          throw new FhirException(412, IssueType.PROCESSING, msg);
+        }
+      }
+    });
+  }
+
+  private Bundle batch(Bundle bundle, String prefer) {
     Bundle responseBundle = new Bundle();
     bundle.getEntry().forEach(entry -> {
       try {
-        responseBundle.addEntry(perform(entry));
+        responseBundle.addEntry(perform(entry, prefer));
       } catch (Exception e) {
         FhirException fhirException = findFhirException(e);
         if (fhirException != null) {
@@ -60,7 +92,9 @@ public class BundleService {
           OperationOutcome outcome = new OperationOutcome();
           outcome.setIssue(fhirException.getIssues());
           responseEntry.setOutcome(outcome);
-          responseBundle.addEntry().setResponse(responseEntry);
+          BundleEntryComponent responseBundleEntry = responseBundle.addEntry();
+          responseBundleEntry.addLink().setRelation("alternate").setUrl(entry.getFullUrl());
+          responseBundleEntry.setResponse(responseEntry);
           return;
         }
         throw new RuntimeException("entry: " + entry.getFullUrl(), e.getCause());
@@ -70,44 +104,37 @@ public class BundleService {
     return responseBundle;
   }
 
-  private Bundle transaction(Bundle bundle) {
-    return transaction(() -> {
+  private Bundle transaction(Bundle bundle, String prefer) {
+    return tx.transaction(() -> {
       Bundle responseBundle = new Bundle();
-      bundle.getEntry().forEach(entry -> responseBundle.addEntry(perform(entry)));
+      bundle.getEntry().forEach(entry -> {
+        try {
+          responseBundle.addEntry(perform(entry, prefer));
+        } catch (Exception e) {
+          FhirException fhirException = findFhirException(e);
+          if (fhirException != null) {
+            fhirException.addExtension("fullUrl", entry.getFullUrl());
+            fhirException.getIssues().forEach(i -> {
+              String expr = "Bundle.entry[" + bundle.getEntry().indexOf(entry) + "]";
+              i.addExpression(expr);
+            });
+          }
+          throw e;
+        }
+      });
       responseBundle.setType(BundleType.TRANSACTIONRESPONSE);
       return responseBundle;
     });
   }
 
-  private BundleEntryComponent perform(BundleEntryComponent entry) {
-    BundleEntryResponseComponent responseEntry = bundleEntryProcessor.perform(entry);
-    BundleEntryComponent newEntry = new BundleEntryComponent();
-    newEntry.setResponse(responseEntry);
-    newEntry.addLink().setRelation("alternate").setUrl(entry.getFullUrl());
-    return newEntry;
-  }
-
-  private <T> T transaction(Supplier<T> fn) {
-    List<TransactionRef> txs = txManagers.stream().map(tx -> tx.requireTransaction()).collect(toList());
-    T returnme = null;
-    try {
-      returnme = fn.get();
-    } catch (Throwable ex) {
-      txs.forEach(tx -> tx.rollback(ex));
-      throw ex;
-    } finally {
-      txs.forEach(tx -> tx.cleanupTransaction());
+  private BundleEntryComponent perform(BundleEntryComponent entry, String prefer) {
+    if (entry.getRequest().getMethod() == HTTPVerb.NULL) {
+      //XXX hack  @see #validateTransaction
+      return new BundleEntryComponent().setResponse(new BundleEntryResponseComponent().setStatus("200"));
     }
-    txs.forEach(tx -> tx.commit());
-    return returnme;
-  }
-
-  protected void bind(TransactionManager txManager) {
-    txManagers.add(txManager);
-  }
-
-  protected void unbind(TransactionManager txManager) {
-    txManagers.remove(txManager);
+    BundleEntryComponent responseEntry = bundleEntryProcessor.perform(entry, prefer);
+    responseEntry.addLink().setRelation("alternate").setUrl(entry.getFullUrl());
+    return responseEntry;
   }
 
   private FhirException findFhirException(Throwable e) {

@@ -22,3 +22,8 @@ alter table resource alter column content DROP NOT NULL;
 --changeset blaze:resource-last_updated_timestamptz dbms:postgresql
 alter table resource alter column last_updated type timestamptz
 --rollback select 1
+
+--changeset blaze:resource_key_seq  dbms:postgresql
+CREATE SEQUENCE resource_id_seq INCREMENT 1 MINVALUE 1;
+SELECT setval('resource_id_seq', nextval('resource_key_seq'));
+--rollback select 1

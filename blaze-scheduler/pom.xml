@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.nortal</groupId>
+    <artifactId>blaze</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.nortal.blaze</groupId>
+  <artifactId>blaze-scheduler</artifactId>
+  <packaging>bundle</packaging>
+  <name>blaze-scheduler</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.karaf.scheduler</groupId>
+      <artifactId>org.apache.karaf.scheduler.core</artifactId>
+      <version>4.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>blaze-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>pg-jdbc</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>pg-whiplash</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <bundle.export-packages>
+      com.nortal.blaze.scheduler.api
+    </bundle.export-packages>
+  </properties>
+</project>

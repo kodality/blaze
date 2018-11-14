@@ -1,27 +1,47 @@
-package com.nortal.fhir.rest.server;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.fhir.rest.server;
 
 import com.nortal.blaze.core.exception.FhirException;
-import com.nortal.blaze.core.model.ResourceContent;
+import com.nortal.blaze.core.model.InteractionType;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.model.search.HistorySearchCriterion;
 import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.core.model.search.SearchResult;
+import com.nortal.blaze.core.service.resource.ResourceOperationService;
+import com.nortal.blaze.core.service.resource.ResourceSearchService;
 import com.nortal.blaze.core.service.resource.ResourceService;
 import com.nortal.blaze.core.service.resource.SearchUtil;
 import com.nortal.blaze.core.util.Osgi;
 import com.nortal.blaze.core.util.ResourceUtil;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
+import com.nortal.blaze.fhir.structure.api.ResourceComposer;
+import com.nortal.blaze.fhir.structure.api.ResourceContent;
 import com.nortal.fhir.rest.filter.RequestContext;
 import com.nortal.fhir.rest.interaction.InteractionUtil;
 import com.nortal.fhir.rest.util.BundleUtil;
+import com.nortal.fhir.rest.util.PreferredReturn;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -29,6 +49,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 public class FhirResourceServer extends JaxRsServer implements FhirResourceRest {
@@ -48,6 +69,14 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
 
   private ResourceService service() {
     return Osgi.requireBean(ResourceService.class);
+  }
+
+  private ResourceSearchService searchService() {
+    return Osgi.requireBean(ResourceSearchService.class);
+  }
+
+  private ResourceOperationService operationService() {
+    return Osgi.requireBean(ResourceOperationService.class);
   }
 
   @Override
@@ -89,22 +118,75 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   }
 
   @Override
-  public Response create(String body, String contentType) {
+  public Response create(String body, String contentType, HttpHeaders headers) {
+    String ifNoneExist = headers == null ? null : headers.getHeaderString("If-None-Exist");
+    if (ifNoneExist != null) {
+      ifNoneExist += "&_count=0";
+      SearchCriterion criteria = new SearchCriterion(type, SearchUtil.parse(ifNoneExist, type));
+      SearchResult result = searchService().search(criteria);
+      if (result.getTotal() == 1) {
+        return Response.status(Status.OK).build();
+      }
+      if (result.getTotal() > 1) {
+        String er = "was expecting 0 or 1 resources. found " + result.getTotal();
+        throw new FhirException(412, IssueType.PROCESSING, er);
+      }
+    }
+
     ResourceContent content = new ResourceContent(body, contentType);
-    ResourceVersion version = service().save(new VersionId(type), content);
-    return Response.status(Status.CREATED).location(uri(version)).build();
+    ResourceVersion version = service().save(new ResourceId(type), content, InteractionType.CREATE);
+    String prefer = PreferredReturn.parse(headers);
+    return created(version, prefer);
   }
 
   @Override
-  public Response update(String resourceId, String body, String contentType, String contentLocation) {
+  public Response conditionalUpdate(String body, UriInfo uriInfo, String contentType, HttpHeaders headers) {
+    MultivaluedMap<String, String> params = uriInfo.getQueryParameters(true);
+    params.put(SearchCriterion._COUNT, Collections.singletonList("1"));
+    SearchResult result = searchService().search(type, params);
+    if (result.getTotal() > 1) {
+      throw new FhirException(400, IssueType.PROCESSING, "was expecting 1 or 0 resources. found " + result.getTotal());
+    }
+    String resourceId = result.getTotal() == 1 ? result.getEntries().get(0).getId().getResourceId() : null;
+
+    return update(resourceId, body, contentType, headers);
+  }
+
+  @Override
+  public Response update(String resourceId, String body, String contentType, HttpHeaders headers) {
+    String contentLocation = headers == null ? null : headers.getHeaderString("Content-Location");
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(body, contentType);
-    ResourceVersion version = service().save(new VersionId(type, resourceId, ver), content);
+    ResourceVersion version = service().save(new VersionId(type, resourceId, ver), content, InteractionType.UPDATE);
 
-    ResponseBuilder response = Response.status(Status.OK);
+    String prefer = PreferredReturn.parse(headers);
+    return version.getId().getVersion() == 1 ? created(version, prefer) : updated(version, prefer);
+  }
+
+  private Response created(ResourceVersion version, String preferedReturn) {
+    ResponseBuilder response = Response.status(Status.CREATED).location(uri(version));
+    preferedBody(version, preferedReturn, response);
+    return response.build();
+  }
+
+  private Response updated(ResourceVersion version, String preferedReturn) {
+    ResponseBuilder response = Response.ok();
     response.contentLocation(uri(version));
     response.lastModified(version.getModified());
+    preferedBody(version, preferedReturn, response);
     return response.build();
+  }
+
+  private void preferedBody(ResourceVersion version, String preferedReturn, ResponseBuilder response) {
+    if (StringUtils.equals(preferedReturn, PreferredReturn.representation)) {
+      response.entity(version.getContent());
+      return;
+    }
+    if (StringUtils.equals(preferedReturn, PreferredReturn.OperationOutcome)) {
+      OperationOutcome outcome = new OperationOutcome();
+      response.entity(ResourceComposer.compose(outcome, "json"));
+      return;
+    }
   }
 
   @Override
@@ -117,7 +199,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   public Response history(String resourceId, UriInfo uriInfo) {
     ResourceVersion version = service().load(new VersionId(type, resourceId));
     if (version == null) {
-      throw new FhirException(404, "resource id does not exist");//XXX same thrown from inside. ugly
+      throw new FhirException(404, IssueType.NOTFOUND, type + "/" + resourceId + " not found");
     }
     HistorySearchCriterion criteria = new HistorySearchCriterion(type, resourceId);
     criteria.setSince(uriInfo.getQueryParameters(true).getFirst(HistorySearchCriterion._SINCE));
@@ -145,13 +227,43 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
 
   @Override
   public Response searchForm(MultivaluedMap<String, String> params) {
-    params.remove("");
-    params.remove(null);// well this is strange
+    //    params.keySet().forEach(key -> params.put(key, params.get(key).stream().map(v -> decode(v)).collect(toList())));
     SearchCriterion criteria = new SearchCriterion(type, SearchUtil.parse(params, type));
-    SearchResult result = service().search(criteria);
-    Bundle bundle = BundleUtil.compose(result.getTotal(), result.getEntries(), BundleType.SEARCHSET);
+    SearchResult result = searchService().search(criteria);
+    Bundle bundle = BundleUtil.compose(result);
     addPagingLinks(bundle, criteria.getCount(), criteria.getPage());
     return Response.status(Status.OK).entity(bundle).build();
+  }
+
+  @Override
+  public Response instanceOperation(String resourceId, String operation, String body, String contentType) {
+    if (!operation.startsWith("$")) {
+      throw new FhirException(400, IssueType.INVALID, "operation must start with $");
+    }
+    ResourceId id = new ResourceId(type, resourceId);
+    ResourceContent content = new ResourceContent(body, contentType);
+    ResourceContent response = operationService().runInstanceOperation(operation, id, content);
+    return Response.status(Status.OK).entity(response).build();
+  }
+
+  @Override
+  public Response instanceOperation_(String resourceId, String operation, UriInfo uriInfo) {
+    throw new FhirException(501, IssueType.NOTSUPPORTED, "GET operation not implemented");
+  }
+
+  @Override
+  public Response typeOperation(String operation, String body, String contentType) {
+    if (!operation.startsWith("$")) {
+      throw new FhirException(400, IssueType.INVALID, "operation must start with $");
+    }
+    ResourceContent content = new ResourceContent(body, contentType);
+    ResourceContent response = operationService().runTypeOperation(operation, type, content);
+    return Response.status(Status.OK).entity(response).build();
+  }
+
+  @Override
+  public Response typeOperation_(String operation, UriInfo uriInfo) {
+    throw new FhirException(501, IssueType.NOTSUPPORTED, "GET operation not implemented");
   }
 
   private void addPagingLinks(Bundle bundle, Integer count, Integer page) {

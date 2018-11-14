@@ -1,59 +1,78 @@
-package com.nortal.blaze.core.service.resource;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.core.service.resource;
 
 import com.nortal.blaze.core.api.resource.*;
-import com.nortal.blaze.core.exception.ServerException;
-import com.nortal.blaze.core.model.ResourceContent;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.model.search.HistorySearchCriterion;
-import com.nortal.blaze.core.model.search.SearchCriterion;
-import com.nortal.blaze.core.model.search.SearchResult;
+import com.nortal.blaze.core.util.ResourceUtil;
+import com.nortal.blaze.fhir.structure.api.ResourceContent;
+import com.nortal.blaze.tx.TransactionService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.nortal.blaze.core.api.resource.ResourceAfterSaveInterceptor.AFTER_TRANSACTION;
+import static com.nortal.blaze.core.api.resource.ResourceAfterSaveInterceptor.TRANSACTION_ENDING;
+import static com.nortal.blaze.core.api.resource.ResourceBeforeSaveInterceptor.*;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
+
 @Component(immediate = true, service = ResourceService.class)
 public class ResourceService {
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+  @Reference(cardinality = OPTIONAL)
   private volatile ResourceStorehouse storehouse;
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+  @Reference(cardinality = OPTIONAL)
   private volatile ResourceSearchHandler searchHandler;
   @Reference
-  private final List<ResourceIndexer> indexers = new ArrayList<>();
-  @Reference(policy = ReferencePolicy.DYNAMIC)
-  private final List<ResourceSaveHandler> handlers = new ArrayList<>();
-  @Reference(policy = ReferencePolicy.DYNAMIC)
-  private final List<ResourceValidator> validators = new ArrayList<>();
+  private TransactionService tx;
 
-  public ResourceVersion save(VersionId id, ResourceContent input) {
-    validators.forEach(v -> v.validate(id.getResourceType(), input));
-    ResourceContent content = beforeSave(id, input);
-    ResourceVersion version = storehouse.save(id, content);
-    indexers.forEach(i -> i.index(version));
-    handlers.forEach(h -> h.afterSave(version));
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceBeforeSaveInterceptor.class)
+  private final Map<String, List<ResourceBeforeSaveInterceptor>> beforeSaveInterceptors = new HashMap<>();
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceAfterSaveInterceptor.class)
+  private final Map<String, List<ResourceAfterSaveInterceptor>> afterSaveInterceptors = new HashMap<>();
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceAfterDeleteInterceptor.class)
+  private final List<ResourceAfterDeleteInterceptor> afterDeleteInterceptor = new ArrayList<>();
+
+  public ResourceVersion save(ResourceId id, ResourceContent content, String interaction) {
+    interceptBeforeSave(INPUT_VALIDATION, id, content, interaction);
+    interceptBeforeSave(NORMALIZATION, id, content, interaction);
+    interceptBeforeSave(BUSINESS_VALIDATION, id, content, interaction);
+
+    id.setResourceId(id.getResourceId() == null ? generateNewId() : id.getResourceId());
+    interceptBeforeSave(BEFORE_TRANSACTION, id, content, interaction);
+    ResourceVersion version = tx.transaction(() -> {
+      interceptBeforeSave(TRANSACTION_STARTING, id, content, interaction);
+      ResourceVersion ver = store(id, content);
+      interceptAfterSave(TRANSACTION_ENDING, ver);
+      return ver;
+    });
+    interceptAfterSave(AFTER_TRANSACTION, version);
     return version;
   }
 
-  private ResourceContent beforeSave(VersionId id, ResourceContent content) {
-    for (ResourceSaveHandler handler : handlers) {
-      content = handler.beforeSave(id, content);
-    }
-    return content;
-  }
-
-  public String prepareId() {
-    return storehouse.prepareId();
-  }
-
-  public void delete(ResourceId id) {
-    storehouse.delete(id);
-    indexers.forEach(i -> i.delete(id));
+  /**
+   * @param reference  ResourceType/id
+   */
+  public ResourceVersion load(String reference) {
+    return load(ResourceUtil.parseReference(reference));
   }
 
   public ResourceVersion load(VersionId id) {
@@ -64,48 +83,56 @@ public class ResourceService {
     return storehouse.loadHistory(criteria);
   }
 
-  public SearchResult search(String resourceType, Map<String, List<String>> params) {
-    return search(new SearchCriterion(resourceType, SearchUtil.parse(params, resourceType)));
+  public void delete(ResourceId id) {
+    storehouse.delete(id);
+    afterDeleteInterceptor.forEach(i -> i.delete(id));
   }
 
-  public SearchResult search(SearchCriterion criteria) {
-    if (searchHandler == null) {
-      throw new ServerException("search not installed");
+  /**
+   * use with caution. only business logic
+   */
+  public ResourceVersion store(ResourceId id, ResourceContent content) {
+    return storehouse.save(id, content);
+  }
+
+  public String generateNewId() {
+    return storehouse.generateNewId();
+  }
+
+  private void interceptBeforeSave(String phase, ResourceId id, ResourceContent content, String interaction) {
+    if (beforeSaveInterceptors.containsKey(phase)) {
+      beforeSaveInterceptors.get(phase).forEach(i -> i.handle(id, content, interaction));
     }
-    SearchResult result = searchHandler.search(criteria);
-    if (result.isEmpty()) {
-      return result;
+  }
+
+  private void interceptAfterSave(String phase, ResourceVersion version) {
+    if (afterSaveInterceptors.containsKey(phase)) {
+      afterSaveInterceptors.get(phase).forEach(i -> i.handle(version));
     }
-    for (ResourceVersion entry : result.getEntries()) {
-      if (entry.getContent() == null) {
-        entry.setContent(load(entry.getId()).getContent());
-      }
-    }
-    return result;
   }
 
-  protected void bind(ResourceIndexer indexer) {
-    this.indexers.add(indexer);
+  protected void bind(ResourceBeforeSaveInterceptor interceptor) {
+    this.beforeSaveInterceptors.computeIfAbsent(interceptor.getPhase(), p -> new ArrayList<>()).add(interceptor);
   }
 
-  protected void bind(ResourceSaveHandler handler) {
-    handlers.add(handler);
+  protected void unbind(ResourceBeforeSaveInterceptor interceptor) {
+    this.beforeSaveInterceptors.values().forEach(l -> l.remove(interceptor));
   }
 
-  protected void bind(ResourceValidator validator) {
-    validators.add(validator);
+  protected void bind(ResourceAfterSaveInterceptor interceptor) {
+    this.afterSaveInterceptors.computeIfAbsent(interceptor.getPhase(), p -> new ArrayList<>()).add(interceptor);
   }
 
-  protected void unbind(ResourceIndexer indexer) {
-    indexers.remove(indexer);
+  protected void unbind(ResourceAfterSaveInterceptor interceptor) {
+    this.afterSaveInterceptors.values().forEach(l -> l.remove(interceptor));
   }
 
-  protected void unbind(ResourceSaveHandler handler) {
-    handlers.remove(handler);
+  protected void bind(ResourceAfterDeleteInterceptor interceptor) {
+    this.afterDeleteInterceptor.add(interceptor);
   }
 
-  protected void unbind(ResourceValidator validator) {
-    validators.remove(validator);
+  protected void unbind(ResourceAfterDeleteInterceptor interceptor) {
+    this.afterDeleteInterceptor.remove(interceptor);
   }
 
 }

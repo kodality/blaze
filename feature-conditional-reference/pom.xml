@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.nortal</groupId>
+    <artifactId>blaze</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.nortal.blaze</groupId>
+  <artifactId>feature-conditional-reference</artifactId>
+  <packaging>bundle</packaging>
+  <name>feature-conditional-reference</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.nortal.blaze</groupId>
+      <artifactId>fhir-rest</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+  </dependencies>
+
+
+  <properties>
+    <bundle.export-packages>
+    </bundle.export-packages>
+  </properties>
+</project>

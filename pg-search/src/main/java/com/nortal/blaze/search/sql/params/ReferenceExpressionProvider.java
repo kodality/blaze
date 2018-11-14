@@ -1,4 +1,16 @@
-package com.nortal.blaze.search.sql.params;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.search.sql.params;
 
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
@@ -21,7 +33,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder makeExpression(QueryParam param, String alias) {
-    Validate.isTrue(param.getChain() == null);
+    Validate.isTrue(param.getChains() == null);
     List<SqlBuilder> ors = param.getValues().stream().map(v -> reference(v, param, alias)).collect(toList());
     return new SqlBuilder().or(ors);
   }
@@ -51,7 +63,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
 
   private static SqlBuilder chain(QueryParam param, String parentAlias) {
     SqlBuilder sb = new SqlBuilder();
-    if (param.getChain() == null) {
+    if (param.getChains() == null) {
       sb.and("(").append(SqlToster.condition(param, parentAlias)).append(")");
       return sb;
     }
@@ -59,8 +71,10 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
     String alias = generateAlias(refs.length == 1 ? refs[0].toLowerCase() : "friends");
     sb.append("INNER JOIN resource " + alias);
     sb.append(" ON ").in(alias + ".type", (Object[]) refs);
-    sb.and(String.format("reference(%s, %s) && ref(%s.type, %s.id)", parentAlias, path(param), alias, alias));
-    sb.append(chain(param.getChain(), alias));
+    String path = path(param);
+    path = path.equals("'agent.who'") ? "'agent.whoReference'" : path;//XXX haha 
+    sb.and(String.format("reference(%s, %s) && ref(%s.type, %s.id)", parentAlias, path, alias, alias));
+    sb.append(chain(param.getChains(), alias));
     return sb;
   }
 
@@ -88,6 +102,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
   // SearchParameter confSearchParameter = SearchParameterMonitor.get(param.getResourceType(), param.getKey());
   // confSearchParameter.getTarget()
   // }
+  
 
   private static class ThreadLocalInteger extends ThreadLocal<Map<String, Integer>> {
     @Override

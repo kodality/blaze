@@ -1,13 +1,26 @@
-package com.nortal.blaze.search;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.search;
 
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.search.dao.BlindexDao;
+import com.nortal.blaze.search.util.FhirPathHackUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.hl7.fhir.dstu3.model.SearchParameter;
+import org.osgi.service.component.annotations.Activate;
 import org.postgresql.util.PSQLException;
 
 import java.util.HashSet;
@@ -17,6 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.*;
 
 @Command(scope = "blindex", name = "init", description = "init search indexes")
@@ -25,6 +39,11 @@ public class BlindexInitCommand implements Action {
   @Reference
   private BlindexDao blindexDao;
 
+  @Activate
+  public void init() throws Exception {
+    execute();
+  }
+
   @Override
   public Object execute() throws Exception {
     List<String> defined = ConformanceHolder.getDefinitions().stream().map(def -> def.getName()).collect(toList());
@@ -32,26 +51,22 @@ public class BlindexInitCommand implements Action {
       System.err.println("will not run. definitions either empty, either definitions not yet loaded.");
       return null;
     }
-    Set<String> create = new HashSet<>();
-    for (SearchParameter sp : ConformanceHolder.getSearchParams()) {
-      if (sp.getExpression() == null) {
-        continue;
-      }
-      List<String> exprs = Stream.of(split(sp.getExpression(), "|")).map((s) -> trim(s)).filter(s -> {
-        return defined.contains(substringBefore(s, "."));
-      }).collect(toList());
-      create.addAll(exprs);
-    }
+    Set<String> create =
+        ConformanceHolder.getSearchParams().stream().filter(sp -> sp.getExpression() != null).flatMap(sp -> {
+          return Stream.of(split(sp.getExpression(), "|"))
+              .map((s) -> trim(s))
+              .map(s -> FhirPathHackUtil.replaceAs(s))
+              .filter(s -> defined.contains(substringBefore(s, ".")));
+        }).collect(toSet());
 
     Set<String> current = blindexDao.load().stream().map(i -> i.getKey()).collect(Collectors.toSet());
-    HashSet<String> ignore = new HashSet<>(create);
-    ignore.retainAll(current);
-    create.removeAll(ignore);
-    current.removeAll(ignore);
+    Set<String> drop = new HashSet<>(current);
+    drop.removeAll(create);
+    create.removeAll(current);
     System.out.println("currently indexed: " + current + "\n");
     System.out.println("need to create: " + create + "\n");
-    System.out.println("need to remove: " + current + "\n");
-    save(create, current);
+    System.out.println("need to remove: " + drop + "\n");
+    save(create, drop);
     blindexDao.init();
     return null;
   }

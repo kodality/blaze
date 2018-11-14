@@ -1,31 +1,46 @@
-package com.nortal.blaze.search.sql.params;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.search.sql.params;
 
+import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class StringExpressionProvider extends ExpressionProvider {
   private static final char S = '`';// separator
-  private static final Map<String, Function<String, String>> patterns;
-
-  static {
-    patterns = new HashMap<>();
-    patterns.put(null, v -> S + v);// default. 'starts-with'
-    patterns.put("exact", v -> S + v + S);
-    patterns.put("contains", v -> v);
-  }
 
   @Override
   public SqlBuilder makeExpression(QueryParam param, String alias) {
     String field = String.format("string(%s, %s)", alias, path(param));
     SqlBuilder sb = new SqlBuilder(field);
-    return sb.append(" ~* ?", any(param.getValues(), patterns.get(param.getModifier())));
+
+    if (param.getModifier() == null) {
+      return sb.append(" ~* ?", any(param.getValues(), v -> S + v));
+    }
+    if (param.getModifier().equals("contains")) {
+      return sb.append(" ~* ?", any(param.getValues(), v -> v));
+    }
+    if (param.getModifier().equals("exact")) {
+      return sb.append(" ~ ?", any(param.getValues(), v -> S + v + S));
+    }
+
+    throw new FhirException(400, IssueType.INVALID, "modifier " + param.getModifier() + " not supported");
   }
 
   @Override
@@ -34,7 +49,7 @@ public class StringExpressionProvider extends ExpressionProvider {
   }
 
   private static String any(List<String> values, Function<String, String> mapper) {
-    return StringUtils.join(values.stream().map(mapper).collect(Collectors.toList()), "|");
+    return values.stream().map(mapper).collect(joining("|"));
   }
 
 }

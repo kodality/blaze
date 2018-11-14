@@ -10,7 +10,7 @@ create table search_configuration (
 );
 --rollback drop table search_configuration;
 
---changeset blaze:search_configuration-data2 dbms:postgresql
+--changeset blaze:search_configuration-data3 dbms:postgresql
 delete from search_configuration;
 insert into search_configuration values (1,'date', 'date', array['{"start":"{}", "end":"{}"}']::jsonb[]);
 insert into search_configuration values (2,'instant', 'date', array['{"start":"{}", "end":"{}"}']::jsonb[]);
@@ -24,4 +24,5 @@ insert into search_configuration values (8,'HumanName', 'string', array['{"value
 insert into search_configuration values (9,'Reference', 'reference', array['{"value":"{reference}"}']::jsonb[]);
 insert into search_configuration values (10,'Period', 'date', array['{"start":"{start}", "end":"{end}"}']::jsonb[]);
 insert into search_configuration values (11,'Quantity', 'number', array['{"value":"{value}"}']::jsonb[]);
+insert into search_configuration values (12,'boolean', 'token', array['{"value":"{}"}']::jsonb[]);
 --rollback delete from search_configuration;

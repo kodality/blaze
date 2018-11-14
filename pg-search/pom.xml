@@ -51,13 +51,17 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+      <version>9.8.0-8</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <properties>
     <bundle.export-packages>
     </bundle.export-packages>
-    <bundle.import-packages>
-      org.apache.karaf.shell.console
-    </bundle.import-packages>
   </properties>
 </project>

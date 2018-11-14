@@ -1,13 +1,26 @@
-package com.nortal.blaze.search;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.search;
 
 import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
+import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.search.dao.ResourceStructureDao;
 import com.nortal.blaze.search.model.StructureElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.ElementDefinition;
-import org.hl7.fhir.dstu3.model.ElementDefinition.TypeRefComponent;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -19,6 +32,11 @@ public class StructureDefinitionUpdater implements ResourceDefinitionListener {
   @Reference
   private ResourceStructureDao structureDefinitionDao;
 
+  @Activate
+  private void init() {
+    comply(ConformanceHolder.getDefinitions());
+  }
+
   @Override
   public void comply(List<StructureDefinition> definitions) {
     // TODO: check if already up to date
@@ -27,23 +45,25 @@ public class StructureDefinitionUpdater implements ResourceDefinitionListener {
       return;
     }
     definitions.forEach(d -> saveDefinition(d));
+    structureDefinitionDao.refresh();
   }
 
   private void saveDefinition(StructureDefinition def) {
     List<String> many = new ArrayList<String>();
     List<StructureElement> elements = new ArrayList<>(def.getSnapshot().getElement().size());
-    if (def.getId().contains(":")) {
-      // XXX think if we should and how should we store definitions with modifier (:). problem - they have same path
-      // Quantity vs Quantity:simplequantity
-      return;
-    }
     for (ElementDefinition elementDef : def.getSnapshot().getElement()) {
       if (elementDef.getId().contains(":")) {
         // XXX think if we should and how should we store definitions with modifier (:). problem - they have same path
         // Quantity vs Quantity:simplequantity
         return;
       }
-      elements.add(new StructureElement(elementDef.getPath(), toCodeArray(elementDef.getType())));
+
+      elementDef.getType().stream().map(t -> t.getCode()).distinct().forEach(type -> {
+        String path = StringUtils.replace(elementDef.getPath(), "[x]", StringUtils.capitalize(type));
+        elements.add(new StructureElement(StringUtils.substringBefore(path, "."),
+                                          StringUtils.substringAfter(path, "."),
+                                          type));
+      });
       if (isMany(elementDef)) {
         many.add(elementDef.getPath());
       }
@@ -73,10 +93,6 @@ public class StructureDefinitionUpdater implements ResourceDefinitionListener {
       return false;
     }
     return elementDef.getMax().equals("*") || Integer.valueOf(elementDef.getMax()) > 1;
-  }
-
-  private static String[] toCodeArray(List<TypeRefComponent> types) {
-    return types.stream().map(t -> t.getCode()).distinct().toArray(String[]::new);
   }
 
 }

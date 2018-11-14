@@ -1,28 +1,23 @@
-package com.nortal.fhir.rest.server;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.fhir.rest.server;
 
 import com.nortal.fhir.rest.interaction.Interaction;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
-import static com.nortal.fhir.rest.interaction.Interaction.DELETE;
-import static com.nortal.fhir.rest.interaction.Interaction.HISTORYINSTANCE;
-import static com.nortal.fhir.rest.interaction.Interaction.HISTORYTYPE;
-import static com.nortal.fhir.rest.interaction.Interaction.READ;
-import static com.nortal.fhir.rest.interaction.Interaction.SEARCHTYPE;
-import static com.nortal.fhir.rest.interaction.Interaction.UPDATE;
-import static com.nortal.fhir.rest.interaction.Interaction.VREAD;
+import static com.nortal.blaze.core.model.InteractionType.*;
 
 public interface FhirResourceRest {
 
@@ -37,8 +32,8 @@ public interface FhirResourceRest {
   Response vread(@PathParam("id") String resourceId, @PathParam("version") Integer version);
 
   @POST
-  @Interaction(Interaction.CREATE)
-  Response create(String body, @HeaderParam("Content-Type") String contentType);
+  @Interaction(CREATE)
+  Response create(String body, @HeaderParam("Content-Type") String contentType, @Context HttpHeaders headers);
 
   @PUT
   @Path("{id}")
@@ -46,7 +41,15 @@ public interface FhirResourceRest {
   Response update(@PathParam("id") String resourceId,
                   String body,
                   @HeaderParam("Content-Type") String contentType,
-                  @HeaderParam("Content-Location") String contentLocation);
+                  @Context HttpHeaders headers);
+
+  @PUT
+  @Path("")
+  @Interaction(UPDATE)
+  Response conditionalUpdate(String body,
+                             @Context UriInfo uriInfo,
+                             @HeaderParam("Content-Type") String contentType,
+                             @Context HttpHeaders headers);
 
   @DELETE
   @Path("{id}")
@@ -77,5 +80,32 @@ public interface FhirResourceRest {
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @Interaction(SEARCHTYPE)
   Response searchForm(MultivaluedMap<String, String> params);
+
+  @POST
+  @Path("{id}/{operation:\\$.+}")
+  @Interaction(OPERATION)
+  Response instanceOperation(@PathParam("id") String resourceId,
+                             @PathParam("operation") String operation,
+                             String body,
+                             @HeaderParam("Content-Type") String contentType);
+
+  @GET
+  @Path("{id}/{operation:\\$.+}")
+  @Interaction(OPERATION)
+  Response instanceOperation_(@PathParam("id") String resourceId,
+                              @PathParam("operation") String operation,
+                              @Context UriInfo uriInfo);
+
+  @POST
+  @Path("{operation:\\$.+}")
+  @Interaction(OPERATION)
+  Response typeOperation(@PathParam("operation") String operation,
+                         String body,
+                         @HeaderParam("Content-Type") String contentType);
+
+  @GET
+  @Path("{operation:\\$.+}")
+  @Interaction(OPERATION)
+  Response typeOperation_(@PathParam("operation") String operation, @Context UriInfo uriInfo);
 
 }

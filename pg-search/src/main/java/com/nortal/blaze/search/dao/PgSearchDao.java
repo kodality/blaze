@@ -1,4 +1,16 @@
-package com.nortal.blaze.search.dao;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.search.dao;
 
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.search.QueryParam;
@@ -6,16 +18,16 @@ import com.nortal.blaze.core.model.search.SearchCriterion;
 import com.nortal.blaze.search.sql.SqlToster;
 import com.nortal.blaze.store.dao.ResourceRowMapper;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.List;
+
+@Slf4j
 @Component(immediate = true, service = PgSearchDao.class)
 public class PgSearchDao {
-  private static final Logger LOG = LogManager.getLogger(PgSearchDao.class);
   @Reference
   private JdbcTemplate jdbcTemplate;
 
@@ -24,7 +36,7 @@ public class PgSearchDao {
     sb.append(joins(criteria));
     sb.append(" WHERE 1=1");
     sb.append(criteria(criteria));
-    LOG.info(sb.getSqlForFun());
+    log.info(sb.getPretty());
     return jdbcTemplate.queryForObject(sb.getSql(), Integer.class, sb.getParams());
   }
 
@@ -35,7 +47,7 @@ public class PgSearchDao {
     sb.append(criteria(criteria));
     sb.append(order(criteria));
     sb.append(limit(criteria));
-    LOG.info(sb.getSqlForFun());
+    log.info(sb.getPretty());
     return jdbcTemplate.query(sb.getSql(), sb.getParams(), new ResourceRowMapper());
   }
 

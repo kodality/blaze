@@ -1,4 +1,16 @@
-package com.nortal.blaze.core.model.search;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.core.model.search;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -12,13 +24,14 @@ public class SearchCriterion {
   public static final String _SORT = "_sort";
   public static final String _COUNT = "_count";
   public static final String _PAGE = "_page";
+  public static final String _INCLUDE = "_include";
   public static final String _REVINCLUDE = "_revinclude";
   public static final String _SUMMARY = "_summary";
   public static final String _ELEMENTS = "_elements";
   public static final String _CONTAINED = "_contained";
   public static final String _CONTAINEDTYPE = "_containedType";
   public static final List<String> resultParamKeys =
-      Arrays.asList(_SORT, _COUNT, _PAGE, _REVINCLUDE, _SUMMARY, _ELEMENTS, _CONTAINED, _CONTAINEDTYPE);
+      Arrays.asList(_SORT, _COUNT, _PAGE, _INCLUDE, _REVINCLUDE, _SUMMARY, _ELEMENTS, _CONTAINED, _CONTAINEDTYPE);
 
   private String type;
   private List<QueryParam> chains;
@@ -65,7 +78,7 @@ public class SearchCriterion {
       return;
     }
     for (QueryParam param : params) {
-      if (param.getChain() != null) {
+      if (param.getChains() != null) {
         chains.add(param);
       } else if (resultParamKeys.contains(param.getKey())) {
         resultParams.add(param);

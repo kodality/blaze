@@ -1,9 +1,21 @@
-package com.nortal.fhir.rest.root;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.fhir.rest.root;
 
 import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.service.resource.ResourceService;
 import com.nortal.blaze.core.util.ResourceUtil;
-import com.nortal.fhir.rest.util.ResourcePropertyUtil;
+import com.nortal.blaze.fhir.structure.util.ResourcePropertyUtil;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
@@ -29,7 +41,7 @@ public class BundleReferenceHandler {
         referenceIds.put(entry.getFullUrl(), id.getResourceReference());
       }
       if (request.getMethod() == HTTPVerb.POST) {
-        String newId = resourceService.prepareId();
+        String newId = resourceService.generateNewId();
         String ref = entry.getResource().getResourceType() + "/" + newId;
         referenceIds.put(entry.getFullUrl(), ref);
 
@@ -40,7 +52,9 @@ public class BundleReferenceHandler {
     });
 
     ResourcePropertyUtil.findProperties(bundle, new HashSet<>(), Reference.class).forEach(reference -> {
-      reference.setReference(referenceIds.get(reference.getReference()));
+      if (referenceIds.containsKey(reference.getReference())) {
+        reference.setReference(referenceIds.get(reference.getReference()));
+      }
     });
   }
 }

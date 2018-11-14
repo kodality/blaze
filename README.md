@@ -2,4 +2,4 @@
 
 etc/docker/postgres/run-postgres.sh
 ./karaf.sh
-etc/docker/karaf/console stop auth-rest 
+# ./console-docker.sh stop auth-rest 

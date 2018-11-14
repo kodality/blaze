@@ -1,15 +1,29 @@
-package com.nortal.blaze.core.model.search;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.core.model.search;
 
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.collections4.CollectionUtils;
 
 public class SearchResult {
   private Integer total;
   private List<ResourceVersion> entries;
+  private final List<ResourceVersion> includes = new ArrayList<>();
 
   public SearchResult() {
     this(0, new ArrayList<ResourceVersion>());
@@ -50,6 +64,18 @@ public class SearchResult {
 
   public void setEntries(List<ResourceVersion> entries) {
     this.entries = entries;
+  }
+
+  public List<ResourceVersion> getIncludes() {
+    return includes;
+  }
+
+  public void addInclude(ResourceVersion include) {
+    this.includes.add(include);
+  }
+
+  public void addIncludes(List<ResourceVersion> includes) {
+    this.includes.addAll(includes);
   }
 
 }

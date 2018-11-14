@@ -1,11 +1,24 @@
-package com.nortal.blaze.search.sql;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.blaze.search.sql;
 
-import com.nortal.blaze.core.exception.ServerException;
+import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.search.sql.params.*;
 import com.nortal.blaze.util.sql.SqlBuilder;
 import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +33,12 @@ public final class SqlToster {
     specialParams.put("_id", (p, a) -> new SqlBuilder().in(a + ".id", p.getValues()));
     specialParams.put("_lastUpdated",
                       (p, a) -> DateExpressionProvider.makeExpression("range_instant(" + a + ".last_updated)", p));
+    specialParams.put("_content", (p, a) -> {
+      throw new FhirException(400, IssueType.NOTSUPPORTED, "_content not implemented");
+    });
+    specialParams.put("_text", (p, a) -> {
+      throw new FhirException(400, IssueType.NOTSUPPORTED, "_text not implemented");
+    });
 
     providers = new HashMap<SearchParamType, ExpressionProvider>();
     providers.put(SearchParamType.STRING, new StringExpressionProvider());
@@ -43,23 +62,29 @@ public final class SqlToster {
       return specialParams.get(key).build(param, alias);
     }
     if (!providers.containsKey(param.getType())) {
-      throw new ServerException("'" + param.getType() + "' search parameter type not implemented");
+      String details = "'" + param.getType() + "' search parameter type not implemented";
+      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
     }
     return providers.get(param.getType()).makeExpression(param, alias);
   }
 
   public static SqlBuilder order(QueryParam param, String alias) {
     String value = param.getValues().get(0);
+    String direction = "ASC";
+    if (value.startsWith("-")) {
+      direction = "DESC";
+      value = value.replaceFirst("-", "");
+    }
     SearchParamType type = ConformanceHolder.requireSearchParam(param.getResourceType(), value).getType();
     // String key = param.getKey();
     // if (specialParams.containsKey(key)) {
     // return specialParams.get(key).build(param, alias);
     // }
     if (!providers.containsKey(type)) {
-      throw new ServerException("'" + param.getType() + "' search parameter type not implemented");
+      String details = String.format("'%s' search parameter type not implemented", param.getType());
+      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
     }
-    boolean isDesc = "desc".equals(param.getModifier());
-    return providers.get(type).order(param.getResourceType(), value, alias).append(isDesc ? " DESC" : " ASC");
+    return providers.get(type).order(param.getResourceType(), value, alias).append(direction);
   }
 
   private interface SpecialParamBuilder {

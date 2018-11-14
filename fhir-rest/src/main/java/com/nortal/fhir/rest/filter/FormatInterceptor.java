@@ -1,7 +1,19 @@
-package com.nortal.fhir.rest.filter;
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ package com.nortal.fhir.rest.filter;
 
 import com.nortal.blaze.core.exception.FhirException;
-import com.nortal.blaze.core.exception.ServerException;
+import com.nortal.blaze.core.exception.FhirServerException;
 import com.nortal.blaze.fhir.structure.api.FhirContentType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +21,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
 
 import javax.ws.rs.core.MediaType;
 
@@ -58,7 +71,7 @@ public class FormatInterceptor extends AbstractPhaseInterceptor<Message> {
       return newType;
     }).distinct().filter(n -> n != null).collect(toList());
     if (CollectionUtils.isEmpty(newTypes)) {
-      throw new FhirException(415, headerValue + " not supported");
+      throw new FhirException(415, IssueType.NOTSUPPORTED, "format '" + headerValue + "' not supported");
     }
     setHeader(message, header, newTypes.get(0));
   }
@@ -76,9 +89,7 @@ public class FormatInterceptor extends AbstractPhaseInterceptor<Message> {
 
         String type = decode(StringUtils.remove(param, FORMAT + "="));
         setHeader(message, Message.ACCEPT_CONTENT_TYPE, type);
-        if (message.get(Message.CONTENT_TYPE) == null) {
-          setHeader(message, Message.CONTENT_TYPE, type);
-        }
+        setHeader(message, Message.CONTENT_TYPE, type);
         return;
       }
     }
@@ -105,7 +116,7 @@ public class FormatInterceptor extends AbstractPhaseInterceptor<Message> {
     try {
       return URLDecoder.decode(s, "UTF8");
     } catch (UnsupportedEncodingException e) {
-      throw new ServerException("there are two ways to write error-free programs");
+      throw new FhirServerException(500, "there are two ways to write error-free programs");
     }
   }
 
