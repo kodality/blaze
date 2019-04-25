@@ -12,8 +12,8 @@
  */
  package com.nortal.blaze.core.exception;
 
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 public class FhirServerException extends FhirException {
 

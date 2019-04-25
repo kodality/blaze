@@ -17,7 +17,7 @@ import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.fhir.rest.filter.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.r4.model.OperationOutcome;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

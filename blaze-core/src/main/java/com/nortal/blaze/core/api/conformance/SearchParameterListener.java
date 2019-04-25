@@ -13,7 +13,7 @@
  package com.nortal.blaze.core.api.conformance;
 
 import java.util.List;
-import org.hl7.fhir.dstu3.model.SearchParameter;
+import org.hl7.fhir.r4.model.SearchParameter;
 
 public interface SearchParameterListener {
   void comply(List<SearchParameter> params);

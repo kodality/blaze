@@ -21,8 +21,12 @@ public class SchedulerJobRunner implements Job {
 
   @Override
   public void execute(JobContext ctx) {
-    log.info("starting scheduler job runner");
+    log.debug("starting scheduler job runner");
     List<SchedulerJob> jobs = jobDao.getExecutables();
+    if (jobs.isEmpty()) {
+      log.debug("found 0 jobs");
+      return;
+    }
     log.info("found " + jobs.size() + " jobs");
     jobs.stream().forEach(job -> {
       if (!jobDao.lock(job.getId())) {

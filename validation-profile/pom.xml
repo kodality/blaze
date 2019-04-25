@@ -27,8 +27,5 @@
   </dependencies>
 
   <properties>
-    <bundle.export-packages>
-      org.fhir.ucum
-    </bundle.export-packages>
   </properties>
 </project>

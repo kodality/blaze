@@ -20,7 +20,7 @@ import com.nortal.blaze.auth.http.HttpAuthorization;
 import com.nortal.blaze.core.exception.FhirException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;

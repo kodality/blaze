@@ -14,7 +14,7 @@
 
 import com.nortal.blaze.fhir.structure.service.ResourceFormatService;
 import org.apache.commons.io.FileUtils;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.Resource;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;

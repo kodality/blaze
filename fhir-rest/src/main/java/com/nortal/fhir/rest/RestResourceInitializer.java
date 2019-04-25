@@ -10,41 +10,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.fhir.rest;
+package com.nortal.fhir.rest;
 
 import com.nortal.blaze.core.api.conformance.CapabilityStatementListener;
 import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
-import com.nortal.blaze.core.util.Osgi;
 import com.nortal.fhir.rest.server.FhirResourceServer;
 import com.nortal.fhir.rest.server.FhirResourceServerFactory;
 import com.nortal.fhir.rest.server.FhirRootServer;
 import com.nortal.fhir.rest.server.JaxRsServer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.common.classloader.ClassLoaderUtils;
-import org.hl7.fhir.dstu3.model.CapabilityStatement;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.*;
-import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
+import org.hl7.fhir.r4.model.CapabilityStatement.SystemRestfulInteraction;
+import org.hl7.fhir.r4.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Component(immediate = true, service = { CapabilityStatementListener.class, ResourceDefinitionListener.class,
                                          RestResourceInitializer.class })
 public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = FhirResourceServerFactory.class)
+  private final List<FhirResourceServerFactory> customServers = new ArrayList<>();
+
   private final Map<String, JaxRsServer> servers = new HashMap<>();
-  private CapabilityStatement modifiedCapability;
+  private CapabilityStatement capability;
 
   @Activate
-  public void restart() {
-    modifiedCapability =
-        modifyCapability(ConformanceHolder.getCapabilityStatement(), ConformanceHolder.getDefinitions());
-    comply();
+  public void init() {
+    capability = modifyCapability(ConformanceHolder.getCapabilityStatement(), ConformanceHolder.getDefinitions());
+    restart();
   }
 
   @Deactivate
@@ -55,37 +66,28 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   @Override
   public void comply(List<StructureDefinition> definition) {
-    modifiedCapability = modifyCapability(ConformanceHolder.getCapabilityStatement(), definition);
-    comply();
+    capability = modifyCapability(ConformanceHolder.getCapabilityStatement(), definition);
+    restart();
   }
 
   @Override
   public void comply(CapabilityStatement capabilityStatement) {
-    modifiedCapability = modifyCapability(capabilityStatement, ConformanceHolder.getDefinitions());
-    comply();
+    capability = modifyCapability(capabilityStatement, ConformanceHolder.getDefinitions());
+    restart();
   }
 
   public CapabilityStatement getModifiedCapability() {
-    return modifiedCapability;
+    return capability;
   }
 
-  private void comply() {
-    new Thread(() -> {
-      // hack cxf when trying to load by class name from wrong classloader
-      ClassLoaderUtils.setThreadContextClassloader(RestResourceInitializer.class.getClassLoader());
-      reloadRest();
-    }).run();
-  }
-
-  private synchronized void reloadRest() {
+  private void restart() {
     stop();
-    if (modifiedCapability == null) {
-      return;
-    }
-    for (CapabilityStatementRestComponent rest : modifiedCapability.getRest()) {
-      if (rest.getMode() == RestfulCapabilityMode.SERVER) {
-        start(rest);
-      }
+    if (capability != null) {
+      capability.getRest().forEach(rest -> {
+        if (rest.getMode() == RestfulCapabilityMode.SERVER) {
+          start(rest);
+        }
+      });
     }
   }
 
@@ -99,7 +101,6 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     capabilityStatement.setText(null);
     List<String> defined = definitions.stream().map(d -> d.getName()).collect(toList());
     defined.removeAll(Arrays.asList("Bundle",
-                                    "Binary",
                                     "CapabilityStatement",
                                     "StructureDefinition",
                                     "ImplementationGuide",
@@ -115,7 +116,9 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     capabilityStatement.getRest().forEach(rest -> {
       rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
     });
-    capabilityStatement.setAcceptUnknown(UnknownContentCode.NO);// no extensions
+    //    capabilityStatement.setAcceptUnknown(UnknownContentCode.NO);// no extensions
+    //XXX r3 -> r4
+    //    src.acceptUnknown as vs ->  tgt.extension as ext,  ext.url = 'http://hl7.org/fhir/3.0/StructureDefinition/extension-CapabilityStatement.acceptUnknown',  ext.value = vs;
     capabilityStatement.getRest().forEach(rest -> {
       rest.setOperation(null);
       List<String> interactions =
@@ -144,7 +147,10 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
 
   private void start(CapabilityStatementRestResourceComponent resourceRest) {
     String type = resourceRest.getType();
-    for (FhirResourceServerFactory factory : Osgi.getBeans(FhirResourceServerFactory.class)) {
+    if (servers.containsKey(type)) {
+      return;
+    }
+    for (FhirResourceServerFactory factory : customServers) {
       if (StringUtils.equals(factory.getType(), type)) {
         start(type, factory.construct(resourceRest));
         return;
@@ -153,13 +159,27 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     start(type, new FhirResourceServer(resourceRest));
   }
 
-  private void start(String type, JaxRsServer server) {
+  public void start(String type, JaxRsServer server) {
+    if (servers.containsKey(type)) {
+      servers.get(type).getServerInstance().destroy();
+      servers.remove(type);
+    }
     server.createServer();
     servers.put(type, server);
   }
 
   public Map<String, JaxRsServer> getServers() {
     return servers;
+  }
+
+  protected void bind(FhirResourceServerFactory factory) {
+    this.customServers.add(factory);
+    restart(); //TODO: avoid reloading all services?
+  }
+
+  protected void unbind(FhirResourceServerFactory factory) {
+    this.customServers.remove(factory);
+    restart();
   }
 
 }

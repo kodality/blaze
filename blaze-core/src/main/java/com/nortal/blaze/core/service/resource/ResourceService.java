@@ -10,9 +10,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.blaze.core.service.resource;
+package com.nortal.blaze.core.service.resource;
 
-import com.nortal.blaze.core.api.resource.*;
+import com.nortal.blaze.core.api.resource.ResourceAfterDeleteInterceptor;
+import com.nortal.blaze.core.api.resource.ResourceAfterSaveInterceptor;
+import com.nortal.blaze.core.api.resource.ResourceBeforeSaveInterceptor;
+import com.nortal.blaze.core.api.resource.ResourceSearchHandler;
+import com.nortal.blaze.core.api.resource.ResourceStorehouse;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.VersionId;
@@ -28,9 +32,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.nortal.blaze.core.api.resource.ResourceAfterSaveInterceptor.AFTER_TRANSACTION;
-import static com.nortal.blaze.core.api.resource.ResourceAfterSaveInterceptor.TRANSACTION_ENDING;
-import static com.nortal.blaze.core.api.resource.ResourceBeforeSaveInterceptor.*;
+import static com.nortal.blaze.core.api.resource.ResourceAfterSaveInterceptor.FINALIZATION;
+import static com.nortal.blaze.core.api.resource.ResourceBeforeSaveInterceptor.BUSINESS_VALIDATION;
+import static com.nortal.blaze.core.api.resource.ResourceBeforeSaveInterceptor.INPUT_VALIDATION;
+import static com.nortal.blaze.core.api.resource.ResourceBeforeSaveInterceptor.NORMALIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -57,14 +62,13 @@ public class ResourceService {
     interceptBeforeSave(BUSINESS_VALIDATION, id, content, interaction);
 
     id.setResourceId(id.getResourceId() == null ? generateNewId() : id.getResourceId());
-    interceptBeforeSave(BEFORE_TRANSACTION, id, content, interaction);
     ResourceVersion version = tx.transaction(() -> {
-      interceptBeforeSave(TRANSACTION_STARTING, id, content, interaction);
+      interceptBeforeSave(ResourceBeforeSaveInterceptor.TRANSACTION, id, content, interaction);
       ResourceVersion ver = store(id, content);
-      interceptAfterSave(TRANSACTION_ENDING, ver);
+      interceptAfterSave(ResourceAfterSaveInterceptor.TRANSACTION, ver);
       return ver;
     });
-    interceptAfterSave(AFTER_TRANSACTION, version);
+    interceptAfterSave(FINALIZATION, version);
     return version;
   }
 
@@ -90,9 +94,18 @@ public class ResourceService {
 
   /**
    * use with caution. only business logic
+   * inside transaction
    */
   public ResourceVersion store(ResourceId id, ResourceContent content) {
     return storehouse.save(id, content);
+  }
+  
+  /**
+   * use with caution. only business logic
+   * outside of transaction
+   */
+  public ResourceVersion storeForce(ResourceId id, ResourceContent content) {
+    return storehouse.saveForce(id, content);
   }
 
   public String generateNewId() {

@@ -12,7 +12,7 @@
  */
  package com.nortal.fhir.rest.server;
 
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 
 public interface FhirResourceServerFactory {
 

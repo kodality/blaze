@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.blaze.core.api.resource;
+package com.nortal.blaze.core.api.resource;
 
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.core.model.ResourceVersion;
@@ -21,7 +21,15 @@ import com.nortal.blaze.fhir.structure.api.ResourceContent;
 import java.util.List;
 
 public interface ResourceStorehouse {
+  /**
+   * transaction supports
+   */
   ResourceVersion save(ResourceId id, ResourceContent content);
+
+  /**
+   * transaction requires new
+   */
+  ResourceVersion saveForce(ResourceId id, ResourceContent content);
 
   void delete(ResourceId id);
 
@@ -30,5 +38,4 @@ public interface ResourceStorehouse {
   List<ResourceVersion> loadHistory(HistorySearchCriterion criteria);
 
   String generateNewId();
-
 }

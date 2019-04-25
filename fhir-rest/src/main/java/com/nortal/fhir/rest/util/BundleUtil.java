@@ -15,8 +15,8 @@
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.model.search.SearchResult;
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.*;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.*;
 
 import java.util.List;
 

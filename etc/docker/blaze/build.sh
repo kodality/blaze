@@ -1,3 +1,4 @@
+img=kodality/blaze
 cd `dirname $0`
 this=`pwd`
 deploy=$this/deploy
@@ -9,13 +10,12 @@ mkdir $etc
 cd ../../..
 cp -r etc/conf/* $etc/
 
-cp fhir-stu3/fhir-stu3.jar $deploy
 find ./*/target/ -name "*SNAPSHOT.jar" -exec rm {} \;
-mvn clean install -DskipTests
+mvn clean install -DskipTests || exit 1
 find ./*/target/ -name "*SNAPSHOT.jar" -exec cp {} $deploy/ \;
-rm $deploy/*blockchain*
+rm $deploy/*blockchain* $deploy/*auth-rest* $deploy/*auth-openid* $deploy/*auth-yupi* $deploy/*auth-smart*
 
 cd $this
-docker build -t kodality/blaze .
+docker build -t $img .
 rm -rf $deploy/*
 rm -rf $etc/*

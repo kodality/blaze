@@ -12,9 +12,9 @@
  */
  package com.nortal.blaze.fhir.structure.util;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Composition;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.Reference;
 import org.junit.Assert;
 import org.junit.Test;
 

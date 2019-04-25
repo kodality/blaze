@@ -19,7 +19,7 @@ import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.fhir.structure.api.ResourceContent;
 import com.nortal.blaze.fhir.structure.service.ResourceFormatService;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

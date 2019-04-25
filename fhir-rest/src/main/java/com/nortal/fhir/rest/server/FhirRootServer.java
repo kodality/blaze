@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.fhir.rest.server;
+package com.nortal.fhir.rest.server;
 
 import com.nortal.blaze.core.exception.FhirServerException;
 import com.nortal.blaze.core.model.InteractionType;
@@ -27,10 +27,10 @@ import com.nortal.fhir.rest.util.BundleUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.model.UserResource;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleType;
-import org.hl7.fhir.dstu3.model.CapabilityStatement;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;

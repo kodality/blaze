@@ -5,7 +5,7 @@ name=blaze-karaf
 image=kodality/blaze
 
 docker rm -vf $name
-docker pull $image
+#docker pull $image
 docker run -d -t \
   --name $name \
   --link blaze-postgres \
@@ -24,4 +24,3 @@ db.password=blaze
 db.maxActive=4
 " > /opt/karaf/etc/com.nortal.blaze.pg.cfg'
 
-sleep 5 && ./console-docker.sh stop auth-rest

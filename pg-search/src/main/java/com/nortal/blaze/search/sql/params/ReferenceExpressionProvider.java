@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.blaze.search.sql.params;
+package com.nortal.blaze.search.sql.params;
 
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
@@ -18,7 +18,7 @@ import com.nortal.blaze.search.sql.SqlToster;
 import com.nortal.blaze.util.sql.SqlBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.hl7.fhir.dstu3.model.CodeType;
+import org.hl7.fhir.r4.model.CodeType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +64,10 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
   private static SqlBuilder chain(QueryParam param, String parentAlias) {
     SqlBuilder sb = new SqlBuilder();
     if (param.getChains() == null) {
-      sb.and("(").append(SqlToster.condition(param, parentAlias)).append(")");
+      SqlBuilder condition = SqlToster.condition(param, parentAlias);
+      if (condition != null && !condition.isEmpty()) {
+        sb.and("(").append(condition).append(")");
+      }
       return sb;
     }
     String[] refs = getReferencedTypes(param);
@@ -74,6 +77,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
     String path = path(param);
     path = path.equals("'agent.who'") ? "'agent.whoReference'" : path;//XXX haha 
     sb.and(String.format("reference(%s, %s) && ref(%s.type, %s.id)", parentAlias, path, alias, alias));
+    sb.and(alias + ".sys_status = 'A'");
     sb.append(chain(param.getChains(), alias));
     return sb;
   }
@@ -102,7 +106,6 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
   // SearchParameter confSearchParameter = SearchParameterMonitor.get(param.getResourceType(), param.getKey());
   // confSearchParameter.getTarget()
   // }
-  
 
   private static class ThreadLocalInteger extends ThreadLocal<Map<String, Integer>> {
     @Override

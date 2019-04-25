@@ -17,8 +17,8 @@ import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.search.sql.params.*;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 import java.util.HashMap;
 import java.util.List;

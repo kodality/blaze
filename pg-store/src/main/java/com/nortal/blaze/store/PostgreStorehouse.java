@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.blaze.store;
+package com.nortal.blaze.store;
 
 import com.nortal.blaze.auth.ClientIdentity;
 import com.nortal.blaze.core.api.resource.ResourceStorehouse;
@@ -26,11 +26,13 @@ import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.blaze.fhir.structure.api.ResourceContent;
 import com.nortal.blaze.store.dao.ResourceDao;
 import com.nortal.blaze.util.sql.PgTransactionManager;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -55,17 +57,25 @@ public class PostgreStorehouse implements ResourceStorehouse {
 
   @Override
   public ResourceVersion save(ResourceId id, ResourceContent content) {
-    return tx.transaction(() -> {
-      ResourceContent cont = content.getContentType().contains("json") ? content : toJson(content);
-      ResourceVersion version = new ResourceVersion(new VersionId(id), cont);
-      version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
-      if (clientIdentity.get() != null) {
-        version.setAuthor(clientIdentity.get().getClaims());
-      }
-      resourceDao.create(version);
-      cache.removeKeys("pgCache", version.getId().getResourceReference());
-      return version;
-    });
+    return tx.transaction(() -> store(id, content));
+  }
+
+  @Override
+  public ResourceVersion saveForce(ResourceId id, ResourceContent content) {
+    DefaultTransactionAttribute prop = new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    return tx.transaction(prop, () -> store(id, content));
+  }
+
+  private ResourceVersion store(ResourceId id, ResourceContent content) {
+    ResourceContent cont = content.getContentType().contains("json") ? content : toJson(content);
+    ResourceVersion version = new ResourceVersion(new VersionId(id), cont);
+    version.getId().setVersion(resourceDao.getLastVersion(id) + 1);
+    if (clientIdentity.get() != null) {
+      version.setAuthor(clientIdentity.get().getClaims());
+    }
+    resourceDao.create(version);
+    cache.removeKeys("pgCache", version.getId().getResourceReference());
+    return version;
   }
 
   private ResourceContent toJson(ResourceContent content) {

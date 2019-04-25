@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.fhir.rest.root;
+package com.nortal.fhir.rest.root;
 
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.search.SearchCriterion;
@@ -19,13 +19,13 @@ import com.nortal.blaze.core.service.resource.ResourceSearchService;
 import com.nortal.blaze.core.service.resource.SearchUtil;
 import com.nortal.blaze.tx.TransactionService;
 import org.apache.commons.lang3.ObjectUtils;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryResponseComponent;
-import org.hl7.fhir.dstu3.model.Bundle.BundleType;
-import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryResponseComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -48,14 +48,15 @@ public class BundleService {
     if (bundle.getEntry().stream().anyMatch(e -> !e.hasRequest())) {
       throw new FhirException(400, IssueType.INVALID, "Bundle.request element required");
     }
-    bundle.getEntry().sort(new EntityMethodOrderComparator());
 
     if (bundle.getType() == BundleType.BATCH) {
+      bundle.getEntry().sort(new EntityMethodOrderComparator());
       return batch(bundle, prefer);
     }
     if (bundle.getType() == BundleType.TRANSACTION) {
       validateTransaction(bundle);
       bundleReferenceHandler.replaceIds(bundle);
+      bundle.getEntry().sort(new EntityMethodOrderComparator()); //moved after replaceIds because incorrect behavior in case of cinditional updates
       return transaction(bundle, prefer);
     }
     throw new FhirException(400, IssueType.INVALID, "only batch or transaction supported");

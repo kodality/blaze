@@ -13,7 +13,7 @@
  package com.nortal.blaze.service.conformance;
 
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
-import org.hl7.fhir.dstu3.model.SearchParameter;
+import org.hl7.fhir.r4.model.SearchParameter;
 
 import java.util.HashMap;
 

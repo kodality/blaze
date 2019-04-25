@@ -15,8 +15,8 @@
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.search.QueryParam;
 import com.nortal.blaze.util.sql.SqlBuilder;
-import org.apache.commons.codec.binary.StringUtils;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 import java.util.ArrayList;
 import java.util.List;

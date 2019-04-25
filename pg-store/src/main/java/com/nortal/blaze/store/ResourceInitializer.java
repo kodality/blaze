@@ -10,13 +10,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.blaze.store;
+package com.nortal.blaze.store;
 
 import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.store.dao.ResourceFunctionsDao;
 import org.apache.commons.collections4.CollectionUtils;
-import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.hl7.fhir.r4.model.StructureDefinition;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -40,7 +40,7 @@ public class ResourceInitializer implements ResourceDefinitionListener {
     }
     String domainResource = "http://hl7.org/fhir/StructureDefinition/DomainResource";
     definitions.stream()
-        .filter(def -> domainResource.equals(def.getBaseDefinition()))
+        .filter(def -> domainResource.equals(def.getBaseDefinition()) || def.getName().equals("Binary"))
         .forEach(d -> resourceFunctionsDao.defineResource(d.getName()));
   }
 

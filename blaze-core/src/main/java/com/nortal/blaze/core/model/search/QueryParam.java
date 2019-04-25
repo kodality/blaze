@@ -13,7 +13,7 @@
  package com.nortal.blaze.core.model.search;
 
 import org.apache.commons.lang3.Validate;
-import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -32,22 +32,22 @@ public class PgSearchDao {
   private JdbcTemplate jdbcTemplate;
 
   public Integer count(SearchCriterion criteria) {
-    SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM " + criteria.getType().toLowerCase() + " base ");
+    SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM \"" + criteria.getType().toLowerCase() + "\" base ");
     sb.append(joins(criteria));
     sb.append(" WHERE 1=1");
     sb.append(criteria(criteria));
-    log.info(sb.getPretty());
+    log.debug(sb.getPretty());
     return jdbcTemplate.queryForObject(sb.getSql(), Integer.class, sb.getParams());
   }
 
   public List<ResourceVersion> search(SearchCriterion criteria) {
-    SqlBuilder sb = new SqlBuilder("SELECT base.* FROM " + criteria.getType().toLowerCase() + " base ");
+    SqlBuilder sb = new SqlBuilder("SELECT base.* FROM \"" + criteria.getType().toLowerCase() + "\" base ");
     sb.append(joins(criteria));
     sb.append(" WHERE 1=1");
     sb.append(criteria(criteria));
     sb.append(order(criteria));
     sb.append(limit(criteria));
-    log.info(sb.getPretty());
+    log.debug(sb.getPretty());
     return jdbcTemplate.query(sb.getSql(), sb.getParams(), new ResourceRowMapper());
   }
 

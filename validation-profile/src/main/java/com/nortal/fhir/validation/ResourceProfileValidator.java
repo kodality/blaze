@@ -23,19 +23,24 @@ import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceContent;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
 import com.nortal.blaze.fhir.structure.service.ResourceFormatService;
+
+import ca.uhn.fhir.context.FhirContext;
+
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.context.BaseWorkerContext;
-import org.hl7.fhir.dstu3.context.IWorkerContext;
-import org.hl7.fhir.dstu3.context.SimpleWorkerContext;
-import org.hl7.fhir.dstu3.elementmodel.Element;
-import org.hl7.fhir.dstu3.elementmodel.Manager.FhirFormat;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
-import org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent;
-import org.hl7.fhir.dstu3.model.ResourceType;
-import org.hl7.fhir.dstu3.model.StructureDefinition;
-import org.hl7.fhir.dstu3.validation.InstanceValidator;
+import org.hl7.fhir.r4.context.BaseWorkerContext;
+import org.hl7.fhir.r4.context.IWorkerContext;
+import org.hl7.fhir.r4.elementmodel.Element;
+import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
+import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
+import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
+import org.hl7.fhir.r4.utils.FHIRPathEngine;
+import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.StructureDefinition;
+import org.hl7.fhir.r4.validation.InstanceValidator;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.utilities.validation.ValidationMessage;
 import org.osgi.service.component.annotations.Activate;
@@ -63,20 +68,24 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor
 
   @Activate
   private void init() {
-    comply(ConformanceHolder.getDefinitions());
+    fhirContext = new HapiWorkerContext(FhirContext.forR4(), new DefaultProfileValidationSupport());
+//    comply(ConformanceHolder.getDefinitions());
   }
 
   @Override
   public void comply(List<StructureDefinition> definition) {
-    if (definition == null) {
-      return;
-    }
-    try {
-      fhirContext = SimpleWorkerContext.fromDefinitions(definition);
-      ((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
-    } catch (IOException | FHIRException e) {
-      throw new RuntimeException("fhir fhir ");
-    }
+//    if (definition == null) {
+//      return;
+//    }
+//    try {
+//      fhirContext = SimpleWorkerContext.fromDefinitions(definition);
+//      ((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
+//    } catch (IOException | FHIRException e) {
+//      throw new RuntimeException("fhir fhir ");
+//    }
+    
+//  IWorkerContext fhirContext = SimpleWorkerContext.fromDefinitions(definition);
+//((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
   }
 
   @Override
@@ -134,6 +143,7 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor
     List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
     try {
       InstanceValidator validator = new InstanceValidator(fhirContext, null);
+      validator.setAnyExtensionsAllowed(true);
       ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes());
       element = validator.validate(null, messages, input, getFhirFormat(content));
     } catch (Exception e) {

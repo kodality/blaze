@@ -20,8 +20,7 @@ public abstract class ResourceBeforeSaveInterceptor {
   public static final String NORMALIZATION = "NORMALIZATION";//modify resource if required
 
   public static final String BUSINESS_VALIDATION = "BUSINESS_VALIDATION";
-  public static final String BEFORE_TRANSACTION = "BEFORE_TRANSACTION";
-  public static final String TRANSACTION_STARTING = "TRANSACTION_STARTING";
+  public static final String TRANSACTION = "TRANSACTION";
 
   private final String phase;
 

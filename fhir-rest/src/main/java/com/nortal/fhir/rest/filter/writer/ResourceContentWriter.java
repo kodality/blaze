@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.Resource;
 
 public class ResourceContentWriter extends AbstractWriter<ResourceContent> {
 

@@ -26,7 +26,7 @@ public class RestRestartCommand implements Action {
 
   @Override
   public Object execute() throws Exception {
-    restResourceInitializer.restart();
+    restResourceInitializer.init();
     return null;
   }
 

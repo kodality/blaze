@@ -10,17 +10,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.nortal.blaze.core.service;
+package com.nortal.blaze.core.service;
 
 import com.nortal.blaze.core.api.conformance.ResourceDefinitionListener;
 import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.fhir.structure.service.ResourceFormatService;
-import org.hl7.fhir.dstu3.context.BaseWorkerContext;
-import org.hl7.fhir.dstu3.context.IWorkerContext;
-import org.hl7.fhir.dstu3.context.SimpleWorkerContext;
-import org.hl7.fhir.dstu3.model.Resource;
-import org.hl7.fhir.dstu3.model.StructureDefinition;
-import org.hl7.fhir.dstu3.utils.FHIRPathEngine;
+
+import ca.uhn.fhir.context.FhirContext;
+
+import org.hl7.fhir.r4.context.BaseWorkerContext;
+import org.hl7.fhir.r4.context.IWorkerContext;
+import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
+import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StructureDefinition;
+import org.hl7.fhir.r4.utils.FHIRPathEngine;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,21 +41,23 @@ public class FhirPath implements ResourceDefinitionListener {
 
   @Activate
   private void init() {
-    comply(ConformanceHolder.getDefinitions());
+    IWorkerContext fhirContext = new HapiWorkerContext(FhirContext.forR4(), new DefaultProfileValidationSupport());
+    engine = new FHIRPathEngine(fhirContext);
+    //    comply(ConformanceHolder.getDefinitions());
   }
 
   @Override
   public void comply(List<StructureDefinition> definition) {
-    if (definition == null) {
-      return;
-    }
-    try {
-      IWorkerContext fhirContext = SimpleWorkerContext.fromDefinitions(definition);
-      ((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
-      engine = new FHIRPathEngine(fhirContext);
-    } catch (IOException | FHIRException e) {
-      throw new RuntimeException("fhir fhir ");
-    }
+    //    if (definition == null) {
+    //      return;
+    //    }
+    //    try {
+    //            IWorkerContext fhirContext = SimpleWorkerContext.fromDefinitions(definition);
+    //      ((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
+    //      engine = new FHIRPathEngine(fhirContext);
+    //    } catch (IOException | FHIRException e) {
+    //      throw new RuntimeException("fhir fhir ");
+    //    }
   }
 
   @SuppressWarnings("unchecked")

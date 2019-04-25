@@ -14,7 +14,7 @@ package com.nortal.fhir.rest.filter.writer;
 
 import com.nortal.blaze.fhir.structure.api.ResourceComposer;
 import com.nortal.blaze.fhir.structure.api.ResourceContent;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.Resource;
 
 import javax.ws.rs.core.MediaType;
 

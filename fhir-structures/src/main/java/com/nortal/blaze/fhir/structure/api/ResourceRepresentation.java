@@ -12,8 +12,8 @@
  */
  package com.nortal.blaze.fhir.structure.api;
 
-import org.hl7.fhir.dstu3.elementmodel.Manager.FhirFormat;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
+import org.hl7.fhir.r4.model.Resource;
 
 import java.util.List;
 

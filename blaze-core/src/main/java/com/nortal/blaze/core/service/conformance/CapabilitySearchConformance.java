@@ -13,11 +13,11 @@
  package com.nortal.blaze.core.service.conformance;
 
 import com.nortal.blaze.core.api.conformance.CapabilityStatementListener;
-import org.hl7.fhir.dstu3.model.CapabilityStatement;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.RestfulCapabilityMode;
+import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
 import org.osgi.service.component.annotations.Component;
 
 import java.util.Collections;

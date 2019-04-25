@@ -19,7 +19,7 @@ import com.nortal.fhir.rest.interaction.InteractionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -77,10 +77,6 @@ public class SmartAuthHttpInterceptor extends InInterceptor {
 
   @Override
   public void handle(Message message) {
-    if (!clientIdentity.isAuthenticated()) {
-      return; //TODO think
-    }
-
     Method method = (Method) message.get("org.apache.cxf.resource.method");
     String interaction = InteractionUtil.getMethodInteraction(method);
     String resourceType =
@@ -93,6 +89,10 @@ public class SmartAuthHttpInterceptor extends InInterceptor {
   }
 
   public void validate(String interaction, String resourceType) {
+    if (!clientIdentity.isAuthenticated()) {
+      return; //TODO think
+    }
+
     Set<String> clientScopes = clientIdentity.get().getScopes();
     if (clientScopes == null || clientScopes.stream()
         .map(s -> new SmartScope(s))

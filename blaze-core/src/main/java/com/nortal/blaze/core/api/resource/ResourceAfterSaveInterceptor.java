@@ -15,8 +15,8 @@
 import com.nortal.blaze.core.model.ResourceVersion;
 
 public abstract class ResourceAfterSaveInterceptor {
-  public static final String TRANSACTION_ENDING = "TRANSACTION_ENDING";
-  public static final String AFTER_TRANSACTION = "AFTER_TRANSACTION";
+  public static final String TRANSACTION = "TRANSACTION";
+  public static final String FINALIZATION = "FINALIZATION";
 
   private final String phase;
 

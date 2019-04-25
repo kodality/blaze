@@ -14,7 +14,7 @@
 
 import com.nortal.blaze.core.exception.FhirException;
 import lombok.Getter;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 @Getter
 public class SmartScope {

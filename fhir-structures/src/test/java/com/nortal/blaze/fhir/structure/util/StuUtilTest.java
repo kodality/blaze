@@ -13,7 +13,7 @@
  package com.nortal.blaze.fhir.structure.util;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.r4.model.Period;
 import org.junit.Assert;
 import org.junit.Test;
 

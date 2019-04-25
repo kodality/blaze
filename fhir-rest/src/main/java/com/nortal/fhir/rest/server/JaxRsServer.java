@@ -51,11 +51,13 @@ public abstract class JaxRsServer {
       return serverInstance;
     }
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
+    sf.getServiceFactory().setDefaultModelClass(this.getClass());
+
     sf.setAddress("/" + getEndpoint());
     sf.setProviders(getProviders());
     sf.setInInterceptors(getInInterceptors());
     sf.setOutInterceptors(getOutInterceptors());
-
+    
     sf.setModelBeans(getResource());
     for (ClassResourceInfo cri : sf.getServiceFactory().getClassResourceInfo()) {
       cri.setResourceProvider(new SingletonResourceProvider(this));

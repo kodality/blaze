@@ -8,9 +8,9 @@ begin
   l_table := lower(p_table_name);
   
   -- create trigger corresponding table trigger type
-  sql := 'DROP TRIGGER IF EXISTS thi_' || l_table ||' ON ' || l_table;
+  sql := 'DROP TRIGGER IF EXISTS thi_' || l_table ||' ON "' || l_table || '"';
   perform exec(sql);
-  sql := 'CREATE TRIGGER thi_' || l_table ||' BEFORE INSERT OR UPDATE ON ' || l_table ||' FOR EACH ROW EXECUTE PROCEDURE sys_columns()';
+  sql := 'CREATE TRIGGER thi_' || l_table ||' BEFORE INSERT OR UPDATE ON "' || l_table ||'" FOR EACH ROW EXECUTE PROCEDURE sys_columns()';
   perform exec(sql);
   
   return '(Y)';

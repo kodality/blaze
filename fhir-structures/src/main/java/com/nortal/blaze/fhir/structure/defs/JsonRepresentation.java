@@ -15,9 +15,9 @@
 import com.nortal.blaze.fhir.structure.api.ParseException;
 import com.nortal.blaze.fhir.structure.api.ResourceRepresentation;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.elementmodel.Manager.FhirFormat;
-import org.hl7.fhir.dstu3.formats.JsonParser;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
+import org.hl7.fhir.r4.formats.JsonParser;
+import org.hl7.fhir.r4.model.Resource;
 import org.osgi.service.component.annotations.Component;
 
 import java.io.ByteArrayOutputStream;

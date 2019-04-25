@@ -23,7 +23,7 @@ import com.nortal.blaze.core.service.conformance.ConformanceHolder;
 import com.nortal.blaze.core.util.ResourceUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -126,8 +126,8 @@ public class ResourceSearchService {
     });
   }
 
-  private Stream<org.hl7.fhir.dstu3.model.Reference> evaluate(ResourceVersion entry, String expr) {
-    return fhirPath.<org.hl7.fhir.dstu3.model.Reference> evaluate(entry.getContent().getValue(), expr).stream();
+  private Stream<org.hl7.fhir.r4.model.Reference> evaluate(ResourceVersion entry, String expr) {
+    return fhirPath.<org.hl7.fhir.r4.model.Reference> evaluate(entry.getContent().getValue(), expr).stream();
   }
 
   private List<String> findReferenceParams(String resourceType, String param) {

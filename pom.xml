@@ -181,7 +181,6 @@
   </build>
 
   <modules>
-    <module>fhir-stu3</module>
     <module>tx-manager</module>
     <module>blaze-osgi</module>
     <module>blaze-core</module>
@@ -199,7 +198,7 @@
     <module>auth-openid</module>
     <module>auth-yupi</module>
     <module>auth-smart</module>
-    <module>blaze-blockchain</module>
+    <!--<module>blaze-blockchain</module>-->
     <module>feature-conditional-reference</module>
     <module>blaze-scheduler</module>
   </modules>

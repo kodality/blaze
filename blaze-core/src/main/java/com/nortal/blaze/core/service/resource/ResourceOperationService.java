@@ -18,7 +18,7 @@ import com.nortal.blaze.core.api.resource.TypeOperationDefinition;
 import com.nortal.blaze.core.exception.FhirException;
 import com.nortal.blaze.core.model.ResourceId;
 import com.nortal.blaze.fhir.structure.api.ResourceContent;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

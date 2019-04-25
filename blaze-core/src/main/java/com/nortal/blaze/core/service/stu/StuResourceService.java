@@ -18,7 +18,7 @@ import com.nortal.blaze.core.model.VersionId;
 import com.nortal.blaze.core.service.resource.ResourceService;
 import com.nortal.blaze.fhir.structure.api.ResourceContent;
 import com.nortal.blaze.fhir.structure.service.ResourceFormatService;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

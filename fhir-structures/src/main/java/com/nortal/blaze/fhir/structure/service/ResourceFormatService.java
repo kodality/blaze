@@ -28,7 +28,7 @@ import org.ehcache.config.builders.ResourcePoolsBuilder;
 // import org.apache.felix.scr.annotations.Reference;
 // import org.apache.felix.scr.annotations.ReferenceCardinality;
 // import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

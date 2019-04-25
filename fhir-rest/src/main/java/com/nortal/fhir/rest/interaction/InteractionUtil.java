@@ -18,10 +18,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.utils.AnnotationUtils;
 import org.apache.cxf.jaxrs.utils.ResourceUtils;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.ResourceInteractionComponent;
-import org.hl7.fhir.dstu3.model.CapabilityStatement.SystemInteractionComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.ResourceInteractionComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.SystemInteractionComponent;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;

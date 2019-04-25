@@ -16,7 +16,7 @@ import com.nortal.blaze.core.api.resource.ResourceAfterSaveInterceptor;
 import com.nortal.blaze.core.model.ResourceVersion;
 import com.nortal.blaze.core.util.JsonUtil;
 import com.nortal.blaze.fhir.structure.service.ResourceFormatService;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -47,7 +47,7 @@ public class DocumentNotary extends ResourceAfterSaveInterceptor {
     }
 
     public DocumentNotary() {
-        super(ResourceAfterSaveInterceptor.AFTER_TRANSACTION);
+        super(ResourceAfterSaveInterceptor.FINALIZATION);
         client = ClientBuilder.newBuilder().build();
     }
 

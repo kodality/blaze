@@ -19,7 +19,7 @@ import com.nortal.fhir.rest.filter.InInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
-import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicy;
