@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component(immediate = true, service = CapabilityStatementListener.class)
 public class CapabilitySearchConformance implements CapabilityStatementListener {
@@ -59,7 +58,10 @@ public class CapabilitySearchConformance implements CapabilityStatementListener 
   }
 
   private static <K, V> Map<K, V> map(List<V> list, Function<V, K> key) {
-    return list.stream().collect(Collectors.toMap(key, v -> v));
+//    return list.stream().collect(Collectors.toMap(key, v -> v));
+    Map<K, V> map = new HashMap<>();
+    list.forEach(v -> map.put(key.apply(v), v));
+    return map;
   }
 
 }
