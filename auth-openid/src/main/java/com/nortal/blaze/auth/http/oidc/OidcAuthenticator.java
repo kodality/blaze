@@ -30,15 +30,12 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Response;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 
+//TODO: .well-known
 @Component(immediate = true, service = AuthHeaderAuthenticator.class, configurationPid = "com.nortal.blaze.auth.openid")
 public class OidcAuthenticator implements AuthHeaderAuthenticator {
   private final ClientBuilder clientBuilder;
@@ -94,7 +91,7 @@ public class OidcAuthenticator implements AuthHeaderAuthenticator {
     if (StringUtils.isEmpty(oidcUrl)) {
       throw new FhirException(500, IssueType.SECURITY, "server oidc config missing");
     }
-    Builder request = clientBuilder.build().target(oidcUrl + "/profile").request();
+    Builder request = clientBuilder.build().target(oidcUrl + "/userinfo").request();
     Response response = request.header("Authorization", "Bearer " + bearer).get();
     if (response.getStatus() >= 400) {
       return null;

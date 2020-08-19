@@ -24,3 +24,7 @@ db.password=blaze
 db.maxActive=4
 " > /opt/karaf/etc/com.nortal.blaze.pg.cfg'
 
+docker exec -ti $name sh -c 'echo "
+oidc.url=http://172.17.0.1:4567
+" > /opt/karaf/etc/com.nortal.blaze.auth.openid.cfg'
+

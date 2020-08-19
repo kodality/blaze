@@ -82,7 +82,7 @@ public class FhirResourceServer extends JaxRsServer implements FhirResourceRest 
   @Override
   protected UserResource getResource() {
     UserResource resource = new UserResource(this.getClass().getName(), "/");
-    resource.setConsumes(StringUtils.join(FhirContentType.getMediaTypes(), ","));
+    resource.setConsumes(StringUtils.join(FhirContentType.getMediaTypes(), ",") + ",application/x-www-form-urlencoded");
     resource.setProduces(StringUtils.join(FhirContentType.getMediaTypes(), ","));
     resource.setOperations(InteractionUtil.getOperations(capability, FhirResourceRest.class));
     return resource;

@@ -29,16 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.nortal.blaze.core.model.InteractionType.CREATE;
-import static com.nortal.blaze.core.model.InteractionType.DELETE;
-import static com.nortal.blaze.core.model.InteractionType.HISTORYINSTANCE;
-import static com.nortal.blaze.core.model.InteractionType.HISTORYTYPE;
-import static com.nortal.blaze.core.model.InteractionType.OPERATION;
-import static com.nortal.blaze.core.model.InteractionType.READ;
-import static com.nortal.blaze.core.model.InteractionType.SEARCHTYPE;
-import static com.nortal.blaze.core.model.InteractionType.UPDATE;
-import static com.nortal.blaze.core.model.InteractionType.VALIDATE;
-import static com.nortal.blaze.core.model.InteractionType.VREAD;
+import static com.nortal.blaze.core.model.InteractionType.*;
 import static java.util.Arrays.asList;
 
 @Component(immediate = true, service = { SmartAuthHttpInterceptor.class, InInterceptor.class })

@@ -55,6 +55,9 @@ public class FormatInterceptor extends AbstractPhaseInterceptor<Message> {
       return;
     }
     List<String> newTypes = Stream.of(StringUtils.split(headerValue, ",")).map(value -> {
+      if (value.equals("application/x-www-form-urlencoded")) {
+        return value;
+      }
       MediaType mediaType = MediaType.valueOf(StringUtils.trim(value));
       if (mediaType.isWildcardSubtype() && mediaType.isWildcardType()) {
         return mediaType.toString();
