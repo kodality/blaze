@@ -22,9 +22,9 @@ db.url=jdbc:postgresql://blaze-postgres:5432/blazedb
 db.username=blaze
 db.password=blaze
 db.maxActive=4
-" > /opt/karaf/etc/com.nortal.blaze.pg.cfg'
+" > /opt/karaf/etc/com.kodality.blaze.pg.cfg'
 
 docker exec -ti $name sh -c 'echo "
 oidc.url=http://172.17.0.1:4567
-" > /opt/karaf/etc/com.nortal.blaze.auth.openid.cfg'
+" > /opt/karaf/etc/com.kodality.blaze.auth.openid.cfg'
 

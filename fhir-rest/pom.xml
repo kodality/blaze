@@ -3,11 +3,11 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.nortal</groupId>
+    <groupId>com.kodality</groupId>
     <artifactId>blaze</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.nortal.blaze</groupId>
+  <groupId>com.kodality.blaze</groupId>
   <artifactId>fhir-rest</artifactId>
   <packaging>bundle</packaging>
   <name>fhir-rest</name>
@@ -15,12 +15,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>blaze-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>fhir-structures</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
@@ -49,10 +49,10 @@
 
   <properties>
     <bundle.export-packages>
-      com.nortal.fhir.rest.server,
-      com.nortal.fhir.rest.root,
-      com.nortal.fhir.rest.interaction,
-      com.nortal.fhir.rest.filter
+      com.kodality.fhir.rest.server,
+      com.kodality.fhir.rest.root,
+      com.kodality.fhir.rest.interaction,
+      com.kodality.fhir.rest.filter
     </bundle.export-packages>
     <bundle.import-packages>
       javax.annotation

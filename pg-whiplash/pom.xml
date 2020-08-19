@@ -3,11 +3,11 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.nortal</groupId>
+    <groupId>com.kodality</groupId>
     <artifactId>blaze</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.nortal.blaze</groupId>
+  <groupId>com.kodality.blaze</groupId>
   <artifactId>pg-whiplash</artifactId>
   <packaging>bundle</packaging>
   <name>pg-whiplash</name>
@@ -15,7 +15,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>pg-jdbc</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
@@ -33,7 +33,7 @@
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.whiplash.api
+      com.kodality.blaze.whiplash.api
     </bundle.export-packages>
   </properties>
 </project>
