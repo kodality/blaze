@@ -3,11 +3,11 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.nortal</groupId>
+    <groupId>com.kodality</groupId>
     <artifactId>blaze</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.nortal.blaze</groupId>
+  <groupId>com.kodality.blaze</groupId>
   <artifactId>pg-jdbc</artifactId>
   <packaging>bundle</packaging>
   <name>pg-jdbc</name>
@@ -35,12 +35,12 @@
       <version>5.0.5.RELEASE</version>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>tx-manager</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>auth-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
@@ -52,7 +52,7 @@
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.util.sql
+      com.kodality.blaze.util.sql
     </bundle.export-packages>
     <bundle.import-packages>
       org.postgresql,

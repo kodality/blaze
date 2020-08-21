@@ -1,4 +1,6 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
+cd `dirname $0`
+
 
 CONTAINER_NAME="blaze-postgres"
 DB_NAME="blazedb"
@@ -13,6 +15,6 @@ docker run -d \
  -p 5432:5432 \
  postgres:10.0
 
-docker cp `pwd`/`dirname $0`/docker-entrypoint-initdb.d $CONTAINER_NAME:/
+docker cp `pwd`/docker-entrypoint-initdb.d $CONTAINER_NAME:/
 #docker exec -ti $CONTAINER_NAME /init/createdb.sh
-#/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/* 
+#/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*

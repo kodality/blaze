@@ -3,11 +3,11 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.nortal</groupId>
+    <groupId>com.kodality</groupId>
     <artifactId>blaze</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.nortal.blaze</groupId>
+  <groupId>com.kodality.blaze</groupId>
   <artifactId>blaze-core</artifactId>
   <packaging>bundle</packaging>
   <name>blaze-core</name>
@@ -15,23 +15,23 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>blaze-osgi</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>fhir-structures</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>tx-manager</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>auth-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
@@ -54,15 +54,15 @@
 
   <properties>
     <bundle.export-packages>
-      com.nortal.blaze.core.exception,
-      com.nortal.blaze.core.util,
-      com.nortal.blaze.core.api,
-      com.nortal.blaze.core.api.*,
-      com.nortal.blaze.core.api.conformance,
-      com.nortal.blaze.core.model,
-      com.nortal.blaze.core.model.*,
-      com.nortal.blaze.core.service,
-      com.nortal.blaze.core.service.*,
+      com.kodality.blaze.core.exception,
+      com.kodality.blaze.core.util,
+      com.kodality.blaze.core.api,
+      com.kodality.blaze.core.api.*,
+      com.kodality.blaze.core.api.conformance,
+      com.kodality.blaze.core.model,
+      com.kodality.blaze.core.model.*,
+      com.kodality.blaze.core.service,
+      com.kodality.blaze.core.service.*,
     </bundle.export-packages>
   </properties>
 </project>

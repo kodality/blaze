@@ -3,11 +3,11 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.nortal</groupId>
+    <groupId>com.kodality</groupId>
     <artifactId>blaze</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.nortal.blaze</groupId>
+  <groupId>com.kodality.blaze</groupId>
   <artifactId>auth-smart</artifactId>
   <packaging>bundle</packaging>
   <name>auth-smart</name>
@@ -15,12 +15,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>auth-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>fhir-rest</artifactId>
       <version>${project.parent.version}</version>
     </dependency>

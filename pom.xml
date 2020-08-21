@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <groupId>com.nortal</groupId>
+  <groupId>com.kodality</groupId>
   <artifactId>blaze</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -17,7 +17,7 @@
     <repository>
       <id>central</id>
       <name>Central Repository</name>
-      <url>http://repo.maven.apache.org/maven2</url>
+      <url>https://repo.maven.apache.org/maven2</url>
       <layout>default</layout>
       <snapshots>
         <enabled>false</enabled>
@@ -32,7 +32,7 @@
       <version>2.0.14</version>
     </dependency>
     <dependency>
-      <groupId>com.nortal.blaze</groupId>
+      <groupId>com.kodality.blaze</groupId>
       <artifactId>blaze-osgi</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>provided</scope>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.16.18</version>
+      <version>1.16.22</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -198,12 +198,12 @@
     <module>auth-openid</module>
     <module>auth-yupi</module>
     <module>auth-smart</module>
-    <!--<module>blaze-blockchain</module>-->
+    <module>blaze-blockchain</module>
     <module>feature-conditional-reference</module>
     <module>blaze-scheduler</module>
   </modules>
 
 </project>
- 
- 
- 
+
+
+
