@@ -10,17 +10,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.blaze.search.dao;
+package com.kodality.blaze.search.dao;
 
 import com.kodality.blaze.core.model.ResourceVersion;
 import com.kodality.blaze.core.model.search.QueryParam;
 import com.kodality.blaze.core.model.search.SearchCriterion;
+import com.kodality.blaze.search.api.PgResourceSearchFilter;
 import com.kodality.blaze.search.sql.SqlToster;
+import com.kodality.blaze.store.api.PgResourceFilter;
 import com.kodality.blaze.store.dao.ResourceRowMapper;
 import com.kodality.blaze.util.sql.SqlBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
@@ -31,11 +34,17 @@ public class PgSearchDao {
   @Reference
   private JdbcTemplate jdbcTemplate;
 
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+  private PgResourceSearchFilter pgResourceSearchFilter;
+
   public Integer count(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM \"" + criteria.getType().toLowerCase() + "\" base ");
     sb.append(joins(criteria));
     sb.append(" WHERE 1=1");
     sb.append(criteria(criteria));
+    if (pgResourceSearchFilter != null) {
+      pgResourceSearchFilter.filter(sb, "base");
+    }
     log.debug(sb.getPretty());
     return jdbcTemplate.queryForObject(sb.getSql(), Integer.class, sb.getParams());
   }
@@ -47,6 +56,9 @@ public class PgSearchDao {
     sb.append(criteria(criteria));
     sb.append(order(criteria));
     sb.append(limit(criteria));
+    if (pgResourceSearchFilter != null) {
+      pgResourceSearchFilter.filter(sb, "base");
+    }
     log.debug(sb.getPretty());
     return jdbcTemplate.query(sb.getSql(), sb.getParams(), new ResourceRowMapper());
   }
