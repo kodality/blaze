@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #KARAF_HOME="/opt/apache-karaf-4.2.5"
-KARAF_HOME="/opt/karaf-blaze-4"
+KARAF_HOME="/opt/karaf"
 
 deploy_path="$KARAF_HOME/deploy/"
 p="`dirname \"$0\"`"

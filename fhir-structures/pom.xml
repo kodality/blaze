@@ -17,7 +17,7 @@
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-base</artifactId>
-      <version>3.0.0</version>
+      <version>3.7.0</version>
     </dependency>
 <!--     <dependency> -->
 <!--       <artifactId>fhir-stu3</artifactId> -->
@@ -39,10 +39,16 @@
     <artifactId>hapi-fhir-validation</artifactId>
     <version>3.7.0</version>
 </dependency>
+      <dependency>
+          <groupId>xpp3</groupId>
+          <artifactId>xpp3</artifactId>
+          <version>1.1.4c</version>
+      </dependency>
 
 
 
-    <dependency>
+
+      <dependency>
       <groupId>org.ehcache</groupId>
       <artifactId>ehcache</artifactId>
     </dependency>
