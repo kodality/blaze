@@ -17,7 +17,7 @@
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-base</artifactId>
-      <version>3.7.0</version>
+      <version>3.8.0</version>
     </dependency>
 <!--     <dependency> -->
 <!--       <artifactId>fhir-stu3</artifactId> -->
