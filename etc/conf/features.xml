@@ -6,6 +6,10 @@
     <feature>cxf-features-logging</feature>
     <feature>scheduler</feature>
 
+    <!-- for jdk11 to work -->
+    <bundle>mvn:javax.xml.soap/javax.xml.soap-api/1.4.0</bundle>
+    <bundle>mvn:javax.xml.ws/jaxws-api/2.3.1</bundle>
+
     <bundle>mvn:org.apache.felix/org.apache.felix.scr/2.1.20</bundle>
 
     <bundle>mvn:org.apache.commons/commons-collections4/4.4</bundle>
@@ -16,10 +20,10 @@
 
     <bundle>mvn:org.ehcache/ehcache/3.9.0</bundle>
 
+    <!-- hapi -->
     <bundle>wrap:mvn:com.google.code.gson/gson/2.8.2</bundle>
     <bundle>mvn:com.google.guava/guava/29.0-jre</bundle>
     <bundle>mvn:com.google.guava/failureaccess/1.0.1</bundle>
-
     <bundle>mvn:com.github.ben-manes.caffeine/caffeine/2.8.5</bundle>
     <bundle>mvn:com.google.guava/guava/25.1-jre</bundle>
     <bundle>mvn:com.github.ben-manes.caffeine/caffeine/2.7.0</bundle>
@@ -29,7 +33,6 @@
     <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-validation-resources-r4/3.7.0</bundle>
     <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-validation/3.7.0</bundle>
     <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-base/3.7.0</bundle>
-
 
     <bundle>wrap:mvn:net.sf.saxon/saxon-xpath/8.7</bundle>
     <bundle>wrap:mvn:net.sf.saxon/Saxon-HE/9.8.0-6</bundle>
