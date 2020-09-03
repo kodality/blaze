@@ -58,6 +58,9 @@ public final class ResourcePropertyUtil {
       if (obj instanceof Collection) {
         return ((Collection<?>) obj).stream().flatMap(o -> findProperties(o, exclude, fieldClazz));
       }
+      if (obj.getClass().getName().startsWith("java")) {
+        return Stream.empty();
+      }
       return findProperties(obj, exclude, fieldClazz);
     });
   }
