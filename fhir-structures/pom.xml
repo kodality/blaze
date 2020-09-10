@@ -17,7 +17,7 @@
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-base</artifactId>
-      <version>3.7.0</version>
+      <version>5.1.0</version>
     </dependency>
 <!--     <dependency> -->
 <!--       <artifactId>fhir-stu3</artifactId> -->
@@ -27,17 +27,17 @@
 <dependency>
     <groupId>ca.uhn.hapi.fhir</groupId>
     <artifactId>hapi-fhir-structures-r4</artifactId>
-    <version>3.7.0</version>
+    <version>5.1.0</version>
 </dependency>
 <dependency>
     <groupId>ca.uhn.hapi.fhir</groupId>
     <artifactId>hapi-fhir-validation-resources-r4</artifactId>
-    <version>3.7.0</version>
+    <version>5.1.0</version>
 </dependency>
 <dependency>
     <groupId>ca.uhn.hapi.fhir</groupId>
     <artifactId>hapi-fhir-validation</artifactId>
-    <version>3.7.0</version>
+    <version>5.1.0</version>
 </dependency>
       <dependency>
           <groupId>xpp3</groupId>
