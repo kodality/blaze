@@ -46,7 +46,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component(immediate = true, service = { CapabilityStatementListener.class, ResourceDefinitionListener.class,
                                          RestResourceInitializer.class })
 public class RestResourceInitializer implements CapabilityStatementListener, ResourceDefinitionListener {
-  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = FhirResourceServerFactory.class)
+
   private final List<FhirResourceServerFactory> customServers = new ArrayList<>();
 
   private final Map<String, JaxRsServer> servers = new HashMap<>();
@@ -172,6 +172,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
     return servers;
   }
 
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = FhirResourceServerFactory.class, name = "FhirResourceServerFactory")
   protected void bind(FhirResourceServerFactory factory) {
     this.customServers.add(factory);
     restart(); //TODO: avoid reloading all services?

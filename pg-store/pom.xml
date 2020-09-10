@@ -43,7 +43,8 @@
 
   <properties>
     <bundle.export-packages>
-      com.kodality.blaze.store.dao
+      com.kodality.blaze.store.dao,
+      com.kodality.blaze.store.api
     </bundle.export-packages>
   </properties>
 </project>

@@ -39,11 +39,8 @@ public class ConformanceHolder {
   //resource type -> code -> param
   protected static Map<String, Map<String, SearchParameter>> searchParams = new HashMap<>();
 
-  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
   private final List<CapabilityStatementListener> capabilityListeners = new ArrayList<>();
-  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
   private final List<SearchParameterListener> searchParamListeners = new ArrayList<>();
-  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
   private final List<ResourceDefinitionListener> definitionListeners = new ArrayList<>();
 
   public static CapabilityStatement getCapabilityStatement() {
@@ -100,6 +97,7 @@ public class ConformanceHolder {
     searchParamListeners.forEach(l -> l.comply(getSearchParams()));
   }
 
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC,service = CapabilityStatementListener.class, name = "CapabilityStatementListener")
   protected void bind(CapabilityStatementListener listener) {
     capabilityListeners.add(listener);
   }
@@ -108,6 +106,7 @@ public class ConformanceHolder {
     capabilityListeners.remove(listener);
   }
 
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, service = SearchParameterListener.class, name = "SearchParameterListener")
   protected void bind(SearchParameterListener listener) {
     searchParamListeners.add(listener);
   }
@@ -116,6 +115,7 @@ public class ConformanceHolder {
     searchParamListeners.remove(listener);
   }
 
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, service = ResourceDefinitionListener.class, name = "ResourceDefinitionListener")
   protected void bind(ResourceDefinitionListener listener) {
     definitionListeners.add(listener);
   }

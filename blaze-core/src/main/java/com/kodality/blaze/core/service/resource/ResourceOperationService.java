@@ -30,12 +30,8 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Component(immediate = true, service = ResourceOperationService.class)
 public class ResourceOperationService {
-  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = InstanceOperationDefinition.class)
   private final List<InstanceOperationDefinition> instanceOperations = new ArrayList<>();
-  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = TypeOperationDefinition.class)
   private final List<TypeOperationDefinition> typeOperations = new ArrayList<>();
-
-  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = OperationInterceptor.class)
   private final List<OperationInterceptor> interceptors = new ArrayList<>();
 
   public ResourceContent runInstanceOperation(String operation, ResourceId id, ResourceContent parameters) {
@@ -58,6 +54,7 @@ public class ResourceOperationService {
         .run(parameters);
   }
 
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = InstanceOperationDefinition.class, name = "InstanceOperationDefinition")
   protected void bind(InstanceOperationDefinition def) {
     this.instanceOperations.add(def);
   }
@@ -66,6 +63,7 @@ public class ResourceOperationService {
     this.instanceOperations.remove(def);
   }
 
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = TypeOperationDefinition.class, name = "TypeOperationDefinition")
   protected void bind(TypeOperationDefinition def) {
     this.typeOperations.add(def);
   }
@@ -74,6 +72,7 @@ public class ResourceOperationService {
     this.typeOperations.remove(def);
   }
 
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = OperationInterceptor.class, name = "OperationInterceptor")
   protected void bind(OperationInterceptor interceptor) {
     this.interceptors.add(interceptor);
   }

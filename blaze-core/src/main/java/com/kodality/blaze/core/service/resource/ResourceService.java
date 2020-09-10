@@ -49,11 +49,9 @@ public class ResourceService {
   @Reference
   private TransactionService tx;
 
-  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceBeforeSaveInterceptor.class)
+
   private final Map<String, List<ResourceBeforeSaveInterceptor>> beforeSaveInterceptors = new HashMap<>();
-  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceAfterSaveInterceptor.class)
   private final Map<String, List<ResourceAfterSaveInterceptor>> afterSaveInterceptors = new HashMap<>();
-  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceAfterDeleteInterceptor.class)
   private final List<ResourceAfterDeleteInterceptor> afterDeleteInterceptor = new ArrayList<>();
 
   public ResourceVersion save(ResourceId id, ResourceContent content, String interaction) {
@@ -124,6 +122,7 @@ public class ResourceService {
     }
   }
 
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceBeforeSaveInterceptor.class, name = "ResourceBeforeSaveInterceptor")
   protected void bind(ResourceBeforeSaveInterceptor interceptor) {
     this.beforeSaveInterceptors.computeIfAbsent(interceptor.getPhase(), p -> new ArrayList<>()).add(interceptor);
   }
@@ -132,6 +131,7 @@ public class ResourceService {
     this.beforeSaveInterceptors.values().forEach(l -> l.remove(interceptor));
   }
 
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceAfterSaveInterceptor.class, name = "ResourceAfterSaveInterceptor" )
   protected void bind(ResourceAfterSaveInterceptor interceptor) {
     this.afterSaveInterceptors.computeIfAbsent(interceptor.getPhase(), p -> new ArrayList<>()).add(interceptor);
   }
@@ -140,6 +140,7 @@ public class ResourceService {
     this.afterSaveInterceptors.values().forEach(l -> l.remove(interceptor));
   }
 
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceAfterDeleteInterceptor.class, name = "ResourceAfterDeleteInterceptor")
   protected void bind(ResourceAfterDeleteInterceptor interceptor) {
     this.afterDeleteInterceptor.add(interceptor);
   }
