@@ -22,6 +22,7 @@ import com.kodality.blaze.core.service.conformance.ConformanceHolder;
 import com.kodality.blaze.fhir.structure.api.ParseException;
 import com.kodality.blaze.fhir.structure.api.ResourceContent;
 import com.kodality.blaze.fhir.structure.api.ResourceRepresentation;
+import com.kodality.blaze.fhir.structure.service.HapiContextHolder;
 import com.kodality.blaze.fhir.structure.service.ResourceFormatService;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -30,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.context.IWorkerContext;
 import org.hl7.fhir.r4.elementmodel.Element;
 import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
-import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
 import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
@@ -38,9 +38,9 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StructureDefinition;
-import org.hl7.fhir.r4.validation.InstanceValidator;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.utilities.validation.ValidationMessage;
+import org.hl7.fhir.validation.instance.InstanceValidator;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,16 +57,11 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor
     implements ResourceDefinitionListener, OperationInterceptor {
   @Reference
   private ResourceFormatService representationService;
-  private IWorkerContext fhirContext;
+  @Reference
+  private HapiContextHolder hapiContextHolder;
 
   public ResourceProfileValidator() {
     super(ResourceBeforeSaveInterceptor.INPUT_VALIDATION);
-  }
-
-  @Activate
-  private void init() {
-    fhirContext = new HapiWorkerContext(FhirContext.forR4(), new DefaultProfileValidationSupport());
-//    comply(ConformanceHolder.getDefinitions());
   }
 
   @Override
@@ -105,7 +100,7 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor
     if (definition == null) {
       throw new FhirServerException(500, "definition for " + resourceType + " not found");
     }
-    if (fhirContext == null) {
+    if (hapiContextHolder.getContext() == null) {
       throw new FhirServerException(500, "fhir context initialization error");
     }
     List<ValidationMessage> errors = validate(resourceType, content);
@@ -138,18 +133,18 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor
   private List<ValidationMessage> validate(String resourceType, ResourceContent content) {
     Element element;
     List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
-    try {
-      InstanceValidator validator = new InstanceValidator(fhirContext, null);
-      validator.setAnyExtensionsAllowed(true);
-      ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes());
-      element = validator.validate(null, messages, input, getFhirFormat(content));
-    } catch (Exception e) {
-      throw new RuntimeException(":/", e);
-    }
-    if (element != null && !element.getType().equals(resourceType)) {
-      String msg = "was expecting " + resourceType + " but found " + element.getType();
-      throw new FhirException(400, IssueType.INVALID, msg);
-    }
+//    try {
+//      InstanceValidator validator = new InstanceValidator(hapiContextHolder.getContext(), null);
+//      validator.setAnyExtensionsAllowed(true);
+//      ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes());
+//      element = validator.validate(null, messages, input, getFhirFormat(content));
+//    } catch (Exception e) {
+//      throw new RuntimeException(":/", e);
+//    }
+//    if (element != null && !element.getType().equals(resourceType)) {
+//      String msg = "was expecting " + resourceType + " but found " + element.getType();
+//      throw new FhirException(400, IssueType.INVALID, msg);
+//    }
     return messages;
   }
 
