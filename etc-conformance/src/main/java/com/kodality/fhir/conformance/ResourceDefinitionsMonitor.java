@@ -88,7 +88,7 @@ public class ResourceDefinitionsMonitor extends EtcMonitor {
 
     defs.forEach(def -> validate(def));
     definitions.putAll(defs.stream()
-        .filter(d -> !"group".equalsIgnoreCase(d.getName()))
+//        .filter(d -> !"group".equalsIgnoreCase(d.getName()))
         .collect(toMap(def -> def.getName(), def -> def)));
   }
 
