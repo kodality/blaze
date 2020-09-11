@@ -18,6 +18,7 @@ import com.kodality.blaze.auth.User;
 import com.kodality.blaze.auth.http.AuthHeaderAuthenticator;
 import com.kodality.blaze.auth.http.HttpAuthorization;
 import com.kodality.blaze.core.exception.FhirException;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
@@ -34,6 +35,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 //TODO: .well-known
 @Component(immediate = true, service = AuthHeaderAuthenticator.class, configurationPid = "com.kodality.blaze.auth.openid")
@@ -55,8 +57,9 @@ public class OidcAuthenticator implements AuthHeaderAuthenticator {
   }
 
   @Override
-  public User autheticate(List<HttpAuthorization> auths, Message message) {
-    String bearer = auths.stream().filter(a -> a.isType("Bearer")).findFirst().map(a -> a.getCredential()).orElse(null);
+  public User autheticate(HttpServletRequest request, Message message) {
+    List<HttpAuthorization> auths = HttpAuthorization.parse(Collections.list(request.getHeaders(AUTHORIZATION)));
+    String bearer = auths.stream().filter(a -> a.isType("Bearer")).findFirst().map(HttpAuthorization::getCredential).orElse(null);
     if (bearer == null) {
       return null;
     }

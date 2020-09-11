@@ -15,6 +15,8 @@
 import com.kodality.blaze.auth.User;
 import com.kodality.blaze.auth.http.AuthHeaderAuthenticator;
 import com.kodality.blaze.auth.http.HttpAuthorization;
+import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.cxf.message.Message;
 import org.osgi.service.component.annotations.Component;
 
@@ -22,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 @Component(immediate = true, service = AuthHeaderAuthenticator.class)
 public class YupiAuthenticator implements AuthHeaderAuthenticator {
@@ -32,10 +36,12 @@ public class YupiAuthenticator implements AuthHeaderAuthenticator {
   }
 
   @Override
-  public User autheticate(List<HttpAuthorization> auths, Message message) {
-    return auths.stream().filter(a -> a.isType("Bearer")).map(bearer -> {
-      return yupis.containsKey(bearer.getCredential()) ? yupis.get(bearer.getCredential()) : null;
-    }).filter(u -> u != null).findFirst().orElse(null);
+  public User autheticate(HttpServletRequest request, Message message) {
+    List<HttpAuthorization> auths = HttpAuthorization.parse(Collections.list(request.getHeaders(AUTHORIZATION)));
+    return auths.stream()
+        .filter(a -> a.isType("Bearer"))
+        .map(bearer -> yupis.getOrDefault(bearer.getCredential(), null))
+        .filter(Objects::nonNull).findFirst().orElse(null);
   }
 
   private static User makeYupi(String sub, String org) {

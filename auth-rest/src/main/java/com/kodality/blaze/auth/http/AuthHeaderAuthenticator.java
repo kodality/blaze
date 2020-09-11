@@ -13,10 +13,11 @@
  package com.kodality.blaze.auth.http;
 
 import com.kodality.blaze.auth.User;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.cxf.message.Message;
 
 import java.util.List;
 
 public interface AuthHeaderAuthenticator {
-  User autheticate(List<HttpAuthorization> auths, Message message);
+  User autheticate(HttpServletRequest request, Message message);
 }

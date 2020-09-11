@@ -16,6 +16,7 @@ import com.kodality.blaze.auth.ClientIdentity;
 import com.kodality.blaze.auth.User;
 import com.kodality.blaze.core.exception.FhirException;
 import com.kodality.fhir.rest.filter.InInterceptor;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
@@ -33,7 +34,6 @@ import java.util.List;
 @Component(immediate = true, service = InInterceptor.class)
 @Slf4j
 public class HttpAuthInterceptor extends InInterceptor {
-  private static final String AUTHORIZATION = "Authorization";
   @Reference
   private ClientIdentity clientIdentity;
   @Reference(policy = ReferencePolicy.DYNAMIC)
@@ -53,10 +53,8 @@ public class HttpAuthInterceptor extends InInterceptor {
     if (clientIdentity.isAuthenticated()) {
       throw new IllegalStateException("context cleanup not worked, panic");
     }
-    List<HttpAuthorization> auths = HttpAuthorization.parse(Collections.list(request.getHeaders(AUTHORIZATION)));
 
-    User user =
-        authenticators.stream().map(a -> a.autheticate(auths, message)).filter(a -> a != null).findFirst().orElse(null);
+    User user = authenticators.stream().map(a -> a.autheticate(request, message)).filter(Objects::nonNull).findFirst().orElse(null);
     clientIdentity.set(user);
 
     if (!clientIdentity.isAuthenticated()) {
