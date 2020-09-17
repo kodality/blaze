@@ -24,6 +24,7 @@
 
   <properties>
     <bundle.export-packages>
+      com.kodality.blaze.auth.http.oidc
     </bundle.export-packages>
   </properties>
 </project>

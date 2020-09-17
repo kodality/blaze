@@ -21,19 +21,19 @@ import com.kodality.blaze.core.util.JsonUtil;
 import com.kodality.blaze.store.api.PgResourceFilter;
 import com.kodality.blaze.util.sql.FhirJdbcTemplate;
 import com.kodality.blaze.util.sql.SqlBuilder;
+import java.util.List;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import java.util.List;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Component(immediate = true, service = ResourceDao.class)
 public class ResourceDao {
   @Reference
   private FhirJdbcTemplate jdbcTemplate;
 
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
   private PgResourceFilter pgResourceFilter;
 
   public String getNextResourceId() {
@@ -95,6 +95,15 @@ public class ResourceDao {
     }
     sb.append(" ORDER BY last_updated desc");
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
+  }
+
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = DYNAMIC, service = PgResourceFilter.class, name = "PgResourceFilter")
+  protected void bind(PgResourceFilter pgResourceFilter) {
+    this.pgResourceFilter = pgResourceFilter;
+  }
+
+  protected void unbind(PgResourceFilter pgResourceFilter) {
+    this.pgResourceFilter = null;
   }
 
 }
