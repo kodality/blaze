@@ -10,101 +10,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.blaze.auth.http.oidc;
+package com.kodality.blaze.auth.http.oidc;
 
-import com.google.gson.Gson;
-import com.kodality.blaze.auth.ClientIdentity;
 import com.kodality.blaze.auth.User;
 import com.kodality.blaze.auth.http.AuthHeaderAuthenticator;
 import com.kodality.blaze.auth.http.HttpAuthorization;
-import com.kodality.blaze.core.exception.FhirException;
+import java.util.Collections;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.Response;
-
-import java.util.*;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 //TODO: .well-known
-@Component(immediate = true, service = AuthHeaderAuthenticator.class, configurationPid = "com.kodality.blaze.auth.openid")
+@Component(immediate = true, service = {AuthHeaderAuthenticator.class})
 public class OidcAuthenticator implements AuthHeaderAuthenticator {
-  private final ClientBuilder clientBuilder;
-  private String oidcUrl;
 
   @Reference
-  private ClientIdentity clientIdentity;
-
-  public OidcAuthenticator() {
-    this.clientBuilder = ClientBuilder.newBuilder();
-  }
-
-  @Activate
-  @Modified
-  public void activate(Map<String, String> props) {
-    oidcUrl = props.get("oidc.url");
-  }
+  private OidcUserProvider oidcUserProvider;
 
   @Override
   public User autheticate(HttpServletRequest request, Message message) {
     List<HttpAuthorization> auths = HttpAuthorization.parse(Collections.list(request.getHeaders(AUTHORIZATION)));
-    String bearer = auths.stream().filter(a -> a.isType("Bearer")).findFirst().map(HttpAuthorization::getCredential).orElse(null);
-    if (bearer == null) {
-      return null;
-    }
-    Map<String, Object> userJson = readProfile(bearer);
-    if (userJson == null) {
-      return null;
-    }
-
-    User user = new User();
-    user.setScopes(getScopes(userJson));
-
-    Map<String, Object> claims = new HashMap<>(userJson);
-    claims.remove("auth_time");
-    claims.remove("scope");
-    user.setClaims(claims);
-    return user;
-  }
-
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  private Set<String> getScopes(Map<String, Object> userJson) {
-    Object scope = userJson.get("scope");
-    if (scope instanceof String) {
-      return Stream.of(StringUtils.split((String) scope, ";")).map(s -> s.trim()).collect(toSet());
-    }
-    if (scope instanceof List) {
-      return new HashSet<>((List) scope);
-    }
-    return null;
-  }
-
-  private Map<String, Object> readProfile(String bearer) {
-    if (StringUtils.isEmpty(oidcUrl)) {
-      throw new FhirException(500, IssueType.SECURITY, "server oidc config missing");
-    }
-    Builder request = clientBuilder.build().target(oidcUrl + "/userinfo").request();
-    Response response = request.header("Authorization", "Bearer " + bearer).get();
-    if (response.getStatus() >= 400) {
-      return null;
-    }
-    return fromJson(response.readEntity(String.class));
-  }
-
-  @SuppressWarnings("unchecked")
-  private Map<String, Object> fromJson(String json) {
-    return new Gson().fromJson(json, Map.class);
+    String bearerToken = auths.stream().filter(a -> a.isType("Bearer")).findFirst().map(HttpAuthorization::getCredential).orElse(null);
+    return oidcUserProvider.getUser(bearerToken);
   }
 
 }
