@@ -37,9 +37,9 @@ public class SmartAuthHttpInterceptor extends InInterceptor {
   private static final Map<String, Map<String, List<String>>> contexts = new HashMap<>();
   static {
     HashMap<String, List<String>> patient = new HashMap<>();
-    patient.put(Right.read, asList(READ, VREAD, HISTORYINSTANCE));
+    patient.put(Right.read, asList(READ, VREAD, HISTORYINSTANCE, SEARCHTYPE));
     patient.put(Right.write, asList(UPDATE, DELETE, OPERATION));
-    patient.put(Right.all, asList(READ, VREAD, HISTORYINSTANCE, UPDATE, DELETE, OPERATION));
+    patient.put(Right.all, asList(READ, VREAD, HISTORYINSTANCE, SEARCHTYPE, UPDATE, DELETE, OPERATION));
     contexts.put(Context.patient, patient);
 
     HashMap<String, List<String>> user = new HashMap<>();
