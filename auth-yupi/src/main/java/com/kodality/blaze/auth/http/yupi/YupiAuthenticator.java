@@ -10,29 +10,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.blaze.auth.http.yupi;
+package com.kodality.blaze.auth.http.yupi;
 
 import com.kodality.blaze.auth.User;
 import com.kodality.blaze.auth.http.AuthHeaderAuthenticator;
 import com.kodality.blaze.auth.http.HttpAuthorization;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.cxf.message.Message;
 import org.osgi.service.component.annotations.Component;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 @Component(immediate = true, service = AuthHeaderAuthenticator.class)
 public class YupiAuthenticator implements AuthHeaderAuthenticator {
-  private static final Map<String, User> yupis = new HashMap<>();
+  private static final Map<String, String> yupiOrgs = new HashMap<>();
+
   static {
-    yupis.put("yupi", makeYupi("yupi", "yupland"));
-    yupis.put("ipuy", makeYupi("ipuy", "dnalpuy"));
+    yupiOrgs.put("yupi", "yupland");
+    yupiOrgs.put("ipuy", "dnalpuy");
   }
 
   @Override
@@ -40,8 +41,27 @@ public class YupiAuthenticator implements AuthHeaderAuthenticator {
     List<HttpAuthorization> auths = HttpAuthorization.parse(Collections.list(request.getHeaders(AUTHORIZATION)));
     return auths.stream()
         .filter(a -> a.isType("Bearer"))
-        .map(bearer -> yupis.getOrDefault(bearer.getCredential(), null))
-        .filter(Objects::nonNull).findFirst().orElse(null);
+        .filter(bearer -> yupiOrgs.containsKey(bearer.getCredential()))
+        .map(bearer -> makeYupi(bearer.getCredential(), yupiOrgs.get(bearer.getCredential())))
+        .map(user -> decorateClaims(user, getClaimHeaders(request))).findFirst().orElse(null);
+  }
+
+  private Map<String, String> getClaimHeaders(HttpServletRequest request) {
+    Map<String, String> claims = new HashMap<>();
+    Enumeration<String> headerNames = request.getHeaderNames();
+    while (headerNames.hasMoreElements()) {
+      String headerName = headerNames.nextElement();
+      if (headerName.startsWith("x-claim-")) {
+        String claim = headerName.replace("x-claim-", "");
+        claims.put(claim, request.getHeader(headerName));
+      }
+    }
+    return claims;
+  }
+
+  private User decorateClaims(User user, Map<String, String> claimHeaders) {
+    claimHeaders.forEach((k, v) -> user.getClaims().put(k, v));
+    return user;
   }
 
   private static User makeYupi(String sub, String org) {
