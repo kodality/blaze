@@ -151,7 +151,11 @@ public class SqlBuilder implements Serializable {
     int i = 0;
     Object[] p = new Object[params.size()];
     for (Object param : params) {
-      p[i++] = param instanceof String ? ("'" + param + "'") : param.toString();
+      if(param == null){
+        p[i++] = "NULL";
+      } else {
+        p[i++] = param instanceof String ? ("'" + param + "'") : param.toString();
+      }
     }
     return String.format(sb.toString().replaceAll("\\?", "%s"), p);
   }

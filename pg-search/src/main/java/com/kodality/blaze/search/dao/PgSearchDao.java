@@ -28,13 +28,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
+
 @Slf4j
 @Component(immediate = true, service = PgSearchDao.class)
 public class PgSearchDao {
   @Reference
   private JdbcTemplate jdbcTemplate;
 
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
   private PgResourceSearchFilter pgResourceSearchFilter;
 
   public Integer count(SearchCriterion criteria) {
@@ -102,6 +103,15 @@ public class PgSearchDao {
       first = false;
     }
     return sb;
+  }
+
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = DYNAMIC, service = PgResourceSearchFilter.class, name = "PgResourceSearchFilter")
+  protected void bind(PgResourceSearchFilter pgResourceSearchFilter) {
+    this.pgResourceSearchFilter = pgResourceSearchFilter;
+  }
+
+  protected void unbind(PgResourceSearchFilter pgResourceSearchFilter) {
+    this.pgResourceSearchFilter = null;
   }
 
 }

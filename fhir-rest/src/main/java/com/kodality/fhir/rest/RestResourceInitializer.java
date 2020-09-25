@@ -111,8 +111,7 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
                                     "CompartmentDefinition",
                                     "StructureMap",
                                     "GraphDefinition",
-                                    "DataElement",
-                                    "AuditEvent"));
+                                    "DataElement"));
     capabilityStatement.getRest().forEach(rest -> {
       rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
     });
