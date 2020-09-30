@@ -55,11 +55,11 @@ public class PgSearchDao {
     sb.append(joins(criteria));
     sb.append(" WHERE 1=1");
     sb.append(criteria(criteria));
-    sb.append(order(criteria));
-    sb.append(limit(criteria));
     if (pgResourceSearchFilter != null) {
       pgResourceSearchFilter.filter(sb, "base");
     }
+    sb.append(order(criteria));
+    sb.append(limit(criteria));
     log.debug(sb.getPretty());
     return jdbcTemplate.query(sb.getSql(), sb.getParams(), new ResourceRowMapper());
   }
