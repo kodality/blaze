@@ -92,7 +92,7 @@ public class PostgreStorehouse implements ResourceStorehouse {
   public void delete(ResourceId id) {
     tx.transaction(() -> {
       ResourceVersion current = resourceDao.load(new VersionId(id));
-      if (current.isDeleted()) {
+      if (current == null || current.isDeleted()) {
         return;
       }
       ResourceVersion version = new ResourceVersion();
