@@ -14,17 +14,16 @@
 
 import com.kodality.blaze.fhir.structure.api.ParseException;
 import com.kodality.blaze.fhir.structure.api.ResourceRepresentation;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
 import org.hl7.fhir.r4.formats.JsonParser;
 import org.hl7.fhir.r4.model.Resource;
 import org.osgi.service.component.annotations.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.List;
-
-@Component(immediate = true, service = { JsonRepresentation.class, ResourceRepresentation.class })
+@Component(immediate = true, service = { ResourceRepresentation.class })
 public class JsonRepresentation implements ResourceRepresentation {
 
   @Override

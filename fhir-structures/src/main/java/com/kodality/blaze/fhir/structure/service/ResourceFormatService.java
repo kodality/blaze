@@ -15,8 +15,10 @@ package com.kodality.blaze.fhir.structure.service;
 import com.kodality.blaze.fhir.structure.api.ParseException;
 import com.kodality.blaze.fhir.structure.api.ResourceContent;
 import com.kodality.blaze.fhir.structure.api.ResourceRepresentation;
-import com.kodality.blaze.fhir.structure.defs.JsonRepresentation;
-import com.kodality.blaze.fhir.structure.defs.XmlRepresentation;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
@@ -25,25 +27,18 @@ import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
-// import org.apache.felix.scr.annotations.Reference;
-// import org.apache.felix.scr.annotations.ReferenceCardinality;
-// import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.hl7.fhir.r4.model.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.time.Duration;
-import java.util.Optional;
-import java.util.stream.Stream;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Component(immediate = true, service = ResourceFormatService.class)
 public class ResourceFormatService {
-  @Reference
-  private JsonRepresentation jsonRepresentation;
-  @Reference
-  private XmlRepresentation xmlRepresentation;
   private Cache<String, ? extends Resource> cache;
+  private final List<ResourceRepresentation> representations = new ArrayList<>();
 
   @Activate
   private void init() {
@@ -85,13 +80,20 @@ public class ResourceFormatService {
       return Optional.empty();
     }
     String mime = StringUtils.substringBefore(ct, ";");
-    return Stream.of(jsonRepresentation, xmlRepresentation).filter(c -> c.getMimeTypes().contains(mime)).findFirst();
-    // return presenters.stream().filter(c -> c.getMimeTypes().contains(mime)).findFirst();
+     return representations.stream().filter(c -> c.getMimeTypes().contains(mime)).findFirst();
   }
 
   private Optional<ResourceRepresentation> guessPresenter(String content) {
-    return Stream.of(jsonRepresentation, xmlRepresentation).filter(c -> c.isParsable(content)).findFirst();
-    // return presenters.stream().filter(c -> c.isParsable(content)).findFirst();
+     return representations.stream().filter(c -> c.isParsable(content)).findFirst();
+  }
+
+  @Reference(cardinality = MULTIPLE, policy = DYNAMIC, service = ResourceRepresentation.class, name = "ResourceRepresentation")
+  protected void bind(ResourceRepresentation representation) {
+    representations.add(representation);
+  }
+
+  protected void unbind(ResourceRepresentation representation) {
+    representations.remove(representation);
   }
 
 }
