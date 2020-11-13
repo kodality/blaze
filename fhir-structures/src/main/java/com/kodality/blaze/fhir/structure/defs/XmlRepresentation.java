@@ -24,7 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-@Component(immediate = true, service = { XmlRepresentation.class, ResourceRepresentation.class })
+@Component(immediate = true, service = { ResourceRepresentation.class })
 public class XmlRepresentation implements ResourceRepresentation {
 
   @Override
