@@ -10,12 +10,13 @@ docker run -d -t \
   --name $name \
   --link blaze-postgres \
   -p 8181:8181 \
+  -p 5007:5005 \
   -e JAVA_MIN_MEM="256M" \
   -e JAVA_MAX_MEM="1024M" \
   -e JAVA_PERM_MEM="128M" \
   -e JAVA_MAX_PERM_MEM="256M" \
   --restart unless-stopped \
-  $image
+  $image $@
 
 docker exec -ti $name sh -c 'echo "
 db.url=jdbc:postgresql://blaze-postgres:5432/blazedb

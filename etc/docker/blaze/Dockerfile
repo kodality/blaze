@@ -13,12 +13,14 @@ RUN apt -y install openssh-client sshpass \
 # well, hapi libs need a refresh after startup :/
 RUN echo '/client.sh refresh "\"HAPI FHIR - Core Library\"" 2>&1 > /tmp/aaa' > /fix-hapi.sh \
  && chmod +x /fix-hapi.sh
-RUN echo 'sleep 10 && /fix-hapi.sh &' > /startup.sh \
- && echo '/opt/karaf/bin/karaf' >> /startup.sh \
+RUN echo '#!/bin/sh' > /startup.sh \
+ && echo 'sleep 10 && /fix-hapi.sh &' >> /startup.sh \
+ && echo '/opt/karaf/bin/karaf $@' >> /startup.sh \
  && chmod +x /startup.sh
+
+RUN echo "export JAVA_DEBUG_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" >> /opt/karaf/bin/setenv
 
 COPY deploy /opt/karaf/deploy
 
-
-ENTRYPOINT ["sh", "-c", "/startup.sh"]
+ENTRYPOINT ["/startup.sh"]
 
