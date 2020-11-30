@@ -51,7 +51,8 @@
       com.kodality.fhir.rest.server,
       com.kodality.fhir.rest.root,
       com.kodality.fhir.rest.interaction,
-      com.kodality.fhir.rest.filter
+      com.kodality.fhir.rest.filter,
+      com.kodality.fhir.rest.util
     </bundle.export-packages>
     <bundle.import-packages>
       javax.annotation
