@@ -22,14 +22,14 @@ import javax.ws.rs.core.Response;
 
 @Slf4j
 public abstract class InInterceptor extends AbstractPhaseInterceptor<Message> {
-  private boolean pohuist;
+  private boolean logAndIgnoreOnError;
 
   public InInterceptor(String phase) {
     super(phase);
   }
 
-  public void setPohuist(boolean pohuist) {
-    this.pohuist = pohuist;
+  public void setLogAndIgnoreOnError(boolean logAndIgnoreOnError) {
+    this.logAndIgnoreOnError = logAndIgnoreOnError;
   }
 
   public abstract void handle(Message message);
@@ -39,7 +39,7 @@ public abstract class InInterceptor extends AbstractPhaseInterceptor<Message> {
     try {
       handle(message);
     } catch (Throwable e) {
-      if (pohuist) {
+      if (logAndIgnoreOnError) {
         log.error("", e);
       } else {
         message.getExchange().put(Response.class, FhirExceptionHandler.getResponse(e));

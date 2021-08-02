@@ -47,7 +47,7 @@ public class HttpAuthorization {
         .map(a -> a.trim())
         .map(auth -> {
           String[] parts = auth.split("\\s");
-          if (parts.length != 2) {
+          if (parts.length < 2) {
             return null;
           }
           return new HttpAuthorization(parts[0], parts[1]);

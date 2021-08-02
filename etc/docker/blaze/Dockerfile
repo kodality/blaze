@@ -1,4 +1,4 @@
-FROM kodality/karaf:4.2.9
+FROM kodality/karaf:4.3.0
 
 COPY etc /opt/karaf/etc
 
@@ -14,7 +14,7 @@ RUN apt -y install openssh-client sshpass \
 RUN echo '/client.sh refresh "\"HAPI FHIR - Core Library\"" 2>&1 > /tmp/aaa' > /fix-hapi.sh \
  && chmod +x /fix-hapi.sh
 RUN echo '#!/bin/sh' > /startup.sh \
- && echo 'sleep 10 && /fix-hapi.sh &' >> /startup.sh \
+ && echo 'sleep 20 && /fix-hapi.sh &' >> /startup.sh \
  && echo '/opt/karaf/bin/karaf $@' >> /startup.sh \
  && chmod +x /startup.sh
 

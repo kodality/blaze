@@ -21,6 +21,7 @@ import com.kodality.fhir.rest.server.FhirRootServer;
 import com.kodality.fhir.rest.server.JaxRsServer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.service.factory.ServiceConstructionException;
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
@@ -163,8 +164,12 @@ public class RestResourceInitializer implements CapabilityStatementListener, Res
       servers.get(type).getServerInstance().destroy();
       servers.remove(type);
     }
-    server.createServer();
-    servers.put(type, server);
+    try {
+      server.createServer();
+      servers.put(type, server);
+    } catch (ServiceConstructionException e) {
+      e.printStackTrace();
+    }
   }
 
   public Map<String, JaxRsServer> getServers() {

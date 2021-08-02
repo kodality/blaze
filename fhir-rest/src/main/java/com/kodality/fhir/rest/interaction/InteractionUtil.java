@@ -13,6 +13,7 @@
  package com.kodality.fhir.rest.interaction;
 
 import com.kodality.blaze.core.model.InteractionType;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.model.UserOperation;
@@ -30,7 +31,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public final class InteractionUtil {
-  private static final Map<Method, String> interactionCache = new HashMap<>();
+  private static final Map<Method, String> interactionCache = new ConcurrentHashMap<>();
 
   private InteractionUtil() {
     //
@@ -111,6 +112,18 @@ public final class InteractionUtil {
       for (Class<?> iface : m.getDeclaringClass().getInterfaces()) {
         try {
           String result = getMethodInteraction(iface.getMethod(m.getName(), m.getParameterTypes()));
+          if (result != null) {
+            return result;
+          }
+        } catch (NoSuchMethodException e) {
+          //continue
+        }
+      }
+
+      Class<?> superClass = m.getDeclaringClass().getSuperclass();
+      if (superClass != null) {
+        try {
+          String result = getMethodInteraction(superClass.getMethod(m.getName(), m.getParameterTypes()));
           if (result != null) {
             return result;
           }

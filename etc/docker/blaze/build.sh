@@ -13,6 +13,7 @@ cp -r etc/conf/* $etc/
 find ./*/target/ -name "*SNAPSHOT.jar" -exec rm {} \;
 mvn clean install -DskipTests || exit 1
 find ./*/target/ -name "*SNAPSHOT.jar" -exec cp {} $deploy/ \;
+ls $deploy
 
 
 cd $this

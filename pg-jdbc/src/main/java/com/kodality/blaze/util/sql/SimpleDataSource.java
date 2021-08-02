@@ -37,7 +37,9 @@ public class SimpleDataSource extends BasicDataSource {
     setValidationQuery("select 1");
     setConnectionInitSqls(Collections.singleton("set search_path to fhir,core,public"));
 
-    setMaxTotal(Integer.valueOf(props.get("db.maxActive")));
+    if (props.get("db.maxActive") != null) {
+      setMaxTotal(Integer.parseInt(props.get("db.maxActive")));
+    }
     setUrl(props.get("db.url"));
     setUsername(props.get("db.username"));
     setPassword(props.get("db.password"));
