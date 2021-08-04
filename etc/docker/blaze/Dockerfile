@@ -6,7 +6,7 @@ RUN echo "feature:repo-add file:///opt/karaf/etc/features.xml" | /opt/karaf/bin/
 RUN echo "feature:install blaze-deps blaze-pg blaze-liquibase" | /opt/karaf/bin/karaf && echo 1
 
 # /opt/karaf/bin/client stopped working from some version. hacks!
-RUN apt -y install openssh-client sshpass \
+RUN apt-get update && apt -y install openssh-client sshpass \
  && echo 'sshpass -p karaf ssh karaf@localhost -p 8101 -o "StrictHostKeyChecking no" $@' > /client.sh \
  && chmod +x /client.sh
 
@@ -14,7 +14,7 @@ RUN apt -y install openssh-client sshpass \
 RUN echo '/client.sh refresh "\"HAPI FHIR - Core Library\"" 2>&1 > /tmp/aaa' > /fix-hapi.sh \
  && chmod +x /fix-hapi.sh
 RUN echo '#!/bin/sh' > /startup.sh \
- && echo 'sleep 20 && /fix-hapi.sh &' >> /startup.sh \
+ && echo 'sleep 60 && /fix-hapi.sh &' >> /startup.sh \
  && echo '/opt/karaf/bin/karaf $@' >> /startup.sh \
  && chmod +x /startup.sh
 
