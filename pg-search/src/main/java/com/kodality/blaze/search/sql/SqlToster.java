@@ -77,7 +77,7 @@ public final class SqlToster {
   public static SqlBuilder order(QueryParam param, String alias) {
     String value = param.getValues().get(0);
     String direction = "ASC";
-    if (value.startsWith("-")) {
+    if (value.startsWith("-") || "desc".equals(param.getModifier())) {
       direction = "DESC";
       value = value.replaceFirst("-", "");
     }
