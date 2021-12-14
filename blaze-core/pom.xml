@@ -16,12 +16,6 @@
   <dependencies>
     <dependency>
       <groupId>com.kodality.blaze</groupId>
-      <artifactId>blaze-osgi</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.kodality.blaze</groupId>
       <artifactId>fhir-structures</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
