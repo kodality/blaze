@@ -1,4 +1,4 @@
-FROM kodality/karaf:4.3.0
+FROM kodality/karaf:4.3.4
 
 COPY etc /opt/karaf/etc
 
