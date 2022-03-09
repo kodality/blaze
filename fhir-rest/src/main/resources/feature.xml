@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="fhir-rest">
+    <feature name="fhir-rest-prometheus">
+        <bundle start-level="50">mvn:io.prometheus/simpleclient/0.15.0</bundle>
+        <bundle start-level="50">mvn:io.prometheus/simpleclient_common/0.15.0</bundle>
+        <bundle start-level="50">wrap:mvn:org.latencyutils/LatencyUtils/2.0.3</bundle>
+        <bundle start-level="50">wrap:mvn:io.micrometer/micrometer-core/1.8.3</bundle>
+        <bundle start-level="50">wrap:mvn:io.micrometer/micrometer-registry-prometheus/1.8.3</bundle>
+    </feature>
+    <feature name="fhir-rest" description="fhir-rest" version="1.0.0.SNAPSHOT">
+        <feature>fhir-structures</feature>
+        <feature>blaze-core</feature>
+        <bundle start-level="50">mvn:org.apache.cxf/cxf-rt-transports-http/3.4.6</bundle>
+        <bundle start-level="50">mvn:org.apache.cxf/cxf-rt-frontend-jaxrs/3.4.6</bundle>
+        <bundle start-level="50">mvn:org.apache.cxf/cxf-rt-features-metrics/3.4.6</bundle>
+        <bundle start-level="50">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <feature>fhir-rest-prometheus</feature>
+        <bundle start-level="50">mvn:com.kodality.blaze/fhir-rest/1.0-SNAPSHOT</bundle>
+    </feature>
+</features>

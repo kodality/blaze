@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="auth-yupi">
+    <feature name="auth-yupi" description="auth-yupi" version="1.0.0.SNAPSHOT">
+         <bundle>mvn:com.kodality.blaze/auth-rest/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/auth-yupi/1.0-SNAPSHOT</bundle>
+    </feature>
+</features>

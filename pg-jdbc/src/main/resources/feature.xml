@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="pg-jdbc">
+    <feature name="pg-jdbc" description="pg-jdbc" version="1.0.0.SNAPSHOT">
+        <bundle>mvn:org.postgresql/postgresql/42.2.16</bundle>
+        <bundle>mvn:org.apache.commons/commons-dbcp2/2.7.0</bundle>
+        <bundle>wrap:mvn:org.springframework/spring-jdbc/5.3.12</bundle>
+        <bundle>wrap:mvn:org.springframework/spring-tx/5.3.12</bundle>
+        <bundle>mvn:com.kodality.blaze/tx-manager/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/auth-core/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.google.code.gson/gson/2.8.2</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-jdbc/1.0-SNAPSHOT</bundle>
+    </feature>
+</features>

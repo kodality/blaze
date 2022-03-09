@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="pg-search">
+    <feature name="pg-search" description="pg-search" version="1.0.0.SNAPSHOT">
+        <bundle>mvn:com.kodality.blaze/blaze-core/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-jdbc/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-store/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/etc-conformance/1.0-SNAPSHOT</bundle>
+        <bundle dependency='true'>mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/4.2.9</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-search/1.0-SNAPSHOT</bundle>
+    </feature>
+</features>

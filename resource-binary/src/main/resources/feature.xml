@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="resource-binary">
+    <feature name="resource-binary" description="resource-binary" version="1.0.0.SNAPSHOT">
+        <bundle>mvn:com.kodality.blaze/fhir-rest/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/fhir-structures/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/resource-binary/1.0-SNAPSHOT</bundle>
+    </feature>
+</features>

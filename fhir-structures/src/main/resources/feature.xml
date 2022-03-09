@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="fhir-structures">
+    <feature name="fhir-structures" description="fhir-structures" version="1.0.0.SNAPSHOT" start-level="50">
+<!--        DON'T TOUCH THIS, THIS WORKS-->
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/hapi-fhir-base/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.r4/5.1.9</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/hapi-fhir-structures-r4/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/hapi-fhir-validation-resources-r4/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/hapi-fhir-validation/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.validation/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.utilities/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/hapi-fhir-converter/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.convertors/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.r5/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.dstu2/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.dstu2016may/5.1.0</bundle>
+        <bundle start-level="50">mvn:ca.uhn.hapi.fhir/org.hl7.fhir.dstu3/5.1.0</bundle>
+        <bundle start-level="50">wrap:mvn:xpp3/xpp3/1.1.4c</bundle>
+        <bundle start-level="50">mvn:org.ehcache/ehcache/3.9.0</bundle>
+        <bundle start-level="50">mvn:com.kodality.blaze/fhir-structures/1.0-SNAPSHOT</bundle>
+    </feature>
+</features>

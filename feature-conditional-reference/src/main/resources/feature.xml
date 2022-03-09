@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="feature-conditional-reference">
+    <feature name="feature-conditional-reference" description="feature-conditional-reference" version="1.0.0.SNAPSHOT">
+         <bundle>mvn:com.kodality.blaze/fhir-rest/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.kodality.blaze/feature-conditional-reference/1.0-SNAPSHOT</bundle>
+    </feature>
+</features>
