@@ -27,12 +27,47 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
-      <version>3.4.0</version>
+      <version>3.4.6</version>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-      <version>3.4.0</version>
+      <version>3.4.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-features-metrics</artifactId>
+      <version>3.4.6</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+      <version>1.8.3</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <version>1.8.3</version>
+    </dependency>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient</artifactId>
+      <version>0.15.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_common</artifactId>
+      <version>0.15.0</version>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>io.prometheus</groupId>-->
+<!--      <artifactId>simpleclient_servlet</artifactId>-->
+<!--      <version>0.15.0</version>-->
+<!--    </dependency>-->
+    <dependency>
+      <groupId>org.latencyutils</groupId>
+      <artifactId>LatencyUtils</artifactId>
+      <version>2.0.3</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -44,7 +79,29 @@
       <artifactId>org.apache.karaf.shell.console</artifactId>
     </dependency>
   </dependencies>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>generate-features-file</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>features-generate-descriptor</goal>
+            </goals>
+            <configuration>
+              <primaryFeatureName>fhir-rest</primaryFeatureName>
+              <includeProjectArtifact>false</includeProjectArtifact>
+              <enableGeneration>true</enableGeneration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <properties>
     <bundle.export-packages>
@@ -52,10 +109,15 @@
       com.kodality.fhir.rest.root,
       com.kodality.fhir.rest.interaction,
       com.kodality.fhir.rest.filter,
-      com.kodality.fhir.rest.util
+      com.kodality.fhir.rest.util,
+      com.kodality.fhir.rest.metrics,
+      io.prometheus*,
+      io.opentelemetry*
     </bundle.export-packages>
     <bundle.import-packages>
-      javax.annotation
+      io.prometheus*,
+      !io.opentelemetry*,
+      *,
     </bundle.import-packages>
   </properties>
 </project>
