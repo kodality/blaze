@@ -19,7 +19,6 @@ import org.apache.cxf.jaxrs.model.UserOperation;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.apache.cxf.jaxrs.utils.AnnotationUtils;
 
-@Slf4j
 public abstract class PrometheusServer {
   private Server serverInstance;
 
@@ -58,24 +57,20 @@ public abstract class PrometheusServer {
     resource.setProduces(TextFormat.CONTENT_TYPE_004);
     List<UserOperation> ops = getOperations();
     resource.setOperations(ops);
-    log.info("Resource {} {} {}", resource.getPath(), resource.getName(), resource.getOperations().stream().map(UserOperation::getName).collect(Collectors.joining(", ")));
     return resource;
   }
 
   private List<UserOperation> getOperations() {
     List<UserOperation> ops = new ArrayList<>();
     List<Method> methods = Arrays.asList(PrometheusRest.class.getMethods());
-    log.info("Found {} methods", methods.size());
     methods.forEach(m -> {
       Path path = m.getAnnotation(Path.class);
       UserOperation op = new UserOperation(m.getName(), path == null ? "" : path.value());
       String httpMethodValue = AnnotationUtils.getHttpMethodValue(m);
-      log.info("Found HTTP method {}", httpMethodValue);
       op.setVerb(httpMethodValue);
       Consumes cm = AnnotationUtils.getMethodAnnotation(m, Consumes.class);
       if (cm != null) {
         String consumes = StringUtils.join(cm.value(), ",");
-        log.info("Method consumes {}", consumes);
         op.setConsumes(consumes);
       }
       setProduces(m, op);
@@ -90,7 +85,6 @@ public abstract class PrometheusServer {
       return;
     }
     String producesStr = StringUtils.join(produces.value(), ",");
-    log.info("Produces {}", producesStr);
     op.setConsumes(producesStr);
   }
 
