@@ -12,11 +12,15 @@ cp -r etc/conf/* $etc/
 
 find ./*/target/ -name "*SNAPSHOT.jar" -exec rm {} \;
 mvn clean install -DskipTests || exit 1
-find ./*/target/ -name "*SNAPSHOT.jar" -exec cp {} $deploy/ \;
+#find ./*/target/ -name "*SNAPSHOT.jar" -exec cp {} $deploy/ \;
+
+mkdir -p $deploy/com/kodality/blaze
+cp -a ~/.m2/repository/com/kodality/blaze $deploy/com/kodality
+
 ls $deploy
 
 
 cd $this
-docker build -t $img .
+docker build --no-cache -t $img:latest .
 rm -rf $deploy/*
 rm -rf $etc/*
