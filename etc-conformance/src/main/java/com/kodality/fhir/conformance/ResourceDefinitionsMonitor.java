@@ -12,31 +12,25 @@
  */
  package com.kodality.fhir.conformance;
 
-import ca.uhn.fhir.context.FhirContext;
 import com.kodality.blaze.core.service.conformance.ConformanceHolder;
 import com.kodality.blaze.core.util.EtcMonitor;
 import com.kodality.blaze.fhir.structure.service.HapiContextHolder;
 import com.kodality.blaze.fhir.structure.service.ResourceFormatService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.StructureDefinition;
-import org.hl7.fhir.utilities.validation.ValidationMessage;
-import org.hl7.fhir.validation.profile.ProfileValidator;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.StructureDefinition;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 import static java.util.stream.Collectors.toMap;
 
