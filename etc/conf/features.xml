@@ -1,9 +1,11 @@
 <features name="standard-4.2.0" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
-  <repository>mvn:org.apache.cxf.karaf/apache-cxf/LATEST/xml/features</repository>
+  <repository>mvn:org.apache.cxf.karaf/apache-cxf/3.4.6/xml/features</repository>
   <feature name="blaze-deps">
+    <feature>cxf-core</feature>
     <feature>cxf-http</feature>
     <feature>cxf-jaxrs</feature>
     <feature>cxf-features-logging</feature>
+    <feature>cxf-features-metrics</feature>
     <feature>scheduler</feature>
 
     <!-- for jdk11 to work -->
@@ -30,19 +32,6 @@
     <bundle>mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
     <bundle>mvn:org.checkerframework/checker-qual/3.6.1</bundle>
     <bundle>wrap:mvn:org.fhir/ucum/1.0.3</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.r5/5.1.9</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.r4/5.1.9</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.dstu2/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.dstu3/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.dstu2016may/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.utilities/5.1.9</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.convertors/5.1.9</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/org.hl7.fhir.validation/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-converter/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-structures-r4/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-validation-resources-r4/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-validation/5.1.0</bundle>
-    <bundle>mvn:ca.uhn.hapi.fhir/hapi-fhir-base/5.1.0</bundle>
 
     <bundle>wrap:mvn:net.sf.saxon/saxon-xpath/8.7</bundle>
     <bundle>wrap:mvn:net.sf.saxon/Saxon-HE/9.8.0-6</bundle>
