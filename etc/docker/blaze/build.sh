@@ -21,6 +21,6 @@ ls $deploy
 
 
 cd $this
-docker build --no-cache -t $img:latest .
+docker build --no-cache -t $img:av-1.4 .
 rm -rf $deploy/*
 rm -rf $etc/*
