@@ -1,16 +1,12 @@
-FROM kodality/karaf:4.3.5
+FROM kodality/karaf:4.3.7
 
 COPY etc /opt/karaf/etc
 COPY deploy/com /root/.m2/repository/com/
-COPY check_feature.sh /
-RUN chmod +x /check_feature.sh
 
-#RUN echo "feature:repo-add file:///opt/karaf/etc/features.xml" | /opt/karaf/bin/karaf
-#RUN echo "feature:install blaze-deps blaze-pg blaze-liquibase" | /opt/karaf/bin/karaf && echo 1
+RUN echo "feature:repo-add file:///opt/karaf/etc/features.xml" | /opt/karaf/bin/karaf
+RUN echo "feature:install blaze-deps blaze-pg blaze-liquibase" | /opt/karaf/bin/karaf && echo 1
 
-RUN echo "./check_feature.sh && feature:repo-add file:///opt/karaf/etc/features.xml\n \
-feature:install blaze-deps blaze-pg blaze-liquibase\n \
-feature:repo-add mvn:com.kodality.blaze/auth-core/1.0-SNAPSHOT/xml/features\n \
+RUN echo "feature:repo-add mvn:com.kodality.blaze/auth-core/1.0-SNAPSHOT/xml/features\n \
 feature:repo-add mvn:com.kodality.blaze/auth-rest/1.0-SNAPSHOT/xml/features\n \
 feature:repo-add mvn:com.kodality.blaze/auth-smart/1.0-SNAPSHOT/xml/features\n \
 feature:repo-add mvn:com.kodality.blaze/auth-yupi/1.0-SNAPSHOT/xml/features\n \
@@ -26,10 +22,9 @@ feature:repo-add mvn:com.kodality.blaze/pg-store/1.0-SNAPSHOT/xml/features\n \
 feature:repo-add mvn:com.kodality.blaze/pg-whiplash/1.0-SNAPSHOT/xml/features\n \
 feature:repo-add mvn:com.kodality.blaze/resource-binary/1.0-SNAPSHOT/xml/features\n \
 feature:repo-add mvn:com.kodality.blaze/tx-manager/1.0-SNAPSHOT/xml/features\n \
-feature:repo-add mvn:com.kodality.blaze/validation-profile/1.0-SNAPSHOT/xml/features\n \
-feature:install auth-core auth-rest auth-smart auth-yupi blaze-core blaze-scheduler etc-conformance feature-conditional-reference fhir-rest fhir-structures pg-jdbc pg-search pg-store pg-whiplash resource-binary tx-manager validation-profile" | /opt/karaf/bin/karaf
+feature:repo-add mvn:com.kodality.blaze/validation-profile/1.0-SNAPSHOT/xml/features" | /opt/karaf/bin/karaf
 
-#RUN echo "feature:install auth-core auth-rest auth-smart auth-yupi blaze-core blaze-scheduler etc-conformance feature-conditional-reference fhir-rest fhir-structures pg-jdbc pg-search pg-store pg-whiplash resource-binary tx-manager validation-profile" | /opt/karaf/bin/karaf
+RUN echo "feature:install auth-core auth-rest auth-smart auth-yupi blaze-core blaze-scheduler etc-conformance feature-conditional-reference fhir-rest fhir-structures pg-jdbc pg-search pg-store pg-whiplash resource-binary tx-manager validation-profile" | /opt/karaf/bin/karaf
 
 # /opt/karaf/bin/client stopped working from some version. hacks!
 RUN apt-get update --allow-releaseinfo-change && apt -y install openssh-client sshpass \

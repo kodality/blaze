@@ -4,7 +4,7 @@
         <bundle>mvn:com.kodality.blaze/pg-jdbc/1.0-SNAPSHOT</bundle>
         <bundle dependency='true'>mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/4.2.9</bundle>
         <bundle>mvn:org.liquibase/liquibase-osgi/3.4.2</bundle>
-        <bundle>wrap:mvn:org.liquibase/liquibase-core/3.5.0</bundle>
+        <bundle>wrap:mvn:org.liquibase/liquibase-core/3.4.2</bundle>
         <bundle>wrap:mvn:org.yaml/snakeyaml/1.17</bundle>
         <bundle>mvn:com.kodality.blaze/pg-whiplash/1.0-SNAPSHOT</bundle>
     </feature>

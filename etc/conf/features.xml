@@ -49,7 +49,7 @@
     <bundle>wrap:mvn:javax.transaction/jta/1.1</bundle>
   </feature>
   <feature name="blaze-liquibase">
-    <bundle>wrap:mvn:org.liquibase/liquibase-core/3.5.0</bundle>
+    <bundle>wrap:mvn:org.liquibase/liquibase-core/3.4.2</bundle>
     <bundle>wrap:mvn:org.yaml/snakeyaml/1.17</bundle>
   </feature>
   <feature name="blaze-all">
