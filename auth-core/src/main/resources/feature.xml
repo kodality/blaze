@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="auth-core">
+    <feature name="auth-core" description="auth-core" version="${feature.version}">
+        <bundle>mvn:com.kodality.blaze/auth-core/${feature.version}</bundle>
+    </feature>
+</features>

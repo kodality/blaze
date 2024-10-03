@@ -19,6 +19,12 @@ import com.kodality.fhir.rest.server.FhirResourceServer;
 import com.kodality.fhir.rest.server.FhirResourceServerFactory;
 import com.kodality.fhir.rest.server.FhirRootServer;
 import com.kodality.fhir.rest.server.JaxRsServer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.service.factory.ServiceConstructionException;
@@ -32,13 +38,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;

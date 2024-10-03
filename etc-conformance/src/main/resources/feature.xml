@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="etc-conformance">
+    <feature name="etc-conformance" description="etc-conformance" version="${feature.version}">
+         <feature>blaze-core</feature>
+         <feature>fhir-structures</feature>
+        <bundle>mvn:com.kodality.blaze/etc-conformance/${feature.version}</bundle>
+    </feature>
+</features>

@@ -24,30 +24,21 @@ import com.kodality.blaze.fhir.structure.api.ResourceContent;
 import com.kodality.blaze.fhir.structure.api.ResourceRepresentation;
 import com.kodality.blaze.fhir.structure.service.HapiContextHolder;
 import com.kodality.blaze.fhir.structure.service.ResourceFormatService;
-
-import ca.uhn.fhir.context.FhirContext;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.context.IWorkerContext;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.elementmodel.Element;
 import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
-import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StructureDefinition;
-import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.utilities.validation.ValidationMessage;
-import org.hl7.fhir.validation.instance.InstanceValidator;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 

@@ -5,7 +5,8 @@
   <parent>
     <groupId>com.kodality</groupId>
     <artifactId>blaze</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0.0</version>
+<relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>com.kodality.blaze</groupId>
   <artifactId>auth-yupi</artifactId>
@@ -20,7 +21,29 @@
       <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>generate-features-file</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>features-generate-descriptor</goal>
+            </goals>
+            <configuration>
+              <primaryFeatureName>auth-yupi</primaryFeatureName>
+              <includeProjectArtifact>true</includeProjectArtifact>
+              <enableGeneration>true</enableGeneration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <properties>
     <bundle.export-packages>

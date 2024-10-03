@@ -13,6 +13,7 @@
  package com.kodality.blaze.fhir.structure.api;
 
 import com.kodality.blaze.fhir.structure.service.ResourceFormatService;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.hl7.fhir.r4.model.Resource;
 import org.osgi.framework.BundleContext;
@@ -35,7 +36,7 @@ public class ResourceComposer {
 
   public static <R extends Resource> R parse(File file) {
     try {
-      return parse(FileUtils.readFileToString(file, "UTF8"));
+      return parse(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
     } catch (IOException e) {
       throw new ParseException(e);
     }

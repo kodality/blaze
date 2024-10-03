@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="pg-whiplash">
+    <feature name="pg-whiplash" description="pg-whiplash" version="${feature.version}">
+        <bundle>mvn:com.kodality.blaze/pg-jdbc/${feature.version}</bundle>
+        <bundle dependency='true'>mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/4.2.9</bundle>
+        <feature prerequisite="true">wrap</feature>
+        <bundle>mvn:org.liquibase/liquibase-osgi/3.4.2</bundle>
+        <bundle>wrap:mvn:org.liquibase/liquibase-core/3.4.2</bundle>
+        <bundle>wrap:mvn:org.yaml/snakeyaml/1.17</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-whiplash/${feature.version}</bundle>
+    </feature>
+</features>

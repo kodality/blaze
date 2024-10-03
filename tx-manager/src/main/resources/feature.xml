@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="tx-manager">
+    <feature name="tx-manager" description="tx-manager" version="${feature.version}">
+        <bundle>mvn:com.kodality.blaze/tx-manager/${feature.version}</bundle>
+    </feature>
+</features>

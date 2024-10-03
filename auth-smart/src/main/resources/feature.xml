@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="auth-smart">
+    <feature name="auth-smart" description="auth-smart" version="${feature.version}">
+         <feature>auth-core</feature>
+         <feature>fhir-rest</feature>
+        <bundle>mvn:com.kodality.blaze/auth-smart/${feature.version}</bundle>
+    </feature>
+</features>

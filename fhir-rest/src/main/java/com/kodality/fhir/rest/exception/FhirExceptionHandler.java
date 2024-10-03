@@ -48,8 +48,7 @@ public class FhirExceptionHandler implements ExceptionMapper<Throwable> {
       return ((WebApplicationException) e).getResponse();
     }
 
-    String stackTrace = ExceptionUtils.getStackTrace(e);
-    return Response.serverError().entity(stackTrace).build();
+    return toResponse(new FhirException(500, OperationOutcome.IssueType.EXCEPTION, "Internal server error"));
   }
 
   private static Response toResponse(FhirException e) {

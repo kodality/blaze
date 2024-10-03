@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="fhir-rest">
+    <feature name="micrometer-prometheus" description="Micrometer dependencies for metrics">
+        <bundle>mvn:io.micrometer/micrometer-core/1.13.4</bundle>
+        <bundle>mvn:io.micrometer/micrometer-commons/1.13.4</bundle>
+        <bundle>mvn:io.micrometer/micrometer-registry-prometheus/1.13.4</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-config/1.3.1</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-core/1.3.1</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-exposition-formats/1.3.1</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-model/1.3.1</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-tracer-initializer/1.3.1</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-tracer-common/1.3.1</bundle>
+        <bundle>wrap:mvn:io.prometheus/prometheus-metrics-shaded-protobuf/1.3.1</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-tracer-otel/1.3.1</bundle>
+        <bundle>mvn:io.prometheus/prometheus-metrics-tracer-otel-agent/1.3.1</bundle>
+        <bundle>wrap:mvn:org.latencyutils/LatencyUtils/2.0.3</bundle>
+        <bundle>mvn:org.hdrhistogram/HdrHistogram/2.2.2</bundle>
+    </feature>
+    <feature name="fhir-rest" description="fhir-rest" version="${feature.version}">
+        <feature prerequisite="true">wrap</feature>
+        <feature>cxf-core</feature>
+        <feature>cxf-http</feature>
+        <feature>cxf-jaxrs</feature>
+        <feature>cxf-features-logging</feature>
+
+        <feature>cxf-features-metrics</feature>
+        <feature>micrometer-prometheus</feature>
+
+        <bundle>mvn:com.kodality.blaze/fhir-rest/${feature.version}</bundle>
+    </feature>
+</features>

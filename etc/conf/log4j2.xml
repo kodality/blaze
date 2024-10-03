@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} | %-5p | %-16t | %-32c{1} | %X{bundle.id} - %X{bundle.name} - %X{bundle.version} | %m{nolookups}%n"/>
+        </Console>
+        <PaxOsgi name="paxosgi" filter="VmLogAppender"/>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.apache.sshd" additivity="false" level="off"/>
+        <Logger name="org.apache.karaf.shell.commands" additivity="false" level="off"/>
+        <Logger name="org.springframework.jdbc.core.JdbcTemplate" level="trace">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="paxosgi"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -5,7 +5,8 @@
   <parent>
     <groupId>com.kodality</groupId>
     <artifactId>blaze</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0.0</version>
+<relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>com.kodality.blaze</groupId>
   <artifactId>fhir-rest</artifactId>
@@ -27,12 +28,32 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
-      <version>3.4.0</version>
+      <version>3.6.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-      <version>3.4.0</version>
+      <version>3.6.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-features-metrics</artifactId>
+      <version>3.6.4</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+      <version>1.13.4</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <version>1.13.4</version>
+    </dependency>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>prometheus-metrics-core</artifactId>
+      <version>1.3.1</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -44,7 +65,29 @@
       <artifactId>org.apache.karaf.shell.console</artifactId>
     </dependency>
   </dependencies>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>generate-features-file</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>features-generate-descriptor</goal>
+            </goals>
+            <configuration>
+              <primaryFeatureName>fhir-rest</primaryFeatureName>
+              <includeProjectArtifact>true</includeProjectArtifact>
+              <enableGeneration>true</enableGeneration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <properties>
     <bundle.export-packages>
@@ -55,7 +98,6 @@
       com.kodality.fhir.rest.util
     </bundle.export-packages>
     <bundle.import-packages>
-      javax.annotation
     </bundle.import-packages>
   </properties>
 </project>

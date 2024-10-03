@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="pg-store">
+    <feature name="pg-store" description="pg-store" version="${feature.version}">
+        <bundle>mvn:com.kodality.blaze/blaze-core/${feature.version}</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-jdbc/${feature.version}</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-whiplash/${feature.version}</bundle>
+        <bundle>mvn:com.kodality.blaze/fhir-structures/${feature.version}</bundle>
+        <bundle>mvn:com.kodality.blaze/etc-conformance/${feature.version}</bundle>
+        <bundle>mvn:com.kodality.blaze/pg-store/${feature.version}</bundle>
+    </feature>
+</features>

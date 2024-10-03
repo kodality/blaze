@@ -20,24 +20,35 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.cxf.message.Message;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 @Component(immediate = true, service = AuthHeaderAuthenticator.class)
 public class YupiAuthenticator implements AuthHeaderAuthenticator {
   private static final Map<String, String> yupiOrgs = new HashMap<>();
+  private boolean activated = false;
 
   static {
     yupiOrgs.put("yupi", "yupland");
     yupiOrgs.put("ipuy", "dnalpuy");
   }
 
+  @Activate
+  @Modified
+  public void init(Map<String, String> props) {
+    activated = Boolean.TRUE.equals(Boolean.parseBoolean(props.get("yupi.enabled")));
+  }
+
   @Override
   public User autheticate(HttpServletRequest request, Message message) {
+    if (!activated) {
+      return null;
+    }
     List<HttpAuthorization> auths = HttpAuthorization.parse(Collections.list(request.getHeaders(AUTHORIZATION)));
     return auths.stream()
         .filter(a -> a.isType("Bearer"))

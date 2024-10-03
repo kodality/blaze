@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="blaze-core">
+    <feature name="blaze-core" description="blaze-core" version="${feature.version}">
+        <feature prerequisite="true">wrap</feature>
+        <feature>fhir-structures</feature>
+        <feature>tx-manager</feature>
+        <feature>auth-core</feature>
+        <bundle>mvn:org.ehcache/ehcache/3.9.0</bundle>
+        <bundle>mvn:com.kodality.blaze/blaze-core/${feature.version}</bundle>
+    </feature>
+</features>

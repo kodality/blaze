@@ -12,24 +12,17 @@
  */
 package com.kodality.blaze.core.service;
 
-import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import com.kodality.blaze.core.api.conformance.ResourceDefinitionListener;
 import com.kodality.blaze.fhir.structure.service.HapiContextHolder;
 import com.kodality.blaze.fhir.structure.service.ResourceFormatService;
-
-import ca.uhn.fhir.context.FhirContext;
-
-import org.hl7.fhir.r4.context.IWorkerContext;
-import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
+import java.util.List;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.utils.FHIRPathEngine;
-import org.hl7.fhir.exceptions.FHIRException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.util.List;
 
 @Component(immediate = true, service = { FhirPath.class, ResourceDefinitionListener.class })
 public class FhirPath implements ResourceDefinitionListener {

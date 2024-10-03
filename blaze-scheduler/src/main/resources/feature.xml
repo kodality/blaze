@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.6.0" name="blaze-scheduler">
+    <feature name="blaze-scheduler" description="blaze-scheduler" version="${feature.version}">
+         <bundle>mvn:org.apache.karaf.scheduler/org.apache.karaf.scheduler.core/4.2.9</bundle>
+         <bundle>mvn:com.kodality.blaze/blaze-core/${feature.version}</bundle>
+         <bundle>mvn:com.kodality.blaze/pg-jdbc/${feature.version}</bundle>
+         <bundle>mvn:com.kodality.blaze/pg-whiplash/${feature.version}</bundle>
+        <bundle>mvn:com.kodality.blaze/blaze-scheduler/${feature.version}</bundle>
+    </feature>
+</features>

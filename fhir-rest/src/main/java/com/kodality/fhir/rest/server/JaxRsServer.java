@@ -23,6 +23,10 @@ import com.kodality.fhir.rest.filter.RequestContext;
 import com.kodality.fhir.rest.filter.ResponseFormatInterceptor;
 import com.kodality.fhir.rest.filter.writer.FhirWriter;
 import com.kodality.fhir.rest.filter.writer.ResourceContentWriter;
+import com.kodality.fhir.rest.metrics.FhirMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.endpoint.Server;
@@ -33,11 +37,23 @@ import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.UserResource;
 import org.apache.cxf.message.Message;
+import org.apache.cxf.metrics.MetricsFeature;
+import org.apache.cxf.metrics.MetricsProvider;
+import org.apache.cxf.metrics.interceptors.CountingOutInterceptor;
+import org.apache.cxf.metrics.interceptors.MetricsMessageInInterceptor;
+import org.apache.cxf.metrics.interceptors.MetricsMessageOutInterceptor;
+import org.apache.cxf.metrics.micrometer.MicrometerMetricsProperties;
+import org.apache.cxf.metrics.micrometer.MicrometerMetricsProvider;
+import org.apache.cxf.metrics.micrometer.provider.DefaultExceptionClassProvider;
+import org.apache.cxf.metrics.micrometer.provider.DefaultTimedAnnotationProvider;
+import org.apache.cxf.metrics.micrometer.provider.StandardTags;
+import org.apache.cxf.metrics.micrometer.provider.StandardTagsProvider;
+import org.apache.cxf.metrics.micrometer.provider.TagsCustomizer;
+import org.apache.cxf.metrics.micrometer.provider.TagsProvider;
+import org.apache.cxf.metrics.micrometer.provider.jaxrs.JaxrsOperationTagsCustomizer;
+import org.apache.cxf.metrics.micrometer.provider.jaxrs.JaxrsTags;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class JaxRsServer {
   protected Server serverInstance;
@@ -53,10 +69,13 @@ public abstract class JaxRsServer {
     JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
     sf.getServiceFactory().setDefaultModelClass(this.getClass());
 
+    MetricsProvider metricsProvider = getMetricsProvider();
+
+    sf.setFeatures(List.of(new MetricsFeature(metricsProvider)));
     sf.setAddress("/" + getEndpoint());
-    sf.setProviders(getProviders());
-    sf.setInInterceptors(getInInterceptors());
-    sf.setOutInterceptors(getOutInterceptors());
+    sf.setProviders(getProviders(metricsProvider));
+    sf.setInInterceptors(getInInterceptors(metricsProvider));
+    sf.setOutInterceptors(getOutInterceptors(metricsProvider));
 
     sf.setModelBeans(getResource());
     for (ClassResourceInfo cri : sf.getServiceFactory().getClassResourceInfo()) {
@@ -71,33 +90,54 @@ public abstract class JaxRsServer {
     return serverInstance;
   }
 
-  private List<Interceptor<? extends Message>> getInInterceptors() {
+  private List<Interceptor<? extends Message>> getInInterceptors(MetricsProvider metricsProvider) {
     List<Interceptor<? extends Message>> interceptors = new ArrayList<>();
     interceptors.add(new FormatInterceptor());
     interceptors.add(new OsgiInterceptorProxy(Phase.RECEIVE, InInterceptor.class));
     interceptors.add(new OsgiInterceptorProxy(Phase.READ, InInterceptor.class));
     interceptors.add(new OsgiInterceptorProxy(Phase.PRE_INVOKE, InInterceptor.class));
+    interceptors.add(new MetricsMessageInInterceptor(new MetricsProvider[]{metricsProvider}));
     return interceptors;
   }
 
-  private List<Interceptor<? extends Message>> getOutInterceptors() {
+  private List<Interceptor<? extends Message>> getOutInterceptors(MetricsProvider metricsProvider) {
     List<Interceptor<? extends Message>> interceptors = new ArrayList<>();
     interceptors.add(new CharsetInterceptor());
     interceptors.add(new CleanupInterceptor());
     interceptors.add(new OsgiInterceptorProxy(Phase.PRE_STREAM, OutInterceptor.class));
     interceptors.add(new OsgiInterceptorProxy(Phase.SEND, OutInterceptor.class));
     interceptors.add(new OsgiInterceptorProxy(Phase.SETUP_ENDING, OutInterceptor.class));
+    interceptors.add(new CountingOutInterceptor());
+    interceptors.add(new MetricsMessageOutInterceptor(new MetricsProvider[]{metricsProvider}));
     return interceptors;
   }
 
-  private List<Object> getProviders() {
+  private List<Object> getProviders(MetricsProvider metricsProvider) {
     List<Object> providers = new ArrayList<>();
     providers.add(new RequestContext());
     providers.add(new FhirExceptionHandler());
     providers.add(new ResponseFormatInterceptor());
     providers.add(new ResourceContentWriter());
     providers.add(new FhirWriter());
+    providers.add(metricsProvider);
     return providers;
+  }
+
+  private MetricsProvider getMetricsProvider() {
+    PrometheusMeterRegistry registry = FhirMeterRegistry.getMeterRegistry();
+    JaxrsTags jaxrsTags = new JaxrsTags();
+    TagsCustomizer operationsCustomizer = new JaxrsOperationTagsCustomizer(jaxrsTags);
+
+    TagsProvider tagsProvider = new StandardTagsProvider(new DefaultExceptionClassProvider(), new StandardTags());
+    MicrometerMetricsProperties properties = new MicrometerMetricsProperties();
+
+    return new MicrometerMetricsProvider(
+        registry,
+        tagsProvider,
+        List.of(operationsCustomizer),
+        new DefaultTimedAnnotationProvider(),
+        properties
+    );
   }
 
   private static class OsgiInterceptorProxy extends AbstractPhaseInterceptor<Message> {
