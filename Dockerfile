@@ -20,7 +20,7 @@ RUN mkdir ${KARAF_INSTALL_PATH}/${KARAF_NAME} && \
 
 # Add configurations and setup correct versions
 COPY etc/conf /opt/apache-karaf/etc
-ARG feature_version=2.0.1
+ARG feature_version=2.0.2
 RUN sed -i "s/\${feature.version}/$feature_version/" /opt/apache-karaf/etc/org.apache.karaf.features.cfg
 
 CMD ["karaf", "run"]
